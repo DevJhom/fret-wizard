@@ -1,37 +1,58 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import data from '../data/pentatonic-scale.json'
+import { ref, watch, onMounted } from 'vue';
+import { getCurrentKey, updateCurrentKey, getScale, updateScale } from '../service/index';
 
 const fretAmount = ref(24);
-
-const scales = ref(["C","C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]);
-const currentScale = ref<string>("C");
-
 const fretIndicator = new Array(24);
-const E = ref(data[currentScale.value as keyof typeof data].E); 
-const A = ref(data[currentScale.value as keyof typeof data].A);
-const D = ref(data[currentScale.value as keyof typeof data].D);
-const G = ref(data[currentScale.value as keyof typeof data].G);
-const B = ref(data[currentScale.value as keyof typeof data].B);
-const e = ref(data[currentScale.value as keyof typeof data].e);
+const keys = ref(["C","C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]);
+const currentKey = ref<string>("C");
+const E = ref();
+const A = ref();
+const D = ref();
+const G = ref();
+const B = ref();
+const e = ref();
 
-const onChangeCurrentScale = (currentScale: string) => {
-    E.value = data[currentScale as keyof typeof data].E; 
-    A.value = data[currentScale as keyof typeof data].A; 
-    D.value = data[currentScale as keyof typeof data].D; 
-    G.value = data[currentScale as keyof typeof data].G; 
-    B.value = data[currentScale as keyof typeof data].B; 
-    e.value = data[currentScale as keyof typeof data].e; 
+const fetchCurrentKey = async () => {
+    const data = await getCurrentKey();
+    currentKey.value = data.key;
 }
+
+const fetchScale = async () => {
+    const data = await getScale(currentKey.value);
+    E.value = data.E;
+    A.value = data.A;
+    D.value = data.D;
+    G.value = data.G;
+    B.value = data.B;
+    e.value = data.e;
+}
+
+const onChangeCurrentKey = () => {
+    fetchScale();
+    updateCurrentKey(currentKey.value);
+}
+
+watch([E, A, D, G, B, e], (newValue) => {
+    updateScale(currentKey.value, newValue[0], newValue[1], newValue[2], newValue[3], newValue[4], newValue[5])
+}, { deep: true })
+
+onMounted(async () => {
+    await fetchCurrentKey();
+    await fetchScale();
+})
 </script>
 
 <template>
-    <div v-for="(scale, index) in scales" :key="scale" class="d-inline-block scales">
+    <div>
+        Choose Key
+    </div>
+    <div v-for="(scale, index) in keys" :key="scale" class="d-inline-block keys">
         <div class="d=flex flex-column">
             <div>
                 {{ scale }}
             </div>
-            <input type="radio" name="scales" v-model="currentScale" :value="scales[index]" @change="onChangeCurrentScale(currentScale)">
+            <input type="radio" name="scales" v-model="currentKey" :value="keys[index]" @change="onChangeCurrentKey()">
         </div>
     </div>
     <!-- Fret Indicator -->
@@ -99,8 +120,7 @@ const onChangeCurrentScale = (currentScale: string) => {
 </template>
 
 <style scoped>
-
-.scales {
+.keys {
     border: 1px solid gray;
     min-width: 50px;
 }
