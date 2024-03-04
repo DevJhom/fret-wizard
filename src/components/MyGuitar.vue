@@ -16,11 +16,29 @@ const G = ref();
 const B = ref();
 const e = ref();
 
-const currentHighlightNotes = ref([]);
-const highlightNotes = ref(["root notes", "thrids", "fifths"]);
-const rootNotes = ref([3,5,7,9]);
-const thirds = ref([4]);
-const fifths = ref([6]);
+const currentHighlightNotes = ref<string[]>(["roots"]);
+const highlightNotes = ref(["roots", "thirds", "fifths"]);
+
+const ERoots = ref([8]);
+const ARoots = ref([1,13]);
+const DRoots = ref([5]);
+const GRoots = ref([10]);
+const BRoots = ref([3,15]);
+const eRoots = ref([8]);
+
+const EThirds = ref([12]);
+const AThirds = ref([5]);
+const DThirds = ref([9]);
+const GThirds = ref([2,14]);
+const BThirds = ref([7]);
+const eThirds = ref([12]);
+
+const EFifths = ref([3]); 
+const AFifths = ref([8]); 
+const DFifths = ref([12]); 
+const GFifths = ref([5]); 
+const BFifths = ref([10]); 
+const eFifths = ref([3]); 
 
 const fetchCurrentKey = async () => {
     const data = await getCurrentKey();
@@ -82,13 +100,19 @@ onMounted(async () => {
         </div>
     </div>
     <!-- HighlightNotes Filter -->
-    <div class="highlightNotes-filter d-flex flex-column text-end border border-success">
-        <div v-for="(highlightNote) in highlightNotes" :key="highlightNote" class="d-flex">
+    <div class="highlightNotes-filter notes d-flex flex-column text-end border border-success">
+        <label v-for="(highlightNote, index) in highlightNotes" :key="highlightNote" class="d-flex">
             <input type="checkbox" :value="highlightNote" v-model="currentHighlightNotes"/>
-            <span class="ms-2 mb-1">
+            <div class="checkbox__checkmark"
+                :class="{
+                    'root-note': index == 0 && currentHighlightNotes.includes('roots'),
+                    'third': index == 1 && currentHighlightNotes.includes('thirds'),
+                    'fifth': index == 2 && currentHighlightNotes.includes('fifths')}">
+            </div>
+            <span class="ms-3">
                 {{ highlightNote }}
             </span>
-        </div>
+        </label>
     </div>
     <!-- Fret Indicator -->
     <div v-for="(_, index) in fretIndicator" :key="index" class="d-inline-block" :class="{'fret-indicator': index < fretAmount}">
@@ -105,9 +129,9 @@ onMounted(async () => {
                 <input type="checkbox" v-model="E[index]"/>
                 <div class="checkbox__checkmark" 
                     :class="{
-                        'root-note': rootNotes.includes(index), 
-                        'third': thirds.includes(index),
-                        'fifth': fifths.includes(index)}">
+                        'root-note': currentHighlightNotes.includes('roots') ? ERoots.includes(index + 1) : '', 
+                        'third': currentHighlightNotes.includes('thirds') ? EThirds.includes(index + 1) : '',
+                        'fifth': currentHighlightNotes.includes('fifths') ? EFifths.includes(index + 1) : ''}">
                 </div>
             </label>
         </div>
@@ -116,7 +140,13 @@ onMounted(async () => {
         <div v-for="(fret, index) in A" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}">
             <label v-if="index < fretAmount" class="notes">
                 <input type="checkbox" v-model="A[index]"/>
-                <div class="checkbox__checkmark"></div>
+                <div class="checkbox__checkmark" 
+                    :class="{
+                        'root-note': currentHighlightNotes.includes('roots') ? ARoots.includes(index + 1) : '', 
+                        'third': currentHighlightNotes.includes('thirds') ? AThirds.includes(index + 1) : '',
+                        'fifth': currentHighlightNotes.includes('fifths') ? AFifths.includes(index + 1) : ''}">
+                </div>
+
             </label>
         </div>
     </div>
@@ -124,7 +154,12 @@ onMounted(async () => {
         <div v-for="(fret, index) in D" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}">
             <label v-if="index < fretAmount" class="notes">
                 <input type="checkbox" v-model="D[index]"/>
-                <div class="checkbox__checkmark"></div>
+                <div class="checkbox__checkmark" 
+                    :class="{
+                        'root-note': currentHighlightNotes.includes('roots') ? DRoots.includes(index + 1) : '', 
+                        'third': currentHighlightNotes.includes('thirds') ? DThirds.includes(index + 1) : '',
+                        'fifth': currentHighlightNotes.includes('fifths') ? DFifths.includes(index + 1) : ''}">
+                </div>
             </label>
         </div>
     </div>
@@ -132,7 +167,12 @@ onMounted(async () => {
         <div v-for="(fret, index) in G" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}">
             <label v-if="index < fretAmount" class="notes">
                 <input type="checkbox" v-model="G[index]"/>
-                <div class="checkbox__checkmark"></div>
+                <div class="checkbox__checkmark" 
+                    :class="{
+                        'root-note': currentHighlightNotes.includes('roots') ? GRoots.includes(index + 1) : '', 
+                        'third': currentHighlightNotes.includes('thirds') ? GThirds.includes(index + 1) : '',
+                        'fifth': currentHighlightNotes.includes('fifths') ? GFifths.includes(index + 1) : ''}">
+                </div>
             </label>
         </div>
     </div>
@@ -140,7 +180,12 @@ onMounted(async () => {
         <div v-for="(fret, index) in B" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}">
             <label v-if="index < fretAmount" class="notes">
                 <input type="checkbox" v-model="B[index]"/>
-                <div class="checkbox__checkmark"></div>
+                <div class="checkbox__checkmark" 
+                    :class="{
+                        'root-note': currentHighlightNotes.includes('roots') ? BRoots.includes(index + 1) : '', 
+                        'third': currentHighlightNotes.includes('thirds') ? BThirds.includes(index + 1) : '',
+                        'fifth': currentHighlightNotes.includes('fifths') ? BFifths.includes(index + 1) : ''}">
+                </div>
             </label>
         </div>
     </div>
@@ -148,7 +193,12 @@ onMounted(async () => {
         <div v-for="(fret, index) in e" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}" style="border-right: none">
             <label v-if="index < fretAmount" class="notes">
                 <input type="checkbox" v-model="e[index]"/>
-                <div class="checkbox__checkmark"></div>
+                <div class="checkbox__checkmark" 
+                    :class="{
+                        'root-note': currentHighlightNotes.includes('roots') ? eRoots.includes(index + 1) : '', 
+                        'third': currentHighlightNotes.includes('thirds') ? eThirds.includes(index + 1) : '',
+                        'fifth': currentHighlightNotes.includes('fifths') ? eFifths.includes(index + 1) : ''}">
+                </div>
             </label>
         </div>
     </div>
@@ -184,8 +234,12 @@ onMounted(async () => {
     top: 20%;
     right: 10%;
     border-radius: 5px;
-    padding: 20px;
+    padding: 20px 30px 20px 20px;
     border: 1px solid red;
+}
+
+.highlightNotes-filter .checkbox__checkmark {
+    margin-top: 4px !important;
 }
 
 /* FRETBOARD */
