@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import MyGuitar from './components/MyGuitar.vue'
+import MyGuitar from '@components/MyGuitar.vue'
 </script>
 
 <template>

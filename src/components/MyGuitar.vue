@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue';
-import { getCurrentKey, updateCurrentKey, getScale, updateScale } from '../service/service';
+import { getCurrentKey, updateCurrentKey, getScale, updateScale } from '@services/service';
 
 const fretAmount = ref(24);
 const fretIndicator = new Array(24);
