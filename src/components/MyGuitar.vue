@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue';
+import { ref, watch, onMounted, computed } from 'vue';
 import { getCurrentKey, updateCurrentKey, getScale, updateScale } from '@services/service';
+import { getRoots, getThirds, getFifths } from './intervals';
 
 const fretAmount = ref(24);
 const fretIndicator = new Array(24);
 const keys = ref(["C","C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]);
-const scales = ref(["Pentatonic Scale", "Blue Scale", "Diatonic Scale", "Traid Arpeggio"]);
+const scales = ref(["Pentatonic Scale", "Blue Scale", "Diatonic Scale", "Traid Arpeggio", "None"]);
 const currentKey = ref<string>("C");
 const currentScale = ref<string>("Pentatonic Scale");
 
@@ -19,26 +20,65 @@ const e = ref();
 const currentHighlightNotes = ref<string[]>(["roots"]);
 const highlightNotes = ref(["roots", "thirds", "fifths"]);
 
-const ERoots = ref([8]);
-const ARoots = ref([1,13]);
-const DRoots = ref([5]);
-const GRoots = ref([10]);
-const BRoots = ref([3,15]);
-const eRoots = ref([8]);
+// Roots
+const ERoots = computed(() => {
+    return getRoots(currentKey.value, "E");
+})
+const ARoots = computed(() => {
+    return getRoots(currentKey.value, "A");
+})
+const DRoots = computed(() => {
+    return getRoots(currentKey.value, "D");
+})
+const GRoots = computed(() => {
+    return getRoots(currentKey.value, "G");
+})
+const BRoots = computed(() => {
+    return getRoots(currentKey.value, "B");
+})
+const eRoots = computed(() => {
+    return getRoots(currentKey.value, "e");
+})
 
-const EThirds = ref([12]);
-const AThirds = ref([5]);
-const DThirds = ref([9]);
-const GThirds = ref([2,14]);
-const BThirds = ref([7]);
-const eThirds = ref([12]);
+// Thirds
+const EThirds = computed(() => {
+    return getThirds(currentKey.value, "E");
+})
+const AThirds = computed(() => {
+    return getThirds(currentKey.value, "A");
+})
+const DThirds = computed(() => {
+    return getThirds(currentKey.value, "D");
+})
+const GThirds = computed(() => {
+    return getThirds(currentKey.value, "G");
+})
+const BThirds = computed(() => {
+    return getThirds(currentKey.value, "B");
+})
+const eThirds = computed(() => {
+    return getThirds(currentKey.value, "e");
+})
 
-const EFifths = ref([3]); 
-const AFifths = ref([8]); 
-const DFifths = ref([12]); 
-const GFifths = ref([5]); 
-const BFifths = ref([10]); 
-const eFifths = ref([3]); 
+// Fifths
+const EFifths = computed(() => {
+    return getFifths(currentKey.value, "E");
+})
+const AFifths = computed(() => {
+    return getFifths(currentKey.value, "A");
+})
+const DFifths = computed(() => {
+    return getFifths(currentKey.value, "D");
+})
+const GFifths = computed(() => {
+    return getFifths(currentKey.value, "G");
+})
+const BFifths = computed(() => {
+    return getFifths(currentKey.value, "B");
+})
+const eFifths = computed(() => {
+    return getFifths(currentKey.value, "e");
+})
 
 const fetchCurrentKey = async () => {
     const data = await getCurrentKey();
@@ -129,9 +169,9 @@ onMounted(async () => {
                 <input type="checkbox" v-model="E[index]"/>
                 <div class="checkbox__checkmark" 
                     :class="{
-                        'root-note': currentHighlightNotes.includes('roots') ? ERoots.includes(index + 1) : '', 
-                        'third': currentHighlightNotes.includes('thirds') ? EThirds.includes(index + 1) : '',
-                        'fifth': currentHighlightNotes.includes('fifths') ? EFifths.includes(index + 1) : ''}">
+                        'root-note': currentHighlightNotes.includes('roots') ? ERoots?.includes(index + 1) : '', 
+                        'third': currentHighlightNotes.includes('thirds') ? EThirds?.includes(index + 1) : '',
+                        'fifth': currentHighlightNotes.includes('fifths') ? EFifths?.includes(index + 1) : ''}">
                 </div>
             </label>
         </div>
@@ -142,9 +182,9 @@ onMounted(async () => {
                 <input type="checkbox" v-model="A[index]"/>
                 <div class="checkbox__checkmark" 
                     :class="{
-                        'root-note': currentHighlightNotes.includes('roots') ? ARoots.includes(index + 1) : '', 
-                        'third': currentHighlightNotes.includes('thirds') ? AThirds.includes(index + 1) : '',
-                        'fifth': currentHighlightNotes.includes('fifths') ? AFifths.includes(index + 1) : ''}">
+                        'root-note': currentHighlightNotes.includes('roots') ? ARoots?.includes(index + 1) : '', 
+                        'third': currentHighlightNotes.includes('thirds') ? AThirds?.includes(index + 1) : '',
+                        'fifth': currentHighlightNotes.includes('fifths') ? AFifths?.includes(index + 1) : ''}">
                 </div>
 
             </label>
@@ -156,9 +196,9 @@ onMounted(async () => {
                 <input type="checkbox" v-model="D[index]"/>
                 <div class="checkbox__checkmark" 
                     :class="{
-                        'root-note': currentHighlightNotes.includes('roots') ? DRoots.includes(index + 1) : '', 
-                        'third': currentHighlightNotes.includes('thirds') ? DThirds.includes(index + 1) : '',
-                        'fifth': currentHighlightNotes.includes('fifths') ? DFifths.includes(index + 1) : ''}">
+                        'root-note': currentHighlightNotes.includes('roots') ? DRoots?.includes(index + 1) : '', 
+                        'third': currentHighlightNotes.includes('thirds') ? DThirds?.includes(index + 1) : '',
+                        'fifth': currentHighlightNotes.includes('fifths') ? DFifths?.includes(index + 1) : ''}">
                 </div>
             </label>
         </div>
@@ -169,9 +209,9 @@ onMounted(async () => {
                 <input type="checkbox" v-model="G[index]"/>
                 <div class="checkbox__checkmark" 
                     :class="{
-                        'root-note': currentHighlightNotes.includes('roots') ? GRoots.includes(index + 1) : '', 
-                        'third': currentHighlightNotes.includes('thirds') ? GThirds.includes(index + 1) : '',
-                        'fifth': currentHighlightNotes.includes('fifths') ? GFifths.includes(index + 1) : ''}">
+                        'root-note': currentHighlightNotes.includes('roots') ? GRoots?.includes(index + 1) : '', 
+                        'third': currentHighlightNotes.includes('thirds') ? GThirds?.includes(index + 1) : '',
+                        'fifth': currentHighlightNotes.includes('fifths') ? GFifths?.includes(index + 1) : ''}">
                 </div>
             </label>
         </div>
@@ -182,9 +222,9 @@ onMounted(async () => {
                 <input type="checkbox" v-model="B[index]"/>
                 <div class="checkbox__checkmark" 
                     :class="{
-                        'root-note': currentHighlightNotes.includes('roots') ? BRoots.includes(index + 1) : '', 
-                        'third': currentHighlightNotes.includes('thirds') ? BThirds.includes(index + 1) : '',
-                        'fifth': currentHighlightNotes.includes('fifths') ? BFifths.includes(index + 1) : ''}">
+                        'root-note': currentHighlightNotes.includes('roots') ? BRoots?.includes(index + 1) : '', 
+                        'third': currentHighlightNotes.includes('thirds') ? BThirds?.includes(index + 1) : '',
+                        'fifth': currentHighlightNotes.includes('fifths') ? BFifths?.includes(index + 1) : ''}">
                 </div>
             </label>
         </div>
@@ -195,9 +235,9 @@ onMounted(async () => {
                 <input type="checkbox" v-model="e[index]"/>
                 <div class="checkbox__checkmark" 
                     :class="{
-                        'root-note': currentHighlightNotes.includes('roots') ? eRoots.includes(index + 1) : '', 
-                        'third': currentHighlightNotes.includes('thirds') ? eThirds.includes(index + 1) : '',
-                        'fifth': currentHighlightNotes.includes('fifths') ? eFifths.includes(index + 1) : ''}">
+                        'root-note': currentHighlightNotes.includes('roots') ? eRoots?.includes(index + 1) : '', 
+                        'third': currentHighlightNotes.includes('thirds') ? eThirds?.includes(index + 1) : '',
+                        'fifth': currentHighlightNotes.includes('fifths') ? eFifths?.includes(index + 1) : ''}">
                 </div>
             </label>
         </div>
