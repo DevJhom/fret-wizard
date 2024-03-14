@@ -22,9 +22,19 @@ export const updateCurrentKey = async (key: string) => {
     }
 }
 
-export const getScale = async (key: string) => {
+export const getScale = async (scale: string, key: string) => {
     try {
-        const response = await axios.get(`${serviceUrl}/${encodeURIComponent(key)}`);
+        const response = await axios.get(`${serviceUrl}/${scale}`); // /${encodeURIComponent(key)
+        return response.data[key];
+    } catch(error){
+        console.log("error:", error);
+        return null;
+    }
+}
+
+export const updateCurrentScale = async (scale: string) => {
+    try {
+        const response = await axios.put(`${serviceUrl}/currentScale`, { scale });
         return response.data;
     } catch(error){
         console.log("error:", error);
