@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, computed } from 'vue';
-import { getCurrentKey, updateCurrentKey, getScale, updateScale } from '@services/service';
+import { getCurrentKey, updateCurrentKey, getScale, updateCurrentScale, updateScale } from '@services/service';
 import { getRoots, getThirds, getFifths } from './intervals';
 
 const fretAmount = ref(24);
 const fretIndicator = new Array(24);
 const keys = ref(["C","C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]);
-const scales = ref(["Pentatonic Scale", "Blue Scale", "Diatonic Scale", "Traid Arpeggio", "None"]);
+const scales = ref(["Pentatonic Scale", "Blue Scale", "Diatonic Scale", "Triad Arpeggio", "None"]);
 const currentKey = ref<string>("C");
 const currentScale = ref<string>("Pentatonic Scale");
 
@@ -86,7 +86,20 @@ const fetchCurrentKey = async () => {
 }
 
 const fetchScale = async () => {
-    const data = await getScale(currentKey.value);
+    const mapScale: () => string = () => {
+        if(currentScale.value == 'Pentatonic Scale')
+            return 'pentatonic_scale';
+        if(currentScale.value == 'Blue Scale')
+            return 'blue_scale';
+        if(currentScale.value == 'Diatonic Scale')
+            return 'diatonic_scale';
+        if(currentScale.value == 'Triad Arpeggio')
+            return 'triad_arpeggio';
+
+        return '';
+    };
+
+    const data = await getScale(mapScale(), currentKey.value);
     E.value = data.E;
     A.value = data.A;
     D.value = data.D;
@@ -102,7 +115,7 @@ const onChangeCurrentKey = () => {
 
 const onChangeCurrentScale = () => {
     fetchScale();
-    // updateCurrentScale(currentScale.value);
+    updateCurrentScale(currentScale.value);
 }
 
 watch([E, A, D, G, B, e], (newValue) => {
