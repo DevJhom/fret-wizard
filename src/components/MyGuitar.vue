@@ -86,20 +86,7 @@ const fetchCurrentKey = async () => {
 }
 
 const fetchScale = async () => {
-    const mapScale: () => string = () => {
-        if(currentScale.value == 'Pentatonic Scale')
-            return 'pentatonic_scale';
-        if(currentScale.value == 'Blue Scale')
-            return 'blue_scale';
-        if(currentScale.value == 'Diatonic Scale')
-            return 'diatonic_scale';
-        if(currentScale.value == 'Triad Arpeggio')
-            return 'triad_arpeggio';
-
-        return '';
-    };
-
-    const data = await getScale(mapScale(), currentKey.value);
+    const data = await getScale(mapScaleName(), currentKey.value);
     E.value = data.E;
     A.value = data.A;
     D.value = data.D;
@@ -107,6 +94,21 @@ const fetchScale = async () => {
     B.value = data.B;
     e.value = data.e;
 }
+
+const mapScaleName: () => string = () => {
+    if(currentScale.value == 'Pentatonic Scale')
+        return 'pentatonic_scale';
+    if(currentScale.value == 'Blue Scale')
+        return 'blue_scale';
+    if(currentScale.value == 'Diatonic Scale')
+        return 'diatonic_scale';
+    if(currentScale.value == 'Triad Arpeggio')
+        return 'triad_arpeggio';
+    if(currentScale.value == 'None')
+        return 'none';
+
+    return '';
+};
 
 const onChangeCurrentKey = () => {
     fetchScale();
@@ -119,7 +121,14 @@ const onChangeCurrentScale = () => {
 }
 
 watch([E, A, D, G, B, e], (newValue) => {
-    updateScale(currentKey.value, newValue[0], newValue[1], newValue[2], newValue[3], newValue[4], newValue[5])
+    updateScale(mapScaleName(), currentKey.value, {
+        E: Object.assign([], newValue[0]), 
+        A: Object.assign([], newValue[1]), 
+        D: Object.assign([], newValue[2]), 
+        G: Object.assign([], newValue[3]),
+        B: Object.assign([], newValue[4]),
+        e: Object.assign([], newValue[5])
+    })
 }, { deep: true })
 
 onMounted(async () => {

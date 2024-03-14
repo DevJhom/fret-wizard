@@ -1,5 +1,9 @@
 import axios from 'axios';
 
+type GuitarStrings = {
+  [key: string]: string[];
+};
+
 const serviceUrl = 'http://localhost:3000';
 
 export const getCurrentKey = async () => {
@@ -42,9 +46,14 @@ export const updateCurrentScale = async (scale: string) => {
     }
 }
 
-export const updateScale = async (key: string, E: string[], A: string[], D: string[], G: string[], B: string[], e: string[]) => {
+export const updateScale = async (scale: string, key: string, guitarStrings: GuitarStrings) => {
     try {
-        const response = await axios.put(`${serviceUrl}/${encodeURIComponent(key)}/`, { E, A, D, G, B, e});
+        //To be refactored - update only the necessary data (key)
+        //As this is not possible with the simulated json-server
+        const allKeys = await axios.get(`${serviceUrl}/${scale}`);
+        allKeys.data[key] = guitarStrings;
+
+        const response = await axios.put(`${serviceUrl}/${scale}/`, allKeys.data); 
         return response.data;
     } catch(error){
         console.log("error:", error);
