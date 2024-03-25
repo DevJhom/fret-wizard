@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, computed } from 'vue';
 import { getCurrentKey, updateCurrentKey, getScale, updateCurrentScale, updateScale } from '@services/service';
-import { getRoots, getThirds, getFifths } from './intervals';
+import { getRoots, getSeconds, getThirds, getFourths, getFifths, getSixths, getSevenths, getBlues } from './intervals';
 
 const fretAmount = ref(24);
 const fretIndicator = new Array(24);
@@ -18,7 +18,18 @@ const B = ref();
 const e = ref();
 
 const currentHighlightNotes = ref<string[]>(["roots"]);
-const highlightNotes = ref(["roots", "thirds", "fifths"]);
+const highlightNotes = computed(() => {
+    if(currentScale.value == "Pentatonic Scale")
+        return ["roots", "seconds", "thirds", "fifths", "sixths"];
+    if(currentScale.value == "Blue Scale")
+        return ["roots", "seconds", "thirds", "fifths", "sixths", "blues"];
+    if(currentScale.value == "Diatonic Scale")
+        return ["roots", "seconds", "thirds", "fourths", "fifths", "sixths", "sevenths"]
+    if(currentScale.value == "Triad Arpeggio")
+        return ["roots", "thirds", "fifths"];
+    else 
+        return ["roots", "thirds", "fifths"];
+})
 
 // Roots
 const ERoots = computed(() => {
@@ -38,6 +49,26 @@ const BRoots = computed(() => {
 })
 const eRoots = computed(() => {
     return getRoots(currentKey.value, "e");
+})
+
+// Seconds
+const ESeconds = computed(() => {
+    return getSeconds(currentKey.value, "E");
+})
+const ASeconds = computed(() => {
+    return getSeconds(currentKey.value, "A");
+})
+const DSeconds = computed(() => {
+    return getSeconds(currentKey.value, "D");
+})
+const GSeconds = computed(() => {
+    return getSeconds(currentKey.value, "G");
+})
+const BSeconds = computed(() => {
+    return getSeconds(currentKey.value, "B");
+})
+const eSeconds = computed(() => {
+    return getSeconds(currentKey.value, "e");
 })
 
 // Thirds
@@ -60,6 +91,26 @@ const eThirds = computed(() => {
     return getThirds(currentKey.value, "e");
 })
 
+// Fourths
+const EFourths = computed(() => {
+    return getFourths(currentKey.value, "E");
+})
+const AFourths = computed(() => {
+    return getFourths(currentKey.value, "A");
+})
+const DFourths = computed(() => {
+    return getFourths(currentKey.value, "D");
+})
+const GFourths = computed(() => {
+    return getFourths(currentKey.value, "G");
+})
+const BFourths = computed(() => {
+    return getFourths(currentKey.value, "B");
+})
+const eFourths = computed(() => {
+    return getFourths(currentKey.value, "e");
+})
+
 // Fifths
 const EFifths = computed(() => {
     return getFifths(currentKey.value, "E");
@@ -79,6 +130,68 @@ const BFifths = computed(() => {
 const eFifths = computed(() => {
     return getFifths(currentKey.value, "e");
 })
+
+// Sixths
+const ESixths = computed(() => {
+    return getSixths(currentKey.value, "E");
+})
+const ASixths = computed(() => {
+    return getSixths(currentKey.value, "A");
+})
+const DSixths = computed(() => {
+    return getSixths(currentKey.value, "D");
+})
+const GSixths = computed(() => {
+    return getSixths(currentKey.value, "G");
+})
+const BSixths = computed(() => {
+    return getSixths(currentKey.value, "B");
+})
+const eSixths = computed(() => {
+    return getSixths(currentKey.value, "e");
+})
+
+// Sevenths
+const ESevenths = computed(() => {
+    return getSevenths(currentKey.value, "E");
+})
+const ASevenths = computed(() => {
+    return getSevenths(currentKey.value, "A");
+})
+const DSevenths = computed(() => {
+    return getSevenths(currentKey.value, "D");
+})
+const GSevenths = computed(() => {
+    return getSevenths(currentKey.value, "G");
+})
+const BSevenths = computed(() => {
+    return getSevenths(currentKey.value, "B");
+})
+const eSevenths = computed(() => {
+    return getSevenths(currentKey.value, "e");
+})
+
+// Blues
+const EBlues = computed(() => {
+    return getBlues(currentKey.value, "E");
+})
+const ABlues = computed(() => {
+    return getBlues(currentKey.value, "A");
+})
+const DBlues = computed(() => {
+    return getBlues(currentKey.value, "D");
+})
+const GBlues = computed(() => {
+    return getBlues(currentKey.value, "G");
+})
+const BBlues = computed(() => {
+    return getBlues(currentKey.value, "B");
+})
+const eBlues = computed(() => {
+    return getBlues(currentKey.value, "e");
+})
+
+
 
 const fetchCurrentKey = async () => {
     const data = await getCurrentKey();
@@ -163,13 +276,19 @@ onMounted(async () => {
     </div>
     <!-- HighlightNotes Filter -->
     <div class="highlightNotes-filter notes d-flex flex-column text-end border border-success">
-        <label v-for="(highlightNote, index) in highlightNotes" :key="highlightNote" class="d-flex">
+        <label v-for="(highlightNote) in highlightNotes" :key="highlightNote" class="d-flex">
             <input type="checkbox" :value="highlightNote" v-model="currentHighlightNotes"/>
             <div class="checkbox__checkmark"
                 :class="{
-                    'root-note': index == 0 && currentHighlightNotes.includes('roots'),
-                    'third': index == 1 && currentHighlightNotes.includes('thirds'),
-                    'fifth': index == 2 && currentHighlightNotes.includes('fifths')}">
+                    'root-note': highlightNote == 'roots' && currentHighlightNotes.includes('roots'),
+                    'second': highlightNote == 'seconds' && currentHighlightNotes.includes('seconds'),
+                    'third': highlightNote == 'thirds' && currentHighlightNotes.includes('thirds'),
+                    'fourth': highlightNote == 'fourths' && currentHighlightNotes.includes('fourths'),
+                    'fifth': highlightNote == 'fifths' && currentHighlightNotes.includes('fifths'),
+                    'sixth': highlightNote == 'sixths' && currentHighlightNotes.includes('sixths'),
+                    'seventh': highlightNote == 'sevenths' && currentHighlightNotes.includes('sevenths'),
+                    'blue': highlightNote == 'blues' && currentHighlightNotes.includes('blues'),
+                }">
             </div>
             <span class="ms-3">
                 {{ highlightNote }}
@@ -186,80 +305,116 @@ onMounted(async () => {
     </div>
     <!-- Fretboard -->
     <div class="fret-start string-E">
-        <div v-for="(fret, index) in E" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}">
+        <div v-for="(_, index) in E" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}">
             <label v-if="index < fretAmount" class="notes">
                 <input type="checkbox" v-model="E[index]"/>
                 <div class="checkbox__checkmark" 
                     :class="{
                         'root-note': currentHighlightNotes.includes('roots') ? ERoots?.includes(index + 1) : '', 
+                        'second': currentHighlightNotes.includes('second') ? ESeconds?.includes(index + 1): '',
                         'third': currentHighlightNotes.includes('thirds') ? EThirds?.includes(index + 1) : '',
-                        'fifth': currentHighlightNotes.includes('fifths') ? EFifths?.includes(index + 1) : ''}">
+                        'fourth': currentHighlightNotes.includes('fourths') ? EFourths?.includes(index + 1) : '',
+                        'fifth': currentHighlightNotes.includes('fifths') ? EFifths?.includes(index + 1) : '',
+                        'sixth': currentHighlightNotes.includes('sixths') ? ESixths?.includes(index + 1) : '',
+                        'seventh': currentHighlightNotes.includes('sevenths') ? ESevenths?.includes(index + 1) : '',
+                        'blue': currentHighlightNotes.includes('blues') ? EBlues?.includes(index + 1) : '',
+                    }">
                 </div>
             </label>
         </div>
     </div>
     <div class="fret-start string-A">
-        <div v-for="(fret, index) in A" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}">
+        <div v-for="(_, index) in A" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}">
             <label v-if="index < fretAmount" class="notes">
                 <input type="checkbox" v-model="A[index]"/>
                 <div class="checkbox__checkmark" 
                     :class="{
                         'root-note': currentHighlightNotes.includes('roots') ? ARoots?.includes(index + 1) : '', 
+                        'second': currentHighlightNotes.includes('second') ? ASeconds?.includes(index + 1): '',
                         'third': currentHighlightNotes.includes('thirds') ? AThirds?.includes(index + 1) : '',
-                        'fifth': currentHighlightNotes.includes('fifths') ? AFifths?.includes(index + 1) : ''}">
+                        'fourth': currentHighlightNotes.includes('fourths') ? AFourths?.includes(index + 1) : '',
+                        'fifth': currentHighlightNotes.includes('fifths') ? AFifths?.includes(index + 1) : '',
+                        'sixth': currentHighlightNotes.includes('sixths') ? ASixths?.includes(index + 1) : '',
+                        'seventh': currentHighlightNotes.includes('sevenths') ? ASevenths?.includes(index + 1) : '',
+                        'blue': currentHighlightNotes.includes('blues') ? ABlues?.includes(index + 1) : '',
+                    }">
                 </div>
 
             </label>
         </div>
     </div>
     <div class="fret-start string-D">
-        <div v-for="(fret, index) in D" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}">
+        <div v-for="(_, index) in D" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}">
             <label v-if="index < fretAmount" class="notes">
                 <input type="checkbox" v-model="D[index]"/>
                 <div class="checkbox__checkmark" 
                     :class="{
                         'root-note': currentHighlightNotes.includes('roots') ? DRoots?.includes(index + 1) : '', 
+                        'second': currentHighlightNotes.includes('second') ? DSeconds?.includes(index + 1): '',
                         'third': currentHighlightNotes.includes('thirds') ? DThirds?.includes(index + 1) : '',
-                        'fifth': currentHighlightNotes.includes('fifths') ? DFifths?.includes(index + 1) : ''}">
+                        'fourth': currentHighlightNotes.includes('fourths') ? DFourths?.includes(index + 1) : '',
+                        'fifth': currentHighlightNotes.includes('fifths') ? DFifths?.includes(index + 1) : '',
+                        'sixth': currentHighlightNotes.includes('sixths') ? DSixths?.includes(index + 1) : '',
+                        'seventh': currentHighlightNotes.includes('sevenths') ? DSevenths?.includes(index + 1) : '',
+                        'blue': currentHighlightNotes.includes('blues') ? DBlues?.includes(index + 1) : '',
+                    }">
                 </div>
             </label>
         </div>
     </div>
     <div class="fret-start string-G">
-        <div v-for="(fret, index) in G" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}">
+        <div v-for="(_, index) in G" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}">
             <label v-if="index < fretAmount" class="notes">
                 <input type="checkbox" v-model="G[index]"/>
                 <div class="checkbox__checkmark" 
                     :class="{
                         'root-note': currentHighlightNotes.includes('roots') ? GRoots?.includes(index + 1) : '', 
+                        'second': currentHighlightNotes.includes('second') ? GSeconds?.includes(index + 1): '',
                         'third': currentHighlightNotes.includes('thirds') ? GThirds?.includes(index + 1) : '',
-                        'fifth': currentHighlightNotes.includes('fifths') ? GFifths?.includes(index + 1) : ''}">
+                        'fourth': currentHighlightNotes.includes('fourths') ? GFourths?.includes(index + 1) : '',
+                        'fifth': currentHighlightNotes.includes('fifths') ? GFifths?.includes(index + 1) : '',
+                        'sixth': currentHighlightNotes.includes('sixths') ? GSixths?.includes(index + 1) : '',
+                        'seventh': currentHighlightNotes.includes('sevenths') ? GSevenths?.includes(index + 1) : '',
+                        'blue': currentHighlightNotes.includes('blues') ? GBlues?.includes(index + 1) : '',
+                    }">
                 </div>
             </label>
         </div>
     </div>
     <div class="fret-start string-B">
-        <div v-for="(fret, index) in B" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}">
+        <div v-for="(_, index) in B" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}">
             <label v-if="index < fretAmount" class="notes">
                 <input type="checkbox" v-model="B[index]"/>
                 <div class="checkbox__checkmark" 
                     :class="{
                         'root-note': currentHighlightNotes.includes('roots') ? BRoots?.includes(index + 1) : '', 
+                        'second': currentHighlightNotes.includes('second') ? BSeconds?.includes(index + 1): '',
                         'third': currentHighlightNotes.includes('thirds') ? BThirds?.includes(index + 1) : '',
-                        'fifth': currentHighlightNotes.includes('fifths') ? BFifths?.includes(index + 1) : ''}">
+                        'fourth': currentHighlightNotes.includes('fourths') ? BFourths?.includes(index + 1) : '',
+                        'fifth': currentHighlightNotes.includes('fifths') ? BFifths?.includes(index + 1) : '',
+                        'sixth': currentHighlightNotes.includes('sixths') ? BSixths?.includes(index + 1) : '',
+                        'seventh': currentHighlightNotes.includes('sevenths') ? BSevenths?.includes(index + 1) : '',
+                        'blue': currentHighlightNotes.includes('blues') ? BBlues?.includes(index + 1) : '',
+                    }">
                 </div>
             </label>
         </div>
     </div>
     <div class="fret-start string-e" style="border-left: none;">
-        <div v-for="(fret, index) in e" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}" style="border-right: none">
+        <div v-for="(_, index) in e" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}" style="border-right: none">
             <label v-if="index < fretAmount" class="notes">
                 <input type="checkbox" v-model="e[index]"/>
                 <div class="checkbox__checkmark" 
                     :class="{
                         'root-note': currentHighlightNotes.includes('roots') ? eRoots?.includes(index + 1) : '', 
+                        'second': currentHighlightNotes.includes('second') ? eSeconds?.includes(index + 1): '',
                         'third': currentHighlightNotes.includes('thirds') ? eThirds?.includes(index + 1) : '',
-                        'fifth': currentHighlightNotes.includes('fifths') ? eFifths?.includes(index + 1) : ''}">
+                        'fourth': currentHighlightNotes.includes('fourths') ? eFourths?.includes(index + 1) : '',
+                        'fifth': currentHighlightNotes.includes('fifths') ? eFifths?.includes(index + 1) : '',
+                        'sixth': currentHighlightNotes.includes('sixths') ? eSixths?.includes(index + 1) : '',
+                        'seventh': currentHighlightNotes.includes('sevenths') ? eSevenths?.includes(index + 1) : '',
+                        'blue': currentHighlightNotes.includes('blues') ? eBlues?.includes(index + 1) : '',
+                    }">
                 </div>
             </label>
         </div>
@@ -275,7 +430,7 @@ onMounted(async () => {
     </div>
 </template>
 
-<style scoped>
+<style scoped lang="scss">
 .custom-radio {
     min-width: 50px;
 }
@@ -374,17 +529,42 @@ onMounted(async () => {
 
 .notes .root-note, 
 .notes .root-note:after {
-    background-color: red !important;
+    background-color: $red !important;
+}
+
+.notes .second,
+.notes .second:after {
+    background-color: $red-orange !important;
 }
 
 .notes .third, 
 .notes .third:after {
-    background-color: orange !important;
+    background-color: $orange !important;
+}
+
+.notes .fourth, 
+.notes .fourth:after {
+    background-color: $orange-yellow !important;
 }
 
 .notes .fifth,
 .notes .fifth:after {
-    background-color: yellow !important;
+    background-color: $yellow !important;
+}
+
+.notes .sixth, 
+.notes .sixth:after {
+    background-color: $yellow-green !important;
+}
+
+.notes .seventh, 
+.notes .seventh:after {
+    background-color: $green !important;
+}
+
+.notes .blue, 
+.notes .blue:after {
+    background-color: $blue !important;
 }
 
 /* Range Input */
