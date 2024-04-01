@@ -191,8 +191,6 @@ const eBlues = computed(() => {
     return getBlues(currentKey.value, "e");
 })
 
-
-
 const fetchCurrentKey = async () => {
     const data = await getCurrentKey();
     currentKey.value = data.key;
@@ -243,6 +241,124 @@ watch([E, A, D, G, B, e], (newValue) => {
         e: Object.assign([], newValue[5])
     })
 }, { deep: true })
+
+const mapCurrentKeyToNumber = computed(() => {
+    if(currentKey.value == "C")
+        return 0;
+    if(currentKey.value == "C#")
+        return 1;
+    if(currentKey.value == "D")
+        return 2;
+    if(currentKey.value == "D#")
+        return 3;
+    if(currentKey.value == "E")
+        return 4;
+    if(currentKey.value == "F")
+        return 5;
+    if(currentKey.value == "F#")
+        return 6;
+    if(currentKey.value == "G")
+        return 7;
+    if(currentKey.value == "G#")
+        return 8;
+    if(currentKey.value == "A")
+        return 9;
+    if(currentKey.value == "A#")
+        return 10;
+    if(currentKey.value == "B")
+        return 11;
+    return 0;
+})
+
+// CAGED
+const CAGED = ref([
+    {
+        name: "C Shape",
+        position: computed(() => -11 + mapCurrentKeyToNumber.value),
+        isChecked: false
+    },
+    {
+        name: "A Shape",
+        position: computed(() => -9 + mapCurrentKeyToNumber.value),
+        isChecked: false
+    },
+    {
+        name: "G Shape",
+        position: computed(() => -7 + mapCurrentKeyToNumber.value),
+        isChecked: false
+    },
+    {
+        name: "E Shape",
+        position: computed(() => -4 + mapCurrentKeyToNumber.value),
+        isChecked: false
+    },
+    {
+        name: "D Shape",
+        position: computed(() => -2 + mapCurrentKeyToNumber.value),
+        isChecked: false
+    },
+    {
+        name: "C Shape",
+        position: computed(() => 1 + mapCurrentKeyToNumber.value),
+        isChecked: false
+    },
+    {
+        name: "A Shape",
+        position: computed(() => 3 + mapCurrentKeyToNumber.value),
+        isChecked: false
+    },
+    {
+        name: "G Shape",
+        position: computed(() => 5 + mapCurrentKeyToNumber.value),
+        isChecked: false
+    },
+    {
+        name: "E Shape",
+        position: computed(() => 8 + mapCurrentKeyToNumber.value),
+        isChecked: false
+    },
+    {
+        name: "D Shape",
+        position: computed(() => 10 + mapCurrentKeyToNumber.value),
+        isChecked: false
+    },
+    {
+        name: "C Shape",
+        position: computed(() => 12 + mapCurrentKeyToNumber.value),
+        isChecked: false
+    },
+    {
+        name: "A Shape",
+        position: computed(() => 15 + mapCurrentKeyToNumber.value),
+        isChecked: false
+    },
+    {
+        name: "G Shape",
+        position: computed(() => 17 + mapCurrentKeyToNumber.value),
+        isChecked: false
+    },
+    {
+        name: "E Shape",
+        position: computed(() => 20 + mapCurrentKeyToNumber.value),
+        isChecked: false
+    },
+    {
+        name: "D Shape",
+        position: computed(() => 22 + mapCurrentKeyToNumber.value),
+        isChecked: false
+    },
+]);
+
+const GetCAGEDPosition = (index: number) => {
+   return CAGED.value.some(obj => Object.values(obj).includes(index));
+}
+
+const GetCAGEDName = (index: number) => {
+    const filtered = CAGED.value.find(obj => obj.position == index);
+
+    if(filtered)
+        return filtered.name;
+}
 
 onMounted(async () => {
     await fetchCurrentKey();
@@ -419,9 +535,17 @@ onMounted(async () => {
             </label>
         </div>
     </div>
+    <!-- CAGED  -->
+    <div v-for="(_, index) in e" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}" style="border-right: none;">
+        <div v-if="index < fretAmount">
+            <div v-if="GetCAGEDPosition(index)" style="white-space: nowrap;">
+                {{ GetCAGEDName(index) }}
+            </div>
+        </div>
+    </div>
     <div class="mt-5">
         <span class="me-3">
-            Fret Amount
+            Number of Frets
         </span>
         <input type="range" min="12" max="24" step="1" v-model="fretAmount">
         <span class="ms-3">
@@ -440,8 +564,8 @@ onMounted(async () => {
 }
 
 .custom-radio input:checked + .label {
-    background-color: gray;
-    border-radius: 7px;
+    border: 3px solid $yellow;
+    border-radius: 9px;
     padding: 5px;
 }
 
@@ -495,6 +619,7 @@ onMounted(async () => {
 
 .fret {
     min-width: 50px;
+    max-width: 50px;
     border-right: 1px solid gray;
 }
 
