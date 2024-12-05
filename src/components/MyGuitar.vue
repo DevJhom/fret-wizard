@@ -369,7 +369,7 @@ onMounted(async () => {
 <template>
     <!-- Key Selector -->
     <div class="d-flex justify-content-center align-items-center">
-        <span class="me-2">
+        <span class="me-2 text-yellow">
             Key
         </span>
         <div v-for="(key, index) in keys" :key="key" class="d-inline-block custom-radio">
@@ -382,6 +382,9 @@ onMounted(async () => {
     </div>
     <!-- Scale Selector -->
     <div class="d-flex justify-content-center align-items-center mt-5">
+        <span class="me-2 text-yellow">
+            Pattern
+        </span>
         <div v-for="(scale, index) in scales" :key="scale" class="d-inline-block custom-radio">
             <label class="d-flex flex-column">
                 <input type="radio" name="scales" v-model="currentScale" :value="scales[index]" @change="onChangeCurrentScale()">
@@ -391,6 +394,11 @@ onMounted(async () => {
         </div>
     </div>
     <!-- HighlightNotes Filter -->
+    <div class="highlightNotes-label notes d-flex flex-column text-start">
+        <span class="me-2 text-yellow">
+            HighlightNotes 
+        </span>
+    </div>
     <div class="highlightNotes-filter notes d-flex flex-column text-end border border-success">
         <label v-for="(highlightNote) in highlightNotes" :key="highlightNote" class="d-flex">
             <input type="checkbox" :value="highlightNote" v-model="currentHighlightNotes"/>
@@ -536,19 +544,19 @@ onMounted(async () => {
         </div>
     </div>
     <!-- CAGED  -->
-    <div v-for="(_, index) in e" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}" style="border-right: none;">
+    <!-- <div v-for="(_, index) in e" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}" style="border-right: none;">
         <div v-if="index < fretAmount">
             <div v-if="GetCAGEDPosition(index)" style="white-space: nowrap;">
                 {{ GetCAGEDName(index) }}
             </div>
         </div>
-    </div>
+    </div> -->
     <div class="mt-5">
-        <span class="me-3">
+        <span class="me-3 text-yellow">
             Number of Frets
         </span>
         <input type="range" min="12" max="24" step="1" v-model="fretAmount">
-        <span class="ms-3">
+        <span class="ms-3 text-yellow">
             {{ fretAmount }}
         </span>
     </div>
@@ -570,6 +578,12 @@ onMounted(async () => {
 }
 
 /* HighlightNotes */
+.highlightNotes-label {
+    position: absolute;
+    top: 16%;
+    right: 11%;
+}
+
 .highlightNotes-filter {
     position: absolute;
     top: 20%;
@@ -747,5 +761,10 @@ input[type="range"]::-moz-range-thumb {
 input[type="range"]:focus::-moz-range-thumb{
   outline: 3px solid #808080;
   outline-offset: 0.125rem;
+}
+
+/* Color */
+.text-yellow {
+    color: $yellow;
 }
 </style>
