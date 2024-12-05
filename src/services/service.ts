@@ -50,11 +50,11 @@ export const updateScale = async (scale: string, key: string, guitarStrings: Gui
     try {
         //To be refactored - update only the necessary data (key)
         //As this is not possible with the simulated json-server
-        const allKeys = await axios.get(`${serviceUrl}/${scale}`);
-        allKeys.data[key] = guitarStrings;
+        // const allKeys = await axios.get(`${serviceUrl}/${scale}`);
+        // allKeys.data[key] = guitarStrings;
 
-        const response = await axios.put(`${serviceUrl}/${scale}/`, allKeys.data); 
-        return response.data;
+        // const response = await axios.put(`${serviceUrl}/${scale}/`, allKeys.data); 
+        // return response.data;
     } catch(error){
         console.log("error:", error);
         return null;

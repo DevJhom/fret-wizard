@@ -197,7 +197,28 @@ const fetchCurrentKey = async () => {
 }
 
 const fetchScale = async () => {
-    const data = await getScale(mapScaleName(), currentKey.value);
+    const data = await getScale(mapScaleName(), "C");
+
+    for (let i = 0; i < mapCurrentKeyToNumber.value; i++) {
+        const lastValueOfE = data.E.pop(); 
+        data.E.unshift(lastValueOfE);
+
+        const lastValueOfA = data.A.pop(); 
+        data.A.unshift(lastValueOfA);
+
+        const lastValueOfD = data.D.pop(); 
+        data.D.unshift(lastValueOfD);
+
+        const lastValueOfG = data.G.pop(); 
+        data.G.unshift(lastValueOfG);
+
+        const lastValueOfB = data.B.pop(); 
+        data.B.unshift(lastValueOfB);
+
+        const lastValueOfe = data.e.pop(); 
+        data.e.unshift(lastValueOfe);
+    }
+
     E.value = data.E;
     A.value = data.A;
     D.value = data.D;
