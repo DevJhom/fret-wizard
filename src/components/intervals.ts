@@ -12,12 +12,12 @@ const roots: Intervals = {
 }
 
 const seconds: Intervals = {
-    E: [],
-    A: [],
-    D: [],
-    G: [],
-    B: [],
-    e: []
+    E: [-2,10,22],
+    A: [-9,3,15],
+    D: [-5,7,19],
+    G: [0,12,24],
+    B: [-7,5,17],
+    e: [-2,10,22]
 }
 
 const thirds: Intervals = {
@@ -30,12 +30,12 @@ const thirds: Intervals = {
 }
 
 const fourths: Intervals = {
-    E: [],
-    A: [],
-    D: [],
-    G: [],
-    B: [],
-    e: []
+    E: [1,13,25],  
+    A: [-6,6,18],  
+    D: [-2,10,22], 
+    G: [3,15,27],  
+    B: [-4,8,20],  
+    e: [1,13,25]  
 }
 
 const fifths: Intervals = {
@@ -48,21 +48,21 @@ const fifths: Intervals = {
 }
 
 const sixths: Intervals = {
-    E: [],
-    A: [],
-    D: [],
-    G: [],
-    B: [],
-    e: []
+    E: [5,17,29],  
+    A: [-2,10,22], 
+    D: [2,14,26],  
+    G: [-3,9,21],  
+    B: [0,12,24],  
+    e: [5,17,29]
 }
 
 const sevenths: Intervals = {
-    E: [],
-    A: [],
-    D: [],
-    G: [],
-    B: [],
-    e: []
+    E: [7,19,31],  
+    A: [0,12,24],  
+    D: [4,16,28],  
+    G: [-1,11,23], 
+    B: [2,14,26],  
+    e: [7,19,31] 
 }
 
 const blues: Intervals = {

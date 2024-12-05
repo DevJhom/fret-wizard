@@ -400,7 +400,7 @@ onMounted(async () => {
         </span>
     </div>
     <div class="highlightNotes-filter notes d-flex flex-column text-end border border-success">
-        <label v-for="(highlightNote) in highlightNotes" :key="highlightNote" class="d-flex">
+        <label v-for="(highlightNote) in highlightNotes" :key="highlightNote" class="d-flex notes">
             <input type="checkbox" :value="highlightNote" v-model="currentHighlightNotes"/>
             <div class="checkbox__checkmark"
                 :class="{
@@ -435,7 +435,7 @@ onMounted(async () => {
                 <div class="checkbox__checkmark" 
                     :class="{
                         'root-note': currentHighlightNotes.includes('roots') ? ERoots?.includes(index + 1) : '', 
-                        'second': currentHighlightNotes.includes('second') ? ESeconds?.includes(index + 1): '',
+                        'second': currentHighlightNotes.includes('seconds') ? ESeconds?.includes(index + 1): '',
                         'third': currentHighlightNotes.includes('thirds') ? EThirds?.includes(index + 1) : '',
                         'fourth': currentHighlightNotes.includes('fourths') ? EFourths?.includes(index + 1) : '',
                         'fifth': currentHighlightNotes.includes('fifths') ? EFifths?.includes(index + 1) : '',
@@ -454,7 +454,7 @@ onMounted(async () => {
                 <div class="checkbox__checkmark" 
                     :class="{
                         'root-note': currentHighlightNotes.includes('roots') ? ARoots?.includes(index + 1) : '', 
-                        'second': currentHighlightNotes.includes('second') ? ASeconds?.includes(index + 1): '',
+                        'second': currentHighlightNotes.includes('seconds') ? ASeconds?.includes(index + 1): '',
                         'third': currentHighlightNotes.includes('thirds') ? AThirds?.includes(index + 1) : '',
                         'fourth': currentHighlightNotes.includes('fourths') ? AFourths?.includes(index + 1) : '',
                         'fifth': currentHighlightNotes.includes('fifths') ? AFifths?.includes(index + 1) : '',
@@ -474,7 +474,7 @@ onMounted(async () => {
                 <div class="checkbox__checkmark" 
                     :class="{
                         'root-note': currentHighlightNotes.includes('roots') ? DRoots?.includes(index + 1) : '', 
-                        'second': currentHighlightNotes.includes('second') ? DSeconds?.includes(index + 1): '',
+                        'second': currentHighlightNotes.includes('seconds') ? DSeconds?.includes(index + 1): '',
                         'third': currentHighlightNotes.includes('thirds') ? DThirds?.includes(index + 1) : '',
                         'fourth': currentHighlightNotes.includes('fourths') ? DFourths?.includes(index + 1) : '',
                         'fifth': currentHighlightNotes.includes('fifths') ? DFifths?.includes(index + 1) : '',
@@ -493,7 +493,7 @@ onMounted(async () => {
                 <div class="checkbox__checkmark" 
                     :class="{
                         'root-note': currentHighlightNotes.includes('roots') ? GRoots?.includes(index + 1) : '', 
-                        'second': currentHighlightNotes.includes('second') ? GSeconds?.includes(index + 1): '',
+                        'second': currentHighlightNotes.includes('seconds') ? GSeconds?.includes(index + 1): '',
                         'third': currentHighlightNotes.includes('thirds') ? GThirds?.includes(index + 1) : '',
                         'fourth': currentHighlightNotes.includes('fourths') ? GFourths?.includes(index + 1) : '',
                         'fifth': currentHighlightNotes.includes('fifths') ? GFifths?.includes(index + 1) : '',
@@ -512,7 +512,7 @@ onMounted(async () => {
                 <div class="checkbox__checkmark" 
                     :class="{
                         'root-note': currentHighlightNotes.includes('roots') ? BRoots?.includes(index + 1) : '', 
-                        'second': currentHighlightNotes.includes('second') ? BSeconds?.includes(index + 1): '',
+                        'second': currentHighlightNotes.includes('seconds') ? BSeconds?.includes(index + 1): '',
                         'third': currentHighlightNotes.includes('thirds') ? BThirds?.includes(index + 1) : '',
                         'fourth': currentHighlightNotes.includes('fourths') ? BFourths?.includes(index + 1) : '',
                         'fifth': currentHighlightNotes.includes('fifths') ? BFifths?.includes(index + 1) : '',
@@ -531,7 +531,7 @@ onMounted(async () => {
                 <div class="checkbox__checkmark" 
                     :class="{
                         'root-note': currentHighlightNotes.includes('roots') ? eRoots?.includes(index + 1) : '', 
-                        'second': currentHighlightNotes.includes('second') ? eSeconds?.includes(index + 1): '',
+                        'second': currentHighlightNotes.includes('seconds') ? eSeconds?.includes(index + 1): '',
                         'third': currentHighlightNotes.includes('thirds') ? eThirds?.includes(index + 1) : '',
                         'fourth': currentHighlightNotes.includes('fourths') ? eFourths?.includes(index + 1) : '',
                         'fifth': currentHighlightNotes.includes('fifths') ? eFifths?.includes(index + 1) : '',
@@ -590,11 +590,11 @@ onMounted(async () => {
     right: 10%;
     border-radius: 5px;
     padding: 20px 30px 20px 20px;
-    border: 1px solid red;
 }
 
 .highlightNotes-filter .checkbox__checkmark {
     margin-top: 4px !important;
+    background-color: #eee;
 }
 
 /* FRETBOARD */
@@ -650,7 +650,6 @@ onMounted(async () => {
     margin-top: -26px;
     height: 18px;
     width: 18px;
-    background-color: #eee;
     border-radius: 11px;
     transition: background-color 0.25s ease;
 }
@@ -660,7 +659,7 @@ onMounted(async () => {
     display: block;
     width: 18px;
     height: 18px;
-    background-color: gray;
+    background-color: #eee;
     border-radius: 50%;
     transform: scale(0);
     transition: transform 0.25s ease;
