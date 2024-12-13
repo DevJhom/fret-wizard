@@ -464,6 +464,13 @@ onMounted(async () => {
                         'seventh': currentHighlightNotes.includes('sevenths') ? ESevenths?.includes(index + 1) : '',
                         'blue': currentHighlightNotes.includes('blues') ? EBlues?.includes(index + 1) : '',
                     }">
+                    <span v-if="ERoots?.includes(index + 1)" class="note-names">C</span>
+                    <span v-if="ESeconds?.includes(index + 1)" class="note-names">D</span>
+                    <span v-if="EThirds?.includes(index + 1)" class="note-names">E</span>
+                    <span v-if="EFourths?.includes(index + 1)" class="note-names">F</span>
+                    <span v-if="EFifths?.includes(index + 1)" class="note-names">G</span>
+                    <span v-if="ESixths?.includes(index + 1)" class="note-names">A</span>
+                    <span v-if="ESevenths?.includes(index + 1)" class="note-names">B</span>
                 </div>
             </label>
         </div>
@@ -483,8 +490,14 @@ onMounted(async () => {
                         'seventh': currentHighlightNotes.includes('sevenths') ? ASevenths?.includes(index + 1) : '',
                         'blue': currentHighlightNotes.includes('blues') ? ABlues?.includes(index + 1) : '',
                     }">
+                    <span v-if="ARoots?.includes(index + 1)" class="note-names">C</span>
+                    <span v-if="ASeconds?.includes(index + 1)" class="note-names">D</span>
+                    <span v-if="AThirds?.includes(index + 1)" class="note-names">E</span>
+                    <span v-if="AFourths?.includes(index + 1)" class="note-names">F</span>
+                    <span v-if="AFifths?.includes(index + 1)" class="note-names">G</span>
+                    <span v-if="ASixths?.includes(index + 1)" class="note-names">A</span>
+                    <span v-if="ASevenths?.includes(index + 1)" class="note-names">B</span>
                 </div>
-
             </label>
         </div>
     </div>
@@ -503,6 +516,13 @@ onMounted(async () => {
                         'seventh': currentHighlightNotes.includes('sevenths') ? DSevenths?.includes(index + 1) : '',
                         'blue': currentHighlightNotes.includes('blues') ? DBlues?.includes(index + 1) : '',
                     }">
+                    <span v-if="DRoots?.includes(index + 1)" class="note-names">C</span>
+                    <span v-if="DSeconds?.includes(index + 1)" class="note-names">D</span>
+                    <span v-if="DThirds?.includes(index + 1)" class="note-names">E</span>
+                    <span v-if="DFourths?.includes(index + 1)" class="note-names">F</span>
+                    <span v-if="DFifths?.includes(index + 1)" class="note-names">G</span>
+                    <span v-if="DSixths?.includes(index + 1)" class="note-names">A</span>
+                    <span v-if="DSevenths?.includes(index + 1)" class="note-names">B</span>
                 </div>
             </label>
         </div>
@@ -522,6 +542,13 @@ onMounted(async () => {
                         'seventh': currentHighlightNotes.includes('sevenths') ? GSevenths?.includes(index + 1) : '',
                         'blue': currentHighlightNotes.includes('blues') ? GBlues?.includes(index + 1) : '',
                     }">
+                    <span v-if="GRoots?.includes(index + 1)" class="note-names">C</span>
+                    <span v-if="GSeconds?.includes(index + 1)" class="note-names">D</span>
+                    <span v-if="GThirds?.includes(index + 1)" class="note-names">E</span>
+                    <span v-if="GFourths?.includes(index + 1)" class="note-names">F</span>
+                    <span v-if="GFifths?.includes(index + 1)" class="note-names">G</span>
+                    <span v-if="GSixths?.includes(index + 1)" class="note-names">A</span>
+                    <span v-if="GSevenths?.includes(index + 1)" class="note-names">B</span>
                 </div>
             </label>
         </div>
@@ -541,6 +568,13 @@ onMounted(async () => {
                         'seventh': currentHighlightNotes.includes('sevenths') ? BSevenths?.includes(index + 1) : '',
                         'blue': currentHighlightNotes.includes('blues') ? BBlues?.includes(index + 1) : '',
                     }">
+                    <span v-if="BRoots?.includes(index + 1)" class="note-names">C</span>
+                    <span v-if="BSeconds?.includes(index + 1)" class="note-names">D</span>
+                    <span v-if="BThirds?.includes(index + 1)" class="note-names">E</span>
+                    <span v-if="BFourths?.includes(index + 1)" class="note-names">F</span>
+                    <span v-if="BFifths?.includes(index + 1)" class="note-names">G</span>
+                    <span v-if="BSixths?.includes(index + 1)" class="note-names">A</span>
+                    <span v-if="BSevenths?.includes(index + 1)" class="note-names">B</span>
                 </div>
             </label>
         </div>
@@ -560,6 +594,13 @@ onMounted(async () => {
                         'seventh': currentHighlightNotes.includes('sevenths') ? eSevenths?.includes(index + 1) : '',
                         'blue': currentHighlightNotes.includes('blues') ? eBlues?.includes(index + 1) : '',
                     }">
+                    <span v-if="eRoots?.includes(index + 1)" class="note-names">C</span>
+                    <span v-if="eSeconds?.includes(index + 1)" class="note-names">D</span>
+                    <span v-if="eThirds?.includes(index + 1)" class="note-names">E</span>
+                    <span v-if="eFourths?.includes(index + 1)" class="note-names">F</span>
+                    <span v-if="eFifths?.includes(index + 1)" class="note-names">G</span>
+                    <span v-if="eSixths?.includes(index + 1)" class="note-names">A</span>
+                    <span v-if="eSevenths?.includes(index + 1)" class="note-names">B</span>
                 </div>
             </label>
         </div>
@@ -669,6 +710,7 @@ onMounted(async () => {
 }
 
 .notes .checkbox__checkmark {
+    position: relative;
     margin-top: -26px;
     height: 18px;
     width: 18px;
@@ -685,6 +727,17 @@ onMounted(async () => {
     border-radius: 50%;
     transform: scale(0);
     transition: transform 0.25s ease;
+}
+
+.notes .note-names {
+    position: absolute;
+    top: 0px;
+    left: 0;
+    pointer-events: none;
+    z-index: 1;
+    font-size: 0.75rem;
+    margin-top: -1px;
+    margin-left: 5px;
 }
 
 .notes .root-note, 
