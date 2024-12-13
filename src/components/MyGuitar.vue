@@ -6,7 +6,7 @@ import { getRoots, getSeconds, getThirds, getFourths, getFifths, getSixths, getS
 const fretAmount = ref(24);
 const fretIndicator = new Array(24);
 const keys = ref(["C","C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]);
-const scales = ref(["Pentatonic Scale", "Blue Scale", "Diatonic Scale", "Triad Arpeggio", "None"]);
+const scales = ref(["Pentatonic Scale", "Blue Scale", "Diatonic Scale", "Triad Arpeggio", "Custom"]);
 const currentKey = ref<string>("C");
 const currentScale = ref<string>("Pentatonic Scale");
 
@@ -236,8 +236,8 @@ const mapScaleName: () => string = () => {
         return 'diatonic_scale';
     if(currentScale.value == 'Triad Arpeggio')
         return 'triad_arpeggio';
-    if(currentScale.value == 'None')
-        return 'none';
+    if(currentScale.value == 'Custom')
+        return 'custom';
 
     return '';
 };
@@ -390,7 +390,7 @@ onMounted(async () => {
 <template>
     <!-- Key Selector -->
     <div class="d-flex justify-content-center align-items-center">
-        <span class="me-2 text-yellow">
+        <span class="me-2 text-yellow fw-bold">
             Key
         </span>
         <div v-for="(key, index) in keys" :key="key" class="d-inline-block custom-radio">
@@ -403,7 +403,7 @@ onMounted(async () => {
     </div>
     <!-- Scale Selector -->
     <div class="d-flex justify-content-center align-items-center mt-5">
-        <span class="me-2 text-yellow">
+        <span class="me-2 text-yellow fw-bold">
             Pattern
         </span>
         <div v-for="(scale, index) in scales" :key="scale" class="d-inline-block custom-radio">
@@ -416,7 +416,7 @@ onMounted(async () => {
     </div>
     <!-- HighlightNotes Filter -->
     <div class="highlightNotes-label notes d-flex flex-column text-start">
-        <span class="me-2 text-yellow">
+        <span class="me-2 text-yellow fw-bold">
             HighlightNotes 
         </span>
     </div>
@@ -573,11 +573,11 @@ onMounted(async () => {
         </div>
     </div> -->
     <div class="mt-5">
-        <span class="me-3 text-yellow">
+        <span class="me-3 text-yellow fw-bold">
             Number of Frets
         </span>
         <input type="range" min="12" max="24" step="1" v-model="fretAmount">
-        <span class="ms-3 text-yellow">
+        <span class="ms-3 text-yellow fw-bold">
             {{ fretAmount }}
         </span>
     </div>
@@ -596,6 +596,7 @@ onMounted(async () => {
     border: 3px solid $yellow;
     border-radius: 9px;
     padding: 5px;
+    color: $yellow;
 }
 
 /* HighlightNotes */
@@ -615,7 +616,7 @@ onMounted(async () => {
 
 .highlightNotes-filter .checkbox__checkmark {
     margin-top: 4px !important;
-    background-color: #eee;
+    background-color: #242525;
 }
 
 /* FRETBOARD */
@@ -625,31 +626,31 @@ onMounted(async () => {
 }
 
 .fret-start {
-    border-left: 3px solid black;
+    border-left: 3px solid #8f8575;
 }
 
 .string-E {
-    border-top: 1px solid black;
+    border-top: 1px solid #8f8575;
 }
 
 .string-A {
-    border-top: 1.5px solid black;
+    border-top: 1.5px solid #8f8575;
 }
 
 .string-D {
-    border-top: 2px solid black;
+    border-top: 2px solid #8f8575;
 }
 
 .string-G {
-    border-top: 2.5px solid black;
+    border-top: 2.5px solid #8f8575;
 }
 
 .string-B {
-    border-top: 3px solid black;
+    border-top: 3px solid #8f8575;
 }
 
 .string-e {
-    border-top: 3.5px solid black;
+    border-top: 3.5px solid #8f8575;
 }
 
 .fret {
@@ -680,7 +681,7 @@ onMounted(async () => {
     display: block;
     width: 18px;
     height: 18px;
-    background-color: #eee;
+    background-color: #242525;
     border-radius: 50%;
     transform: scale(0);
     transition: transform 0.25s ease;
@@ -742,7 +743,7 @@ input[type="range"]:focus {
 }
 
 input[type="range"]::-webkit-slider-runnable-track {
-  background-color: #c1c9cd;
+  background-color: #242525;
   border-radius: 0.5rem;
   height: 1rem;
 }
@@ -751,7 +752,8 @@ input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none; 
   appearance: none;
   margin-top: -8px;
-  background-color: #808080;
+  background-color: $yellow;
+  opacity: 0.75;
   border-radius: 1rem;
   height: 2rem;
   width: 2rem;

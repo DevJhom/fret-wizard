@@ -26,7 +26,6 @@
       "@components/*": ["src/components/*"],
       "@services/*": ["src/services/*"],
       "@assets/*": ["src/assets/*"],
-      "@images/*": ["src/images/*"],
       "@scss/*": ["src/scss/*"]
     }
   },
