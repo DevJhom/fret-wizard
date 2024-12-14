@@ -1,0 +1,78 @@
+.notes input {
+    display: none;
+}
+
+.notes input:checked ~ .checkbox__checkmark:after {
+    transform: scale(1);
+}
+
+.notes .checkbox__checkmark {
+    position: relative;
+    margin-top: -26px;
+    height: 18px;
+    width: 18px;
+    border-radius: 11px;
+    transition: background-color 0.25s ease;
+}
+
+.notes .checkbox__checkmark:after {
+    content: "";
+    display: block;
+    width: 18px;
+    height: 18px;
+    background-color: #242525;
+    border-radius: 50%;
+    transform: scale(0);
+    transition: transform 0.25s ease;
+}
+
+.notes .note-names {
+    position: absolute;
+    top: 0px;
+    left: 0;
+    pointer-events: none;
+    z-index: 1;
+    font-size: 0.75rem;
+    margin-top: -1px;
+    margin-left: 5px;
+}
+
+.notes .root-note, 
+.notes .root-note:after {
+    background-color: $red !important;
+}
+
+.notes .second,
+.notes .second:after {
+    background-color: $red-orange !important;
+}
+
+.notes .third, 
+.notes .third:after {
+    background-color: $orange !important;
+}
+
+.notes .fourth, 
+.notes .fourth:after {
+    background-color: $orange-yellow !important;
+}
+
+.notes .fifth,
+.notes .fifth:after {
+    background-color: $yellow !important;
+}
+
+.notes .sixth, 
+.notes .sixth:after {
+    background-color: $yellow-green !important;
+}
+
+.notes .seventh, 
+.notes .seventh:after {
+    background-color: $green !important;
+}
+
+.notes .blue, 
+.notes .blue:after {
+    background-color: $blue !important;
+}

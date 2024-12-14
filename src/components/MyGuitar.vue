@@ -2,13 +2,17 @@
 import { ref, watch, onMounted, computed } from 'vue';
 import { getCurrentKey, updateCurrentKey, getScale, updateCurrentScale, updateScale } from '@services/service';
 import { getRoots, getSeconds, getThirds, getFourths, getFifths, getSixths, getSevenths, getBlues } from './intervals';
+import { usePatternStore } from '@/stores/usePatternStore';
+import { storeToRefs } from 'pinia';
+
+const patternStore = usePatternStore();
+const { currentPattern, currentHighlightNotes } = storeToRefs(patternStore);
 
 const fretAmount = ref(24);
 const fretIndicator = new Array(24);
 const keys = ref(["C","C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]);
-const scales = ref(["Pentatonic Scale", "Blue Scale", "Diatonic Scale", "Triad Arpeggio", "Custom"]);
+const patterns = ref(["Pentatonic Scale", "Blue Scale", "Diatonic Scale", "Triad Arpeggio", "Custom"]);
 const currentKey = ref<string>("C");
-const currentScale = ref<string>("Pentatonic Scale");
 
 const E = ref();
 const A = ref();
@@ -16,20 +20,6 @@ const D = ref();
 const G = ref();
 const B = ref();
 const e = ref();
-
-const currentHighlightNotes = ref<string[]>(["roots"]);
-const highlightNotes = computed(() => {
-    if(currentScale.value == "Pentatonic Scale")
-        return ["roots", "seconds", "thirds", "fifths", "sixths"];
-    if(currentScale.value == "Blue Scale")
-        return ["roots", "seconds", "thirds", "fifths", "sixths", "blues"];
-    if(currentScale.value == "Diatonic Scale")
-        return ["roots", "seconds", "thirds", "fourths", "fifths", "sixths", "sevenths"]
-    if(currentScale.value == "Triad Arpeggio")
-        return ["roots", "thirds", "fifths"];
-    else 
-        return ["roots", "thirds", "fifths"];
-})
 
 // Roots
 const ERoots = computed(() => {
@@ -228,15 +218,15 @@ const fetchScale = async () => {
 }
 
 const mapScaleName: () => string = () => {
-    if(currentScale.value == 'Pentatonic Scale')
+    if(currentPattern.value == 'Pentatonic Scale')
         return 'pentatonic_scale';
-    if(currentScale.value == 'Blue Scale')
+    if(currentPattern.value == 'Blue Scale')
         return 'blue_scale';
-    if(currentScale.value == 'Diatonic Scale')
+    if(currentPattern.value == 'Diatonic Scale')
         return 'diatonic_scale';
-    if(currentScale.value == 'Triad Arpeggio')
+    if(currentPattern.value == 'Triad Arpeggio')
         return 'triad_arpeggio';
-    if(currentScale.value == 'Custom')
+    if(currentPattern.value == 'Custom')
         return 'custom';
 
     return '';
@@ -249,7 +239,7 @@ const onChangeCurrentKey = () => {
 
 const onChangeCurrentScale = () => {
     fetchScale();
-    updateCurrentScale(currentScale.value);
+    updateCurrentScale(currentPattern.value);
 }
 
 watch([E, A, D, G, B, e], (newValue) => {
@@ -401,47 +391,21 @@ onMounted(async () => {
             </label>
         </div>
     </div>
-    <!-- Scale Selector -->
+    <!-- Pattern Selector -->
     <div class="d-flex justify-content-center align-items-center mt-5">
         <span class="me-2 text-yellow fw-bold">
             Pattern
         </span>
-        <div v-for="(scale, index) in scales" :key="scale" class="d-inline-block custom-radio">
+        <div v-for="(scale, index) in patterns" :key="scale" class="d-inline-block custom-radio">
             <label class="d-flex flex-column">
-                <input type="radio" name="scales" v-model="currentScale" :value="scales[index]" @change="onChangeCurrentScale()">
+                <input type="radio" name="scales" v-model="currentPattern" :value="patterns[index]" @change="onChangeCurrentScale()">
                     <span class="label px-3">{{ scale }}</span>
                 </input>
             </label>
         </div>
     </div>
-    <!-- HighlightNotes Filter -->
-    <div class="highlightNotes-label notes d-flex flex-column text-start">
-        <span class="me-2 text-yellow fw-bold">
-            HighlightNotes 
-        </span>
-    </div>
-    <div class="highlightNotes-filter notes d-flex flex-column text-end border border-success">
-        <label v-for="(highlightNote) in highlightNotes" :key="highlightNote" class="d-flex notes">
-            <input type="checkbox" :value="highlightNote" v-model="currentHighlightNotes"/>
-            <div class="checkbox__checkmark"
-                :class="{
-                    'root-note': highlightNote == 'roots' && currentHighlightNotes.includes('roots'),
-                    'second': highlightNote == 'seconds' && currentHighlightNotes.includes('seconds'),
-                    'third': highlightNote == 'thirds' && currentHighlightNotes.includes('thirds'),
-                    'fourth': highlightNote == 'fourths' && currentHighlightNotes.includes('fourths'),
-                    'fifth': highlightNote == 'fifths' && currentHighlightNotes.includes('fifths'),
-                    'sixth': highlightNote == 'sixths' && currentHighlightNotes.includes('sixths'),
-                    'seventh': highlightNote == 'sevenths' && currentHighlightNotes.includes('sevenths'),
-                    'blue': highlightNote == 'blues' && currentHighlightNotes.includes('blues'),
-                }">
-            </div>
-            <span class="ms-3">
-                {{ highlightNote }}
-            </span>
-        </label>
-    </div>
     <!-- Fret Indicator -->
-    <div class="d-flex">
+    <div class="d-flex mt-5">
         <div class="d-inline-block string-name"></div>
         <div v-for="(_, index) in fretIndicator" :key="index" class="d-inline-block" :class="{'fret-indicator': index < fretAmount}">
             <div v-if="index < fretAmount">
@@ -627,13 +591,13 @@ onMounted(async () => {
         </div>
     </div>
     <!-- CAGED  -->
-    <!-- <div v-for="(_, index) in e" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}" style="border-right: none;">
+    <div v-for="(_, index) in e" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}" style="border-right: none;">
         <div v-if="index < fretAmount">
             <div v-if="GetCAGEDPosition(index)" style="white-space: nowrap;">
                 {{ GetCAGEDName(index) }}
             </div>
         </div>
-    </div> -->
+    </div>
     <div class="mt-5">
         <span class="me-3 text-yellow fw-bold">
             Number of Frets
@@ -659,26 +623,6 @@ onMounted(async () => {
     border-radius: 9px;
     padding: 5px;
     color: $yellow;
-}
-
-/* HighlightNotes */
-.highlightNotes-label {
-    position: absolute;
-    top: 16%;
-    right: 11%;
-}
-
-.highlightNotes-filter {
-    position: absolute;
-    top: 20%;
-    right: 10%;
-    border-radius: 5px;
-    padding: 20px 30px 20px 20px;
-}
-
-.highlightNotes-filter .checkbox__checkmark {
-    margin-top: 4px !important;
-    background-color: #242525;
 }
 
 /* FRETBOARD */
@@ -728,86 +672,6 @@ onMounted(async () => {
     min-width: 50px;
     max-width: 50px;
     border-right: 1px solid gray;
-}
-
-/* Checkbox Input */
-.notes input {
-    display: none;
-}
-
-.notes input:checked ~ .checkbox__checkmark:after {
-    transform: scale(1);
-}
-
-.notes .checkbox__checkmark {
-    position: relative;
-    margin-top: -26px;
-    height: 18px;
-    width: 18px;
-    border-radius: 11px;
-    transition: background-color 0.25s ease;
-}
-
-.notes .checkbox__checkmark:after {
-    content: "";
-    display: block;
-    width: 18px;
-    height: 18px;
-    background-color: #242525;
-    border-radius: 50%;
-    transform: scale(0);
-    transition: transform 0.25s ease;
-}
-
-.notes .note-names {
-    position: absolute;
-    top: 0px;
-    left: 0;
-    pointer-events: none;
-    z-index: 1;
-    font-size: 0.75rem;
-    margin-top: -1px;
-    margin-left: 5px;
-}
-
-.notes .root-note, 
-.notes .root-note:after {
-    background-color: $red !important;
-}
-
-.notes .second,
-.notes .second:after {
-    background-color: $red-orange !important;
-}
-
-.notes .third, 
-.notes .third:after {
-    background-color: $orange !important;
-}
-
-.notes .fourth, 
-.notes .fourth:after {
-    background-color: $orange-yellow !important;
-}
-
-.notes .fifth,
-.notes .fifth:after {
-    background-color: $yellow !important;
-}
-
-.notes .sixth, 
-.notes .sixth:after {
-    background-color: $yellow-green !important;
-}
-
-.notes .seventh, 
-.notes .seventh:after {
-    background-color: $green !important;
-}
-
-.notes .blue, 
-.notes .blue:after {
-    background-color: $blue !important;
 }
 
 /* Range Input */
@@ -866,10 +730,5 @@ input[type="range"]::-moz-range-thumb {
 input[type="range"]:focus::-moz-range-thumb{
   outline: 3px solid #808080;
   outline-offset: 0.125rem;
-}
-
-/* Color */
-.text-yellow {
-    color: $yellow;
 }
 </style>
