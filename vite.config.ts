@@ -8,6 +8,7 @@ export default defineConfig({
     alias: {
       '@': '/src/',
       '@components': '/src/components',
+      '@stores': '/src/stores',
       '@services': '/src/services',
       '@assets': '/src/assets',
       '@images': '/src/assets/images',
@@ -17,7 +18,10 @@ export default defineConfig({
   css: {
     preprocessorOptions: {
       scss: {
-        additionalData: `@import "./src/assets/scss/variables.scss";`
+        additionalData: `
+        @import "./src/assets/scss/variables.scss";
+        @import "./src/assets/scss/notes.scss";
+        `
       }
     }
   }

@@ -1,9 +1,15 @@
 <script setup lang="ts">
 import MyGuitar from '@components/MyGuitar.vue'
+import LeftNav from './components/SideBar.vue';
 </script>
 
 <template>
-  <MyGuitar/>
+  <div class="d-flex">
+    <LeftNav/>
+    <div>
+      <MyGuitar/>
+    </div>
+  </div>
 </template>
 
 <style scoped>
