@@ -441,168 +441,189 @@ onMounted(async () => {
         </label>
     </div>
     <!-- Fret Indicator -->
-    <div v-for="(_, index) in fretIndicator" :key="index" class="d-inline-block" :class="{'fret-indicator': index < fretAmount}">
-        <div v-if="index < fretAmount">
-            <small v-if="[3,5,7,9,12,15,17,19,21,24].includes(index + 1)" class="opacity-75">
-                {{ index + 1 }}
-            </small>
+    <div class="d-flex">
+        <div class="d-inline-block string-name"></div>
+        <div v-for="(_, index) in fretIndicator" :key="index" class="d-inline-block" :class="{'fret-indicator': index < fretAmount}">
+            <div v-if="index < fretAmount">
+                <small v-if="[3,5,7,9,12,15,17,19,21,24].includes(index + 1)" class="opacity-75">
+                    {{ index + 1 }}
+                </small>
+            </div>
         </div>
     </div>
     <!-- Fretboard -->
-    <div class="fret-start string-E">
-        <div v-for="(_, index) in E" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}">
-            <label v-if="index < fretAmount" class="notes">
-                <input type="checkbox" v-model="E[index]"/>
-                <div class="checkbox__checkmark" 
-                    :class="{
-                        'root-note': currentHighlightNotes.includes('roots') ? ERoots?.includes(index + 1) : '', 
-                        'second': currentHighlightNotes.includes('seconds') ? ESeconds?.includes(index + 1): '',
-                        'third': currentHighlightNotes.includes('thirds') ? EThirds?.includes(index + 1) : '',
-                        'fourth': currentHighlightNotes.includes('fourths') ? EFourths?.includes(index + 1) : '',
-                        'fifth': currentHighlightNotes.includes('fifths') ? EFifths?.includes(index + 1) : '',
-                        'sixth': currentHighlightNotes.includes('sixths') ? ESixths?.includes(index + 1) : '',
-                        'seventh': currentHighlightNotes.includes('sevenths') ? ESevenths?.includes(index + 1) : '',
-                        'blue': currentHighlightNotes.includes('blues') ? EBlues?.includes(index + 1) : '',
-                    }">
-                    <span v-if="ERoots?.includes(index + 1)" class="note-names">C</span>
-                    <span v-if="ESeconds?.includes(index + 1)" class="note-names">D</span>
-                    <span v-if="EThirds?.includes(index + 1)" class="note-names">E</span>
-                    <span v-if="EFourths?.includes(index + 1)" class="note-names">F</span>
-                    <span v-if="EFifths?.includes(index + 1)" class="note-names">G</span>
-                    <span v-if="ESixths?.includes(index + 1)" class="note-names">A</span>
-                    <span v-if="ESevenths?.includes(index + 1)" class="note-names">B</span>
-                </div>
-            </label>
+    <div class="d-flex text-nowrap">
+        <div class="d-inline-block string-name">e</div>
+        <div class="fret-start string-E">
+            <div v-for="(_, index) in E" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}">
+                <label v-if="index < fretAmount" class="notes">
+                    <input type="checkbox" v-model="E[index]"/>
+                    <div class="checkbox__checkmark" 
+                        :class="{
+                            'root-note': currentHighlightNotes.includes('roots') ? ERoots?.includes(index + 1) : '', 
+                            'second': currentHighlightNotes.includes('seconds') ? ESeconds?.includes(index + 1): '',
+                            'third': currentHighlightNotes.includes('thirds') ? EThirds?.includes(index + 1) : '',
+                            'fourth': currentHighlightNotes.includes('fourths') ? EFourths?.includes(index + 1) : '',
+                            'fifth': currentHighlightNotes.includes('fifths') ? EFifths?.includes(index + 1) : '',
+                            'sixth': currentHighlightNotes.includes('sixths') ? ESixths?.includes(index + 1) : '',
+                            'seventh': currentHighlightNotes.includes('sevenths') ? ESevenths?.includes(index + 1) : '',
+                            'blue': currentHighlightNotes.includes('blues') ? EBlues?.includes(index + 1) : '',
+                        }">
+                        <span v-if="currentHighlightNotes.includes('roots') && ERoots?.includes(index + 1)" class="note-names">C</span>
+                        <span v-if="currentHighlightNotes.includes('seconds') && ESeconds?.includes(index + 1)" class="note-names">D</span>
+                        <span v-if="currentHighlightNotes.includes('thirds') && EThirds?.includes(index + 1)" class="note-names">E</span>
+                        <span v-if="currentHighlightNotes.includes('fourths') && EFourths?.includes(index + 1)" class="note-names">F</span>
+                        <span v-if="currentHighlightNotes.includes('fifths') && EFifths?.includes(index + 1)" class="note-names">G</span>
+                        <span v-if="currentHighlightNotes.includes('sixths') && ESixths?.includes(index + 1)" class="note-names">A</span>
+                        <span v-if="currentHighlightNotes.includes('sevenths') && ESevenths?.includes(index + 1)" class="note-names">B</span>
+                    </div>
+                </label>
+            </div>
         </div>
     </div>
-    <div class="fret-start string-A">
-        <div v-for="(_, index) in A" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}">
-            <label v-if="index < fretAmount" class="notes">
-                <input type="checkbox" v-model="A[index]"/>
-                <div class="checkbox__checkmark" 
-                    :class="{
-                        'root-note': currentHighlightNotes.includes('roots') ? ARoots?.includes(index + 1) : '', 
-                        'second': currentHighlightNotes.includes('seconds') ? ASeconds?.includes(index + 1): '',
-                        'third': currentHighlightNotes.includes('thirds') ? AThirds?.includes(index + 1) : '',
-                        'fourth': currentHighlightNotes.includes('fourths') ? AFourths?.includes(index + 1) : '',
-                        'fifth': currentHighlightNotes.includes('fifths') ? AFifths?.includes(index + 1) : '',
-                        'sixth': currentHighlightNotes.includes('sixths') ? ASixths?.includes(index + 1) : '',
-                        'seventh': currentHighlightNotes.includes('sevenths') ? ASevenths?.includes(index + 1) : '',
-                        'blue': currentHighlightNotes.includes('blues') ? ABlues?.includes(index + 1) : '',
-                    }">
-                    <span v-if="ARoots?.includes(index + 1)" class="note-names">C</span>
-                    <span v-if="ASeconds?.includes(index + 1)" class="note-names">D</span>
-                    <span v-if="AThirds?.includes(index + 1)" class="note-names">E</span>
-                    <span v-if="AFourths?.includes(index + 1)" class="note-names">F</span>
-                    <span v-if="AFifths?.includes(index + 1)" class="note-names">G</span>
-                    <span v-if="ASixths?.includes(index + 1)" class="note-names">A</span>
-                    <span v-if="ASevenths?.includes(index + 1)" class="note-names">B</span>
-                </div>
-            </label>
+    <div class="d-flex text-nowrap">
+        <div class="d-inline-block string-name">B</div>
+        <div class="fret-start string-A">
+            <div v-for="(_, index) in A" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}">
+                <label v-if="index < fretAmount" class="notes">
+                    <input type="checkbox" v-model="A[index]"/>
+                    <div class="checkbox__checkmark" 
+                        :class="{
+                            'root-note': currentHighlightNotes.includes('roots') ? ARoots?.includes(index + 1) : '', 
+                            'second': currentHighlightNotes.includes('seconds') ? ASeconds?.includes(index + 1): '',
+                            'third': currentHighlightNotes.includes('thirds') ? AThirds?.includes(index + 1) : '',
+                            'fourth': currentHighlightNotes.includes('fourths') ? AFourths?.includes(index + 1) : '',
+                            'fifth': currentHighlightNotes.includes('fifths') ? AFifths?.includes(index + 1) : '',
+                            'sixth': currentHighlightNotes.includes('sixths') ? ASixths?.includes(index + 1) : '',
+                            'seventh': currentHighlightNotes.includes('sevenths') ? ASevenths?.includes(index + 1) : '',
+                            'blue': currentHighlightNotes.includes('blues') ? ABlues?.includes(index + 1) : '',
+                        }">
+                        <span v-if="currentHighlightNotes.includes('roots') && ARoots?.includes(index + 1)" class="note-names">C</span>
+                        <span v-if="currentHighlightNotes.includes('seconds') && ASeconds?.includes(index + 1)" class="note-names">D</span>
+                        <span v-if="currentHighlightNotes.includes('thirds') && AThirds?.includes(index + 1)" class="note-names">E</span>
+                        <span v-if="currentHighlightNotes.includes('fourths') && AFourths?.includes(index + 1)" class="note-names">F</span>
+                        <span v-if="currentHighlightNotes.includes('fifths') && AFifths?.includes(index + 1)" class="note-names">G</span>
+                        <span v-if="currentHighlightNotes.includes('sixths') && ASixths?.includes(index + 1)" class="note-names">A</span>
+                        <span v-if="currentHighlightNotes.includes('sevenths') && ASevenths?.includes(index + 1)" class="note-names">B</span>
+                    </div>
+                </label>
+            </div>
         </div>
     </div>
-    <div class="fret-start string-D">
-        <div v-for="(_, index) in D" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}">
-            <label v-if="index < fretAmount" class="notes">
-                <input type="checkbox" v-model="D[index]"/>
-                <div class="checkbox__checkmark" 
-                    :class="{
-                        'root-note': currentHighlightNotes.includes('roots') ? DRoots?.includes(index + 1) : '', 
-                        'second': currentHighlightNotes.includes('seconds') ? DSeconds?.includes(index + 1): '',
-                        'third': currentHighlightNotes.includes('thirds') ? DThirds?.includes(index + 1) : '',
-                        'fourth': currentHighlightNotes.includes('fourths') ? DFourths?.includes(index + 1) : '',
-                        'fifth': currentHighlightNotes.includes('fifths') ? DFifths?.includes(index + 1) : '',
-                        'sixth': currentHighlightNotes.includes('sixths') ? DSixths?.includes(index + 1) : '',
-                        'seventh': currentHighlightNotes.includes('sevenths') ? DSevenths?.includes(index + 1) : '',
-                        'blue': currentHighlightNotes.includes('blues') ? DBlues?.includes(index + 1) : '',
-                    }">
-                    <span v-if="DRoots?.includes(index + 1)" class="note-names">C</span>
-                    <span v-if="DSeconds?.includes(index + 1)" class="note-names">D</span>
-                    <span v-if="DThirds?.includes(index + 1)" class="note-names">E</span>
-                    <span v-if="DFourths?.includes(index + 1)" class="note-names">F</span>
-                    <span v-if="DFifths?.includes(index + 1)" class="note-names">G</span>
-                    <span v-if="DSixths?.includes(index + 1)" class="note-names">A</span>
-                    <span v-if="DSevenths?.includes(index + 1)" class="note-names">B</span>
-                </div>
-            </label>
+    <div class="d-flex text-nowrap">
+        <div class="d-inline-block string-name">G</div>
+        <div class="fret-start string-D">
+            <div v-for="(_, index) in D" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}">
+                <label v-if="index < fretAmount" class="notes">
+                    <input type="checkbox" v-model="D[index]"/>
+                    <div class="checkbox__checkmark" 
+                        :class="{
+                            'root-note': currentHighlightNotes.includes('roots') ? DRoots?.includes(index + 1) : '', 
+                            'second': currentHighlightNotes.includes('seconds') ? DSeconds?.includes(index + 1): '',
+                            'third': currentHighlightNotes.includes('thirds') ? DThirds?.includes(index + 1) : '',
+                            'fourth': currentHighlightNotes.includes('fourths') ? DFourths?.includes(index + 1) : '',
+                            'fifth': currentHighlightNotes.includes('fifths') ? DFifths?.includes(index + 1) : '',
+                            'sixth': currentHighlightNotes.includes('sixths') ? DSixths?.includes(index + 1) : '',
+                            'seventh': currentHighlightNotes.includes('sevenths') ? DSevenths?.includes(index + 1) : '',
+                            'blue': currentHighlightNotes.includes('blues') ? DBlues?.includes(index + 1) : '',
+                        }">
+                        <span v-if="currentHighlightNotes.includes('roots') && DRoots?.includes(index + 1)" class="note-names">C</span>
+                        <span v-if="currentHighlightNotes.includes('seconds') && DSeconds?.includes(index + 1)" class="note-names">D</span>
+                        <span v-if="currentHighlightNotes.includes('thirds') && DThirds?.includes(index + 1)" class="note-names">E</span>
+                        <span v-if="currentHighlightNotes.includes('fourths') && DFourths?.includes(index + 1)" class="note-names">F</span>
+                        <span v-if="currentHighlightNotes.includes('fifths') && DFifths?.includes(index + 1)" class="note-names">G</span>
+                        <span v-if="currentHighlightNotes.includes('sixths') && DSixths?.includes(index + 1)" class="note-names">A</span>
+                        <span v-if="currentHighlightNotes.includes('sevenths') && DSevenths?.includes(index + 1)" class="note-names">B</span>
+                    </div>
+                </label>
+            </div>
         </div>
     </div>
-    <div class="fret-start string-G">
-        <div v-for="(_, index) in G" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}">
-            <label v-if="index < fretAmount" class="notes">
-                <input type="checkbox" v-model="G[index]"/>
-                <div class="checkbox__checkmark" 
-                    :class="{
-                        'root-note': currentHighlightNotes.includes('roots') ? GRoots?.includes(index + 1) : '', 
-                        'second': currentHighlightNotes.includes('seconds') ? GSeconds?.includes(index + 1): '',
-                        'third': currentHighlightNotes.includes('thirds') ? GThirds?.includes(index + 1) : '',
-                        'fourth': currentHighlightNotes.includes('fourths') ? GFourths?.includes(index + 1) : '',
-                        'fifth': currentHighlightNotes.includes('fifths') ? GFifths?.includes(index + 1) : '',
-                        'sixth': currentHighlightNotes.includes('sixths') ? GSixths?.includes(index + 1) : '',
-                        'seventh': currentHighlightNotes.includes('sevenths') ? GSevenths?.includes(index + 1) : '',
-                        'blue': currentHighlightNotes.includes('blues') ? GBlues?.includes(index + 1) : '',
-                    }">
-                    <span v-if="GRoots?.includes(index + 1)" class="note-names">C</span>
-                    <span v-if="GSeconds?.includes(index + 1)" class="note-names">D</span>
-                    <span v-if="GThirds?.includes(index + 1)" class="note-names">E</span>
-                    <span v-if="GFourths?.includes(index + 1)" class="note-names">F</span>
-                    <span v-if="GFifths?.includes(index + 1)" class="note-names">G</span>
-                    <span v-if="GSixths?.includes(index + 1)" class="note-names">A</span>
-                    <span v-if="GSevenths?.includes(index + 1)" class="note-names">B</span>
-                </div>
-            </label>
+    <div class="d-flex text-nowrap">
+        <div class="d-inline-block string-name">D</div>
+        <div class="fret-start string-G">
+            <div v-for="(_, index) in G" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}">
+                <label v-if="index < fretAmount" class="notes">
+                    <input type="checkbox" v-model="G[index]"/>
+                    <div class="checkbox__checkmark" 
+                        :class="{
+                            'root-note': currentHighlightNotes.includes('roots') ? GRoots?.includes(index + 1) : '', 
+                            'second': currentHighlightNotes.includes('seconds') ? GSeconds?.includes(index + 1): '',
+                            'third': currentHighlightNotes.includes('thirds') ? GThirds?.includes(index + 1) : '',
+                            'fourth': currentHighlightNotes.includes('fourths') ? GFourths?.includes(index + 1) : '',
+                            'fifth': currentHighlightNotes.includes('fifths') ? GFifths?.includes(index + 1) : '',
+                            'sixth': currentHighlightNotes.includes('sixths') ? GSixths?.includes(index + 1) : '',
+                            'seventh': currentHighlightNotes.includes('sevenths') ? GSevenths?.includes(index + 1) : '',
+                            'blue': currentHighlightNotes.includes('blues') ? GBlues?.includes(index + 1) : '',
+                        }">
+                        <span v-if="currentHighlightNotes.includes('roots') && GRoots?.includes(index + 1)" class="note-names">C</span>
+                        <span v-if="currentHighlightNotes.includes('seconds') && GSeconds?.includes(index + 1)" class="note-names">D</span>
+                        <span v-if="currentHighlightNotes.includes('thirds') && GThirds?.includes(index + 1)" class="note-names">E</span>
+                        <span v-if="currentHighlightNotes.includes('fourths') && GFourths?.includes(index + 1)" class="note-names">F</span>
+                        <span v-if="currentHighlightNotes.includes('fifths') && GFifths?.includes(index + 1)" class="note-names">G</span>
+                        <span v-if="currentHighlightNotes.includes('sixths') && GSixths?.includes(index + 1)" class="note-names">A</span>
+                        <span v-if="currentHighlightNotes.includes('sevenths') && GSevenths?.includes(index + 1)" class="note-names">B</span>
+                    </div>
+                </label>
+            </div>
         </div>
     </div>
-    <div class="fret-start string-B">
-        <div v-for="(_, index) in B" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}">
-            <label v-if="index < fretAmount" class="notes">
-                <input type="checkbox" v-model="B[index]"/>
-                <div class="checkbox__checkmark" 
-                    :class="{
-                        'root-note': currentHighlightNotes.includes('roots') ? BRoots?.includes(index + 1) : '', 
-                        'second': currentHighlightNotes.includes('seconds') ? BSeconds?.includes(index + 1): '',
-                        'third': currentHighlightNotes.includes('thirds') ? BThirds?.includes(index + 1) : '',
-                        'fourth': currentHighlightNotes.includes('fourths') ? BFourths?.includes(index + 1) : '',
-                        'fifth': currentHighlightNotes.includes('fifths') ? BFifths?.includes(index + 1) : '',
-                        'sixth': currentHighlightNotes.includes('sixths') ? BSixths?.includes(index + 1) : '',
-                        'seventh': currentHighlightNotes.includes('sevenths') ? BSevenths?.includes(index + 1) : '',
-                        'blue': currentHighlightNotes.includes('blues') ? BBlues?.includes(index + 1) : '',
-                    }">
-                    <span v-if="BRoots?.includes(index + 1)" class="note-names">C</span>
-                    <span v-if="BSeconds?.includes(index + 1)" class="note-names">D</span>
-                    <span v-if="BThirds?.includes(index + 1)" class="note-names">E</span>
-                    <span v-if="BFourths?.includes(index + 1)" class="note-names">F</span>
-                    <span v-if="BFifths?.includes(index + 1)" class="note-names">G</span>
-                    <span v-if="BSixths?.includes(index + 1)" class="note-names">A</span>
-                    <span v-if="BSevenths?.includes(index + 1)" class="note-names">B</span>
-                </div>
-            </label>
+    <div class="d-flex text-nowrap">
+        <div class="d-inline-block string-name">A</div>
+        <div class="fret-start string-B">
+            <div v-for="(_, index) in B" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}">
+                <label v-if="index < fretAmount" class="notes">
+                    <input type="checkbox" v-model="B[index]"/>
+                    <div class="checkbox__checkmark" 
+                        :class="{
+                            'root-note': currentHighlightNotes.includes('roots') ? BRoots?.includes(index + 1) : '', 
+                            'second': currentHighlightNotes.includes('seconds') ? BSeconds?.includes(index + 1): '',
+                            'third': currentHighlightNotes.includes('thirds') ? BThirds?.includes(index + 1) : '',
+                            'fourth': currentHighlightNotes.includes('fourths') ? BFourths?.includes(index + 1) : '',
+                            'fifth': currentHighlightNotes.includes('fifths') ? BFifths?.includes(index + 1) : '',
+                            'sixth': currentHighlightNotes.includes('sixths') ? BSixths?.includes(index + 1) : '',
+                            'seventh': currentHighlightNotes.includes('sevenths') ? BSevenths?.includes(index + 1) : '',
+                            'blue': currentHighlightNotes.includes('blues') ? BBlues?.includes(index + 1) : '',
+                        }">
+                        <span v-if="currentHighlightNotes.includes('roots') && BRoots?.includes(index + 1)" class="note-names">C</span>
+                        <span v-if="currentHighlightNotes.includes('seconds') && BSeconds?.includes(index + 1)" class="note-names">D</span>
+                        <span v-if="currentHighlightNotes.includes('thirds') && BThirds?.includes(index + 1)" class="note-names">E</span>
+                        <span v-if="currentHighlightNotes.includes('fourths') && BFourths?.includes(index + 1)" class="note-names">F</span>
+                        <span v-if="currentHighlightNotes.includes('fifths') && BFifths?.includes(index + 1)" class="note-names">G</span>
+                        <span v-if="currentHighlightNotes.includes('sixths') && BSixths?.includes(index + 1)" class="note-names">A</span>
+                        <span v-if="currentHighlightNotes.includes('sevenths') && BSevenths?.includes(index + 1)" class="note-names">B</span>
+                    </div>
+                </label>
+            </div>
         </div>
     </div>
-    <div class="fret-start string-e" style="border-left: none;">
-        <div v-for="(_, index) in e" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}" style="border-right: none">
-            <label v-if="index < fretAmount" class="notes">
-                <input type="checkbox" v-model="e[index]"/>
-                <div class="checkbox__checkmark" 
-                    :class="{
-                        'root-note': currentHighlightNotes.includes('roots') ? eRoots?.includes(index + 1) : '', 
-                        'second': currentHighlightNotes.includes('seconds') ? eSeconds?.includes(index + 1): '',
-                        'third': currentHighlightNotes.includes('thirds') ? eThirds?.includes(index + 1) : '',
-                        'fourth': currentHighlightNotes.includes('fourths') ? eFourths?.includes(index + 1) : '',
-                        'fifth': currentHighlightNotes.includes('fifths') ? eFifths?.includes(index + 1) : '',
-                        'sixth': currentHighlightNotes.includes('sixths') ? eSixths?.includes(index + 1) : '',
-                        'seventh': currentHighlightNotes.includes('sevenths') ? eSevenths?.includes(index + 1) : '',
-                        'blue': currentHighlightNotes.includes('blues') ? eBlues?.includes(index + 1) : '',
-                    }">
-                    <span v-if="eRoots?.includes(index + 1)" class="note-names">C</span>
-                    <span v-if="eSeconds?.includes(index + 1)" class="note-names">D</span>
-                    <span v-if="eThirds?.includes(index + 1)" class="note-names">E</span>
-                    <span v-if="eFourths?.includes(index + 1)" class="note-names">F</span>
-                    <span v-if="eFifths?.includes(index + 1)" class="note-names">G</span>
-                    <span v-if="eSixths?.includes(index + 1)" class="note-names">A</span>
-                    <span v-if="eSevenths?.includes(index + 1)" class="note-names">B</span>
-                </div>
-            </label>
+    <div class="d-flex text-nowrap">
+        <div class="d-inline-block string-name">E</div>
+        <div class="fret-start string-e last-string">
+            <div v-for="(_, index) in e" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}" style="border-right: none">
+                <label v-if="index < fretAmount" class="notes">
+                    <input type="checkbox" v-model="e[index]"/>
+                    <div class="checkbox__checkmark" 
+                        :class="{
+                            'root-note': currentHighlightNotes.includes('roots') ? eRoots?.includes(index + 1) : '', 
+                            'second': currentHighlightNotes.includes('seconds') ? eSeconds?.includes(index + 1): '',
+                            'third': currentHighlightNotes.includes('thirds') ? eThirds?.includes(index + 1) : '',
+                            'fourth': currentHighlightNotes.includes('fourths') ? eFourths?.includes(index + 1) : '',
+                            'fifth': currentHighlightNotes.includes('fifths') ? eFifths?.includes(index + 1) : '',
+                            'sixth': currentHighlightNotes.includes('sixths') ? eSixths?.includes(index + 1) : '',
+                            'seventh': currentHighlightNotes.includes('sevenths') ? eSevenths?.includes(index + 1) : '',
+                            'blue': currentHighlightNotes.includes('blues') ? eBlues?.includes(index + 1) : '',
+                        }">
+                        <span v-if="currentHighlightNotes.includes('roots') && eRoots?.includes(index + 1)" class="note-names">C</span>
+                        <span v-if="currentHighlightNotes.includes('seconds') && eSeconds?.includes(index + 1)" class="note-names">D</span>
+                        <span v-if="currentHighlightNotes.includes('thirds') && eThirds?.includes(index + 1)" class="note-names">E</span>
+                        <span v-if="currentHighlightNotes.includes('fourths') && eFourths?.includes(index + 1)" class="note-names">F</span>
+                        <span v-if="currentHighlightNotes.includes('fifths') && eFifths?.includes(index + 1)" class="note-names">G</span>
+                        <span v-if="currentHighlightNotes.includes('sixths') && eSixths?.includes(index + 1)" class="note-names">A</span>
+                        <span v-if="currentHighlightNotes.includes('sevenths') && eSevenths?.includes(index + 1)" class="note-names">B</span>
+                    </div>
+                </label>
+            </div>
         </div>
     </div>
     <!-- CAGED  -->
@@ -663,7 +684,12 @@ onMounted(async () => {
 /* FRETBOARD */
 .fret-indicator {
     min-width: 50px;
-    height: 50px;
+    height: 40px;
+}
+
+.string-name {
+    width: 30px;
+    margin-top: -13px;
 }
 
 .fret-start {
@@ -692,6 +718,10 @@ onMounted(async () => {
 
 .string-e {
     border-top: 3.5px solid #8f8575;
+}
+
+.last-string {
+    border-left-color: transparent;
 }
 
 .fret {
