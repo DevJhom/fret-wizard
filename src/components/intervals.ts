@@ -74,7 +74,7 @@ const blues: Intervals = {
     e: []
 }
 
-const SEMITONE_SHIFTS: { [key: string]: number } = {
+export const KEY_TO_NUMBER: { [key: string]: number } = {
   "C": 0,
   "C#": 1, //"Db": 1,
   "D": 2,
@@ -90,41 +90,41 @@ const SEMITONE_SHIFTS: { [key: string]: number } = {
 };
 
 export const getRoots = (currentKey: string, stringName: string) => {
-  const shift = SEMITONE_SHIFTS[currentKey];
+  const shift = KEY_TO_NUMBER[currentKey];
   return roots[stringName].map(note => (note + shift));
 };
 
 export const getSeconds = (currentKey: string, stringName: string) => {
-  const shift = SEMITONE_SHIFTS[currentKey];
+  const shift = KEY_TO_NUMBER[currentKey];
   return seconds[stringName].map(note => (note + shift));
 };
 
 export const getThirds = (currentKey: string, stringName: string) => {
-  const shift = SEMITONE_SHIFTS[currentKey];
+  const shift = KEY_TO_NUMBER[currentKey];
   return thirds[stringName].map(note => (note + shift));
 };
 
 export const getFourths = (currentKey: string, stringName: string) => {
-  const shift = SEMITONE_SHIFTS[currentKey];
+  const shift = KEY_TO_NUMBER[currentKey];
   return fourths[stringName].map(note => (note + shift));
 };
 
 export const getFifths = (currentKey: string, stringName: string) => {
-  const shift = SEMITONE_SHIFTS[currentKey];
+  const shift = KEY_TO_NUMBER[currentKey];
   return fifths[stringName].map(note => (note + shift));
 };
 
 export const getSixths = (currentKey: string, stringName: string) => {
-  const shift = SEMITONE_SHIFTS[currentKey];
+  const shift = KEY_TO_NUMBER[currentKey];
   return sixths[stringName].map(note => (note + shift));
 };
 
 export const getSevenths = (currentKey: string, stringName: string) => {
-  const shift = SEMITONE_SHIFTS[currentKey];
+  const shift = KEY_TO_NUMBER[currentKey];
   return sevenths[stringName].map(note => (note + shift));
 };
 
 export const getBlues = (currentKey: string, stringName: string) => {
-  const shift = SEMITONE_SHIFTS[currentKey];
+  const shift = KEY_TO_NUMBER[currentKey];
   return blues[stringName].map(note => (note + shift));
 };
