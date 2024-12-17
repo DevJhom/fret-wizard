@@ -74,218 +74,57 @@ const blues: Intervals = {
     e: []
 }
 
+const SEMITONE_SHIFTS: { [key: string]: number } = {
+  "C": 0,
+  "C#": 1, //"Db": 1,
+  "D": 2,
+  "D#": 3, //"Eb": 3, 
+  "E": 4,
+  "F": 5,
+  "F#": 6, //"Gb": 6, 
+  "G": 7,
+  "G#": 8, //"Ab": 8, 
+  "A": 9,
+  "A#": 10, //"Bb": 10, 
+  "B": 11,
+};
+
 export const getRoots = (currentKey: string, stringName: string) => {
-    if(currentKey == "C")
-        return roots[stringName];
-    if(currentKey == "C#")
-        return roots[stringName].map(note => note + 1);
-    if(currentKey == "D")
-        return roots[stringName].map(note => note + 2); 
-    if(currentKey == "D#")
-        return roots[stringName].map(note => note + 3);
-    if(currentKey == "E")
-        return roots[stringName].map(note => note + 4); 
-    if(currentKey == "F")
-        return roots[stringName].map(note => note + 5);
-    if(currentKey == "F#")
-        return roots[stringName].map(note => note + 6); 
-    if(currentKey == "G")
-        return roots[stringName].map(note => note + 7);
-    if(currentKey == "G#")
-        return roots[stringName].map(note => note + 8); 
-    if(currentKey == "A")
-        return roots[stringName].map(note => note + 9);
-    if(currentKey == "A#")
-        return roots[stringName].map(note => note + 10); 
-    if(currentKey == "B")
-        return roots[stringName].map(note => note + 11);
-}
+  const shift = SEMITONE_SHIFTS[currentKey];
+  return roots[stringName].map(note => (note + shift));
+};
 
 export const getSeconds = (currentKey: string, stringName: string) => {
-    if(currentKey == "C")
-        return seconds[stringName];
-    if(currentKey == "C#")
-        return seconds[stringName].map(note => note + 1);
-    if(currentKey == "D")
-        return seconds[stringName].map(note => note + 2); 
-    if(currentKey == "D#")
-        return seconds[stringName].map(note => note + 3);
-    if(currentKey == "E")
-        return seconds[stringName].map(note => note + 4); 
-    if(currentKey == "F")
-        return seconds[stringName].map(note => note + 5);
-    if(currentKey == "F#")
-        return seconds[stringName].map(note => note + 6); 
-    if(currentKey == "G")
-        return seconds[stringName].map(note => note + 7);
-    if(currentKey == "G#")
-        return seconds[stringName].map(note => note + 8); 
-    if(currentKey == "A")
-        return seconds[stringName].map(note => note + 9);
-    if(currentKey == "A#")
-        return seconds[stringName].map(note => note + 10); 
-    if(currentKey == "B")
-        return seconds[stringName].map(note => note + 11);
-}
+  const shift = SEMITONE_SHIFTS[currentKey];
+  return seconds[stringName].map(note => (note + shift));
+};
 
 export const getThirds = (currentKey: string, stringName: string) => {
-    if(currentKey == "C")
-        return thirds[stringName];
-    if(currentKey == "C#")
-        return thirds[stringName].map(note => note + 1);
-    if(currentKey == "D")
-        return thirds[stringName].map(note => note + 2); 
-    if(currentKey == "D#")
-        return thirds[stringName].map(note => note + 3);
-    if(currentKey == "E")
-        return thirds[stringName].map(note => note + 4); 
-    if(currentKey == "F")
-        return thirds[stringName].map(note => note + 5);
-    if(currentKey == "F#")
-        return thirds[stringName].map(note => note + 6); 
-    if(currentKey == "G")
-        return thirds[stringName].map(note => note + 7);
-    if(currentKey == "G#")
-        return thirds[stringName].map(note => note + 8); 
-    if(currentKey == "A")
-        return thirds[stringName].map(note => note + 9);
-    if(currentKey == "A#")
-        return thirds[stringName].map(note => note + 10); 
-    if(currentKey == "B")
-        return thirds[stringName].map(note => note + 11);
-}
+  const shift = SEMITONE_SHIFTS[currentKey];
+  return thirds[stringName].map(note => (note + shift));
+};
 
 export const getFourths = (currentKey: string, stringName: string) => {
-    if(currentKey == "C")
-        return fourths[stringName];
-    if(currentKey == "C#")
-        return fourths[stringName].map(note => note + 1);
-    if(currentKey == "D")
-        return fourths[stringName].map(note => note + 2); 
-    if(currentKey == "D#")
-        return fourths[stringName].map(note => note + 3);
-    if(currentKey == "E")
-        return fourths[stringName].map(note => note + 4); 
-    if(currentKey == "F")
-        return fourths[stringName].map(note => note + 5);
-    if(currentKey == "F#")
-        return fourths[stringName].map(note => note + 6); 
-    if(currentKey == "G")
-        return fourths[stringName].map(note => note + 7);
-    if(currentKey == "G#")
-        return fourths[stringName].map(note => note + 8); 
-    if(currentKey == "A")
-        return fourths[stringName].map(note => note + 9);
-    if(currentKey == "A#")
-        return fourths[stringName].map(note => note + 10); 
-    if(currentKey == "B")
-        return fourths[stringName].map(note => note + 11);
-}
+  const shift = SEMITONE_SHIFTS[currentKey];
+  return fourths[stringName].map(note => (note + shift));
+};
 
 export const getFifths = (currentKey: string, stringName: string) => {
-    if(currentKey == "C")
-        return fifths[stringName];
-    if(currentKey == "C#")
-        return fifths[stringName].map(note => note + 1);
-    if(currentKey == "D")
-        return fifths[stringName].map(note => note + 2); 
-    if(currentKey == "D#")
-        return fifths[stringName].map(note => note + 3);
-    if(currentKey == "E")
-        return fifths[stringName].map(note => note + 4); 
-    if(currentKey == "F")
-        return fifths[stringName].map(note => note + 5);
-    if(currentKey == "F#")
-        return fifths[stringName].map(note => note + 6); 
-    if(currentKey == "G")
-        return fifths[stringName].map(note => note + 7);
-    if(currentKey == "G#")
-        return fifths[stringName].map(note => note + 8); 
-    if(currentKey == "A")
-        return fifths[stringName].map(note => note + 9);
-    if(currentKey == "A#")
-        return fifths[stringName].map(note => note + 10); 
-    if(currentKey == "B")
-        return fifths[stringName].map(note => note + 11);
-}
+  const shift = SEMITONE_SHIFTS[currentKey];
+  return fifths[stringName].map(note => (note + shift));
+};
 
 export const getSixths = (currentKey: string, stringName: string) => {
-    if(currentKey == "C")
-        return sixths[stringName];
-    if(currentKey == "C#")
-        return sixths[stringName].map(note => note + 1);
-    if(currentKey == "D")
-        return sixths[stringName].map(note => note + 2); 
-    if(currentKey == "D#")
-        return sixths[stringName].map(note => note + 3);
-    if(currentKey == "E")
-        return sixths[stringName].map(note => note + 4); 
-    if(currentKey == "F")
-        return sixths[stringName].map(note => note + 5);
-    if(currentKey == "F#")
-        return sixths[stringName].map(note => note + 6); 
-    if(currentKey == "G")
-        return sixths[stringName].map(note => note + 7);
-    if(currentKey == "G#")
-        return sixths[stringName].map(note => note + 8); 
-    if(currentKey == "A")
-        return sixths[stringName].map(note => note + 9);
-    if(currentKey == "A#")
-        return sixths[stringName].map(note => note + 10); 
-    if(currentKey == "B")
-        return sixths[stringName].map(note => note + 11);
-}
+  const shift = SEMITONE_SHIFTS[currentKey];
+  return sixths[stringName].map(note => (note + shift));
+};
 
 export const getSevenths = (currentKey: string, stringName: string) => {
-    if(currentKey == "C")
-        return sevenths[stringName];
-    if(currentKey == "C#")
-        return sevenths[stringName].map(note => note + 1);
-    if(currentKey == "D")
-        return sevenths[stringName].map(note => note + 2); 
-    if(currentKey == "D#")
-        return sevenths[stringName].map(note => note + 3);
-    if(currentKey == "E")
-        return sevenths[stringName].map(note => note + 4); 
-    if(currentKey == "F")
-        return sevenths[stringName].map(note => note + 5);
-    if(currentKey == "F#")
-        return sevenths[stringName].map(note => note + 6); 
-    if(currentKey == "G")
-        return sevenths[stringName].map(note => note + 7);
-    if(currentKey == "G#")
-        return sevenths[stringName].map(note => note + 8); 
-    if(currentKey == "A")
-        return sevenths[stringName].map(note => note + 9);
-    if(currentKey == "A#")
-        return sevenths[stringName].map(note => note + 10); 
-    if(currentKey == "B")
-        return sevenths[stringName].map(note => note + 11);
-}
+  const shift = SEMITONE_SHIFTS[currentKey];
+  return sevenths[stringName].map(note => (note + shift));
+};
 
 export const getBlues = (currentKey: string, stringName: string) => {
-    if(currentKey == "C")
-        return blues[stringName];
-    if(currentKey == "C#")
-        return blues[stringName].map(note => note + 1);
-    if(currentKey == "D")
-        return blues[stringName].map(note => note + 2); 
-    if(currentKey == "D#")
-        return blues[stringName].map(note => note + 3);
-    if(currentKey == "E")
-        return blues[stringName].map(note => note + 4); 
-    if(currentKey == "F")
-        return blues[stringName].map(note => note + 5);
-    if(currentKey == "F#")
-        return blues[stringName].map(note => note + 6); 
-    if(currentKey == "G")
-        return blues[stringName].map(note => note + 7);
-    if(currentKey == "G#")
-        return blues[stringName].map(note => note + 8); 
-    if(currentKey == "A")
-        return blues[stringName].map(note => note + 9);
-    if(currentKey == "A#")
-        return blues[stringName].map(note => note + 10); 
-    if(currentKey == "B")
-        return blues[stringName].map(note => note + 11);
-}
+  const shift = SEMITONE_SHIFTS[currentKey];
+  return blues[stringName].map(note => (note + shift));
+};
