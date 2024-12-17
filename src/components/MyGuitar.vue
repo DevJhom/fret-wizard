@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, computed } from 'vue';
 import { getCurrentKey, updateCurrentKey, getScale, updateCurrentScale, updateScale } from '@services/service';
-import { getRoots, getSeconds, getThirds, getFourths, getFifths, getSixths, getSevenths, getBlues } from './intervals';
+import { KEY_TO_NUMBER, getRoots, getSeconds, getThirds, getFourths, getFifths, getSixths, getSevenths, getBlues } from './intervals';
 import { usePatternStore } from '@/stores/usePatternStore';
 import { storeToRefs } from 'pinia';
 
@@ -14,6 +14,7 @@ const keys = ref(["C","C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"
 const patterns = ref(["Pentatonic Scale", "Blue Scale", "Diatonic Scale", "Triad Arpeggio", "Custom"]);
 const currentKey = ref<string>("C");
 
+// Strings
 const E = ref();
 const A = ref();
 const D = ref();
@@ -22,164 +23,68 @@ const B = ref();
 const e = ref();
 
 // Roots
-const ERoots = computed(() => {
-    return getRoots(currentKey.value, "E");
-})
-const ARoots = computed(() => {
-    return getRoots(currentKey.value, "A");
-})
-const DRoots = computed(() => {
-    return getRoots(currentKey.value, "D");
-})
-const GRoots = computed(() => {
-    return getRoots(currentKey.value, "G");
-})
-const BRoots = computed(() => {
-    return getRoots(currentKey.value, "B");
-})
-const eRoots = computed(() => {
-    return getRoots(currentKey.value, "e");
-})
+const ERoots = computed(() => getRoots(currentKey.value, "E"));
+const ARoots = computed(() => getRoots(currentKey.value, "A"));
+const DRoots = computed(() => getRoots(currentKey.value, "D"));
+const GRoots = computed(() => getRoots(currentKey.value, "G"));
+const BRoots = computed(() => getRoots(currentKey.value, "B"));
+const eRoots = computed(() => getRoots(currentKey.value, "e"));
 
 // Seconds
-const ESeconds = computed(() => {
-    return getSeconds(currentKey.value, "E");
-})
-const ASeconds = computed(() => {
-    return getSeconds(currentKey.value, "A");
-})
-const DSeconds = computed(() => {
-    return getSeconds(currentKey.value, "D");
-})
-const GSeconds = computed(() => {
-    return getSeconds(currentKey.value, "G");
-})
-const BSeconds = computed(() => {
-    return getSeconds(currentKey.value, "B");
-})
-const eSeconds = computed(() => {
-    return getSeconds(currentKey.value, "e");
-})
+const ESeconds = computed(() => getSeconds(currentKey.value, "E"));
+const ASeconds = computed(() => getSeconds(currentKey.value, "A"));
+const DSeconds = computed(() => getSeconds(currentKey.value, "D"));
+const GSeconds = computed(() => getSeconds(currentKey.value, "G"));
+const BSeconds = computed(() => getSeconds(currentKey.value, "B"));
+const eSeconds = computed(() => getSeconds(currentKey.value, "e"));
 
 // Thirds
-const EThirds = computed(() => {
-    return getThirds(currentKey.value, "E");
-})
-const AThirds = computed(() => {
-    return getThirds(currentKey.value, "A");
-})
-const DThirds = computed(() => {
-    return getThirds(currentKey.value, "D");
-})
-const GThirds = computed(() => {
-    return getThirds(currentKey.value, "G");
-})
-const BThirds = computed(() => {
-    return getThirds(currentKey.value, "B");
-})
-const eThirds = computed(() => {
-    return getThirds(currentKey.value, "e");
-})
+const EThirds = computed(() => getThirds(currentKey.value, "E"));
+const AThirds = computed(() => getThirds(currentKey.value, "A"));
+const DThirds = computed(() => getThirds(currentKey.value, "D"));
+const GThirds = computed(() => getThirds(currentKey.value, "G"));
+const BThirds = computed(() => getThirds(currentKey.value, "B"));
+const eThirds = computed(() => getThirds(currentKey.value, "e"));
 
 // Fourths
-const EFourths = computed(() => {
-    return getFourths(currentKey.value, "E");
-})
-const AFourths = computed(() => {
-    return getFourths(currentKey.value, "A");
-})
-const DFourths = computed(() => {
-    return getFourths(currentKey.value, "D");
-})
-const GFourths = computed(() => {
-    return getFourths(currentKey.value, "G");
-})
-const BFourths = computed(() => {
-    return getFourths(currentKey.value, "B");
-})
-const eFourths = computed(() => {
-    return getFourths(currentKey.value, "e");
-})
+const EFourths = computed(() => getFourths(currentKey.value, "E"));
+const AFourths = computed(() => getFourths(currentKey.value, "A"));
+const DFourths = computed(() => getFourths(currentKey.value, "D"));
+const GFourths = computed(() => getFourths(currentKey.value, "G"));
+const BFourths = computed(() => getFourths(currentKey.value, "B"));
+const eFourths = computed(() => getFourths(currentKey.value, "e"));
 
 // Fifths
-const EFifths = computed(() => {
-    return getFifths(currentKey.value, "E");
-})
-const AFifths = computed(() => {
-    return getFifths(currentKey.value, "A");
-})
-const DFifths = computed(() => {
-    return getFifths(currentKey.value, "D");
-})
-const GFifths = computed(() => {
-    return getFifths(currentKey.value, "G");
-})
-const BFifths = computed(() => {
-    return getFifths(currentKey.value, "B");
-})
-const eFifths = computed(() => {
-    return getFifths(currentKey.value, "e");
-})
+const EFifths = computed(() => getFifths(currentKey.value, "E"));
+const AFifths = computed(() => getFifths(currentKey.value, "A"));
+const DFifths = computed(() => getFifths(currentKey.value, "D"));
+const GFifths = computed(() => getFifths(currentKey.value, "G"));
+const BFifths = computed(() => getFifths(currentKey.value, "B"));
+const eFifths = computed(() => getFifths(currentKey.value, "e"));
 
 // Sixths
-const ESixths = computed(() => {
-    return getSixths(currentKey.value, "E");
-})
-const ASixths = computed(() => {
-    return getSixths(currentKey.value, "A");
-})
-const DSixths = computed(() => {
-    return getSixths(currentKey.value, "D");
-})
-const GSixths = computed(() => {
-    return getSixths(currentKey.value, "G");
-})
-const BSixths = computed(() => {
-    return getSixths(currentKey.value, "B");
-})
-const eSixths = computed(() => {
-    return getSixths(currentKey.value, "e");
-})
+const ESixths = computed(() => getSixths(currentKey.value, "E"));
+const ASixths = computed(() => getSixths(currentKey.value, "A"));
+const DSixths = computed(() => getSixths(currentKey.value, "D"));
+const GSixths = computed(() => getSixths(currentKey.value, "G"));
+const BSixths = computed(() => getSixths(currentKey.value, "B"));
+const eSixths = computed(() => getSixths(currentKey.value, "e"));
 
 // Sevenths
-const ESevenths = computed(() => {
-    return getSevenths(currentKey.value, "E");
-})
-const ASevenths = computed(() => {
-    return getSevenths(currentKey.value, "A");
-})
-const DSevenths = computed(() => {
-    return getSevenths(currentKey.value, "D");
-})
-const GSevenths = computed(() => {
-    return getSevenths(currentKey.value, "G");
-})
-const BSevenths = computed(() => {
-    return getSevenths(currentKey.value, "B");
-})
-const eSevenths = computed(() => {
-    return getSevenths(currentKey.value, "e");
-})
+const ESevenths = computed(() => getSevenths(currentKey.value, "E"));
+const ASevenths = computed(() => getSevenths(currentKey.value, "A"));
+const DSevenths = computed(() => getSevenths(currentKey.value, "D"));
+const GSevenths = computed(() => getSevenths(currentKey.value, "G"));
+const BSevenths = computed(() => getSevenths(currentKey.value, "B"));
+const eSevenths = computed(() => getSevenths(currentKey.value, "e"));
 
 // Blues
-const EBlues = computed(() => {
-    return getBlues(currentKey.value, "E");
-})
-const ABlues = computed(() => {
-    return getBlues(currentKey.value, "A");
-})
-const DBlues = computed(() => {
-    return getBlues(currentKey.value, "D");
-})
-const GBlues = computed(() => {
-    return getBlues(currentKey.value, "G");
-})
-const BBlues = computed(() => {
-    return getBlues(currentKey.value, "B");
-})
-const eBlues = computed(() => {
-    return getBlues(currentKey.value, "e");
-})
+const EBlues = computed(() => getBlues(currentKey.value, "E"));
+const ABlues = computed(() => getBlues(currentKey.value, "A"));
+const DBlues = computed(() => getBlues(currentKey.value, "D"));
+const GBlues = computed(() => getBlues(currentKey.value, "G"));
+const BBlues = computed(() => getBlues(currentKey.value, "B"));
+const eBlues = computed(() => getBlues(currentKey.value, "e"));
 
 const fetchCurrentKey = async () => {
     const data = await getCurrentKey();
@@ -254,34 +159,10 @@ watch([E, A, D, G, B, e], (newValue) => {
 }, { deep: true })
 
 const mapCurrentKeyToNumber = computed(() => {
-    if(currentKey.value == "C")
-        return 0;
-    if(currentKey.value == "C#")
-        return 1;
-    if(currentKey.value == "D")
-        return 2;
-    if(currentKey.value == "D#")
-        return 3;
-    if(currentKey.value == "E")
-        return 4;
-    if(currentKey.value == "F")
-        return 5;
-    if(currentKey.value == "F#")
-        return 6;
-    if(currentKey.value == "G")
-        return 7;
-    if(currentKey.value == "G#")
-        return 8;
-    if(currentKey.value == "A")
-        return 9;
-    if(currentKey.value == "A#")
-        return 10;
-    if(currentKey.value == "B")
-        return 11;
-    return 0;
-})
+  const number = KEY_TO_NUMBER[currentKey.value];
+  return number;
+});
 
-// CAGED
 const CAGED = ref([
     {
         name: "C Shape",
