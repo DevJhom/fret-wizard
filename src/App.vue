@@ -1,17 +1,9 @@
 <script setup lang="ts">
-import MyGuitar from '@components/MyGuitar.vue'
-import LeftNav from './components/SideBar.vue';
+import DefaultLayout from './layout/DefaultLayout.vue';
 </script>
 
 <template>
-  <div class="d-flex">
-    <LeftNav/>
-    <div>
-      <MyGuitar/>
-    </div>
-  </div>
+  <DefaultLayout/>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>
