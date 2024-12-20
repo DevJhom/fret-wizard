@@ -287,7 +287,7 @@ onMounted(async () => {
             </div>
         </div>
         <!-- Fret Indicator -->
-        <div class="d-flex mt-5">
+        <div class="d-flex mt-5 w-75">
             <div class="d-inline-block string-name"></div>
             <div v-for="(_, index) in fretIndicator" :key="index" class="d-inline-block" :class="{'fret-indicator': index < fretAmount}">
                 <div v-if="index < fretAmount">
@@ -298,7 +298,7 @@ onMounted(async () => {
             </div>
         </div>
         <!-- Fretboard -->
-        <div class="d-flex text-nowrap">
+        <div class="d-flex text-nowrap w-75">
             <div class="d-inline-block string-name">e</div>
             <div class="fret-start string-E">
                 <div v-for="(_, index) in E" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}">
@@ -327,7 +327,7 @@ onMounted(async () => {
                 </div>
             </div>
         </div>
-        <div class="d-flex text-nowrap">
+        <div class="d-flex text-nowrap w-75">
             <div class="d-inline-block string-name">B</div>
             <div class="fret-start string-A">
                 <div v-for="(_, index) in A" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}">
@@ -356,7 +356,7 @@ onMounted(async () => {
                 </div>
             </div>
         </div>
-        <div class="d-flex text-nowrap">
+        <div class="d-flex text-nowrap w-75">
             <div class="d-inline-block string-name">G</div>
             <div class="fret-start string-D">
                 <div v-for="(_, index) in D" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}">
@@ -385,7 +385,7 @@ onMounted(async () => {
                 </div>
             </div>
         </div>
-        <div class="d-flex text-nowrap">
+        <div class="d-flex text-nowrap w-75">
             <div class="d-inline-block string-name">D</div>
             <div class="fret-start string-G">
                 <div v-for="(_, index) in G" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}">
@@ -414,7 +414,7 @@ onMounted(async () => {
                 </div>
             </div>
         </div>
-        <div class="d-flex text-nowrap">
+        <div class="d-flex text-nowrap w-75">
             <div class="d-inline-block string-name">A</div>
             <div class="fret-start string-B">
                 <div v-for="(_, index) in B" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}">
@@ -443,7 +443,7 @@ onMounted(async () => {
                 </div>
             </div>
         </div>
-        <div class="d-flex text-nowrap">
+        <div class="d-flex text-nowrap w-75">
             <div class="d-inline-block string-name">E</div>
             <div class="fret-start string-e last-string">
                 <div v-for="(_, index) in e" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}" style="border-right: none">
@@ -473,12 +473,12 @@ onMounted(async () => {
             </div>
         </div>
         <!-- CAGED  -->
-        <div>
+        <div class="w-75 text-start">
             <div v-for="(_, index) in e" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}" style="border-right: none;">
                 <div v-if="index < fretAmount">
-                    <div v-if="GetCAGEDPosition(index)" style="white-space: nowrap;">
+                    <span v-if="GetCAGEDPosition(index)" class="CAGED-name">
                         {{ GetCAGEDName(index) }}
-                    </div>
+                    </span>
                 </div>
             </div>
         </div>
@@ -517,7 +517,7 @@ onMounted(async () => {
 
 /* FRETBOARD */
 .fret-indicator {
-    min-width: 50px;
+    min-width: 2rem;
     height: 40px;
 }
 
@@ -559,9 +559,14 @@ onMounted(async () => {
 }
 
 .fret {
-    min-width: 50px;
+    min-width: 2rem;
     max-width: 50px;
     border-right: 1px solid gray;
+}
+
+.CAGED-name {
+    white-space: nowrap;
+    font-size: 12px;
 }
 
 /* Range Input */
