@@ -1,20 +1,26 @@
 import { defineStore } from 'pinia';
 
 interface State {
+  allKeys: string[];
+  allPatterns: string[];
+  currentKey: string;
   currentPattern: string;
   currentHighlightNotes: string[];
   currentStrings: {
-    E: boolean,
-    A: boolean,
-    D: boolean,
-    G: boolean,
-    B: boolean,
-    e: boolean
+    E: boolean;
+    A: boolean;
+    D: boolean;
+    G: boolean;
+    B: boolean;
+    e: boolean;
   }
 }
 
 export const usePatternStore = defineStore('pattern', {
   state: (): State => ({
+    allKeys : ["C","C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"],
+    allPatterns : ["Pentatonic Scale", "Blue Scale", "Diatonic Scale", "Triad Arpeggio", "Custom"],
+    currentKey: "C",
     currentPattern: "Pentatonic Scale",
     currentHighlightNotes: ["roots"],
     currentStrings: {
@@ -24,7 +30,7 @@ export const usePatternStore = defineStore('pattern', {
       G: true,
       B: true,
       e: true
-    }
+    },
   }),
   getters: {
     highlightNotes: (state: State) => {
