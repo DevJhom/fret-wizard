@@ -84,6 +84,7 @@ const toggleSidebar = () => {
                     </label>
                 </div>
                 
+                <!-- THE CAGED SYSTEM (To be implemented later)
                 <div class="notes d-flex flex-column text-start mt-5">
                     <span class="me-2 text-yellow fw-bold">
                         Shapes (CAGED)
@@ -116,6 +117,7 @@ const toggleSidebar = () => {
                         <span class="ms-3">D</span>
                     </label>            
                 </div>
+                -->
             </div>
         </Transition>
     </div>
@@ -125,6 +127,7 @@ const toggleSidebar = () => {
 .side-bar {
     width: 15vw;
     height: 100%;
+    min-height: 100vh;
     padding: 1rem 2rem;
     background-color: #3c3e41;
     transition: 0.5s;
