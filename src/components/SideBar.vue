@@ -133,6 +133,7 @@ const toggleSidebar = () => {
 
 .side-bar.collapsed {
     width: 60px; 
+    background-color: transparent;
     padding: 1rem;
 }
 
