@@ -1,18 +1,16 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, computed } from 'vue';
 import { getCurrentKey, updateCurrentKey, getScale, updateCurrentScale, updateScale } from '@services/service';
-import { KEY_TO_NUMBER, getRoots, getSeconds, getThirds, getFourths, getFifths, getSixths, getSevenths, getBlues } from './intervals';
+import { getRoots, getSeconds, getThirds, getFourths, getFifths, getSixths, getSevenths, getBlues } from './intervals';
+import { KEY_TO_NUMBER, getRootNoteName, getSecondNoteName, getThirdNoteName, getFourthNoteName, getFifthNoteName, getSixthNoteName, getSeventhNoteName, getBlueNoteName } from './noteNames';
 import { usePatternStore } from '@/stores/usePatternStore';
 import { storeToRefs } from 'pinia';
 
 const patternStore = usePatternStore();
-const { currentPattern, currentHighlightNotes, currentStrings } = storeToRefs(patternStore);
+const { allKeys, allPatterns, currentKey, currentPattern, currentHighlightNotes, currentStrings } = storeToRefs(patternStore);
 
 const fretAmount = ref(24);
 const fretIndicator = new Array(24);
-const keys = ref(["C","C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]);
-const patterns = ref(["Pentatonic Scale", "Blue Scale", "Diatonic Scale", "Triad Arpeggio", "Custom"]);
-const currentKey = ref<string>("C");
 
 // Strings
 const E = ref();
@@ -85,6 +83,16 @@ const DBlues = computed(() => getBlues(currentKey.value, "D"));
 const GBlues = computed(() => getBlues(currentKey.value, "G"));
 const BBlues = computed(() => getBlues(currentKey.value, "B"));
 const eBlues = computed(() => getBlues(currentKey.value, "e"));
+
+// Note Names
+const rootNoteName = computed(() => getRootNoteName(currentKey.value));
+const secondNoteName = computed(() => getSecondNoteName(currentKey.value));
+const thirdNoteName = computed(() => getThirdNoteName(currentKey.value));
+const fourthNoteName = computed(() => getFourthNoteName(currentKey.value));
+const fifthNoteName = computed(() => getFifthNoteName(currentKey.value));
+const sixthNoteName = computed(() => getSixthNoteName(currentKey.value));
+const seventhNoteName = computed(() => getSeventhNoteName(currentKey.value));
+const blueNoteName = computed(() => getBlueNoteName(currentKey.value));
 
 const fetchCurrentKey = async () => {
     const data = await getCurrentKey();
@@ -266,9 +274,9 @@ onMounted(async () => {
             <span class="me-2 text-yellow fw-bold">
                 Key
             </span>
-            <div v-for="(key, index) in keys" :key="key" class="d-inline-block custom-radio">
+            <div v-for="(key, index) in allKeys" :key="key" class="d-inline-block custom-radio">
                 <label class="d-flex flex-column">
-                    <input type="radio" name="keys" v-model="currentKey" :value="keys[index]" @change="onChangeCurrentKey()">
+                    <input type="radio" name="keys" v-model="currentKey" :value="allKeys[index]" @change="onChangeCurrentKey()">
                         <span class="label"> {{ key }} </span>
                     </input>
                 </label>
@@ -279,9 +287,9 @@ onMounted(async () => {
             <span class="me-2 text-yellow fw-bold">
                 Pattern
             </span>
-            <div v-for="(scale, index) in patterns" :key="scale" class="d-inline-block custom-radio">
+            <div v-for="(scale, index) in allPatterns" :key="scale" class="d-inline-block custom-radio">
                 <label class="d-flex flex-column">
-                    <input type="radio" name="scales" v-model="currentPattern" :value="patterns[index]" @change="onChangeCurrentPattern()">
+                    <input type="radio" name="scales" v-model="currentPattern" :value="allPatterns[index]" @change="onChangeCurrentPattern()">
                         <span class="label px-3">{{ scale }}</span>
                     </input>
                 </label>
@@ -316,14 +324,14 @@ onMounted(async () => {
                                 'seventh': currentHighlightNotes.includes('sevenths') ? ESevenths?.includes(index + 1) && currentStrings.E: '',
                                 'blue': currentHighlightNotes.includes('blues') ? EBlues?.includes(index + 1) && currentStrings.E: '',
                             }">
-                            <span v-if="currentHighlightNotes.includes('roots') && ERoots?.includes(index + 1) && currentStrings.E" class="note-names">C</span>
-                            <span v-if="currentHighlightNotes.includes('seconds') && ESeconds?.includes(index + 1) && currentStrings.E" class="note-names">D</span>
-                            <span v-if="currentHighlightNotes.includes('thirds') && EThirds?.includes(index + 1) && currentStrings.E" class="note-names">E</span>
-                            <span v-if="currentHighlightNotes.includes('fourths') && EFourths?.includes(index + 1) && currentStrings.E" class="note-names">F</span>
-                            <span v-if="currentHighlightNotes.includes('fifths') && EFifths?.includes(index + 1) && currentStrings.E" class="note-names">G</span>
-                            <span v-if="currentHighlightNotes.includes('sixths') && ESixths?.includes(index + 1) && currentStrings.E" class="note-names">A</span>
-                            <span v-if="currentHighlightNotes.includes('sevenths') && ESevenths?.includes(index + 1) && currentStrings.E" class="note-names">B</span>
-                            <span v-if="currentHighlightNotes.includes('blues') && EBlues?.includes(index + 1) && currentStrings.E" class="note-names">E♭</span>
+                            <span v-if="currentHighlightNotes.includes('roots') && ERoots?.includes(index + 1) && currentStrings.E" class="note-names">{{ rootNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('seconds') && ESeconds?.includes(index + 1) && currentStrings.E" class="note-names">{{ secondNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('thirds') && EThirds?.includes(index + 1) && currentStrings.E" class="note-names">{{ thirdNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('fourths') && EFourths?.includes(index + 1) && currentStrings.E" class="note-names">{{ fourthNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('fifths') && EFifths?.includes(index + 1) && currentStrings.E" class="note-names">{{ fifthNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('sixths') && ESixths?.includes(index + 1) && currentStrings.E" class="note-names">{{ sixthNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('sevenths') && ESevenths?.includes(index + 1) && currentStrings.E" class="note-names">{{ seventhNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('blues') && EBlues?.includes(index + 1) && currentStrings.E" class="note-names">{{ blueNoteName }}</span>
                         </div>
                     </label>
                 </div>
@@ -346,14 +354,14 @@ onMounted(async () => {
                                 'seventh': currentHighlightNotes.includes('sevenths') ? ASevenths?.includes(index + 1) && currentStrings.A: '',
                                 'blue': currentHighlightNotes.includes('blues') ? ABlues?.includes(index + 1) && currentStrings.A: '',
                             }">
-                            <span v-if="currentHighlightNotes.includes('roots') && ARoots?.includes(index + 1) && currentStrings.A" class="note-names">C</span>
-                            <span v-if="currentHighlightNotes.includes('seconds') && ASeconds?.includes(index + 1) && currentStrings.A" class="note-names">D</span>
-                            <span v-if="currentHighlightNotes.includes('thirds') && AThirds?.includes(index + 1) && currentStrings.A" class="note-names">E</span>
-                            <span v-if="currentHighlightNotes.includes('fourths') && AFourths?.includes(index + 1) && currentStrings.A" class="note-names">F</span>
-                            <span v-if="currentHighlightNotes.includes('fifths') && AFifths?.includes(index + 1) && currentStrings.A" class="note-names">G</span>
-                            <span v-if="currentHighlightNotes.includes('sixths') && ASixths?.includes(index + 1) && currentStrings.A" class="note-names">A</span>
-                            <span v-if="currentHighlightNotes.includes('sevenths') && ASevenths?.includes(index + 1) && currentStrings.A" class="note-names">B</span>
-                            <span v-if="currentHighlightNotes.includes('blues') && ABlues?.includes(index + 1) && currentStrings.A" class="note-names">E♭</span>
+                            <span v-if="currentHighlightNotes.includes('roots') && ARoots?.includes(index + 1) && currentStrings.A" class="note-names">{{ rootNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('seconds') && ASeconds?.includes(index + 1) && currentStrings.A" class="note-names">{{ secondNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('thirds') && AThirds?.includes(index + 1) && currentStrings.A" class="note-names">{{ thirdNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('fourths') && AFourths?.includes(index + 1) && currentStrings.A" class="note-names">{{ fourthNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('fifths') && AFifths?.includes(index + 1) && currentStrings.A" class="note-names">{{ fifthNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('sixths') && ASixths?.includes(index + 1) && currentStrings.A" class="note-names">{{ sixthNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('sevenths') && ASevenths?.includes(index + 1) && currentStrings.A" class="note-names">{{ sixthNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('blues') && ABlues?.includes(index + 1) && currentStrings.A" class="note-names">{{ blueNoteName }}</span>
                         </div>
                     </label>
                 </div>
@@ -376,14 +384,14 @@ onMounted(async () => {
                                 'seventh': currentHighlightNotes.includes('sevenths') ? DSevenths?.includes(index + 1) && currentStrings.D: '',
                                 'blue': currentHighlightNotes.includes('blues') ? DBlues?.includes(index + 1) && currentStrings.D: '',
                             }">
-                            <span v-if="currentHighlightNotes.includes('roots') && DRoots?.includes(index + 1) && currentStrings.D" class="note-names">C</span>
-                            <span v-if="currentHighlightNotes.includes('seconds') && DSeconds?.includes(index + 1) && currentStrings.D" class="note-names">D</span>
-                            <span v-if="currentHighlightNotes.includes('thirds') && DThirds?.includes(index + 1) && currentStrings.D" class="note-names">E</span>
-                            <span v-if="currentHighlightNotes.includes('fourths') && DFourths?.includes(index + 1) && currentStrings.D" class="note-names">F</span>
-                            <span v-if="currentHighlightNotes.includes('fifths') && DFifths?.includes(index + 1) && currentStrings.D" class="note-names">G</span>
-                            <span v-if="currentHighlightNotes.includes('sixths') && DSixths?.includes(index + 1) && currentStrings.D" class="note-names">A</span>
-                            <span v-if="currentHighlightNotes.includes('sevenths') && DSevenths?.includes(index + 1) && currentStrings.D" class="note-names">B</span>
-                            <span v-if="currentHighlightNotes.includes('blues') && DBlues?.includes(index + 1) && currentStrings.D" class="note-names">E♭</span>
+                            <span v-if="currentHighlightNotes.includes('roots') && DRoots?.includes(index + 1) && currentStrings.D" class="note-names">{{ rootNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('seconds') && DSeconds?.includes(index + 1) && currentStrings.D" class="note-names">{{ secondNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('thirds') && DThirds?.includes(index + 1) && currentStrings.D" class="note-names">{{ thirdNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('fourths') && DFourths?.includes(index + 1) && currentStrings.D" class="note-names">{{ fourthNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('fifths') && DFifths?.includes(index + 1) && currentStrings.D" class="note-names">{{ fifthNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('sixths') && DSixths?.includes(index + 1) && currentStrings.D" class="note-names">{{ sixthNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('sevenths') && DSevenths?.includes(index + 1) && currentStrings.D" class="note-names">{{ seventhNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('blues') && DBlues?.includes(index + 1) && currentStrings.D" class="note-names">{{ blueNoteName }}</span>
                         </div>
                     </label>
                 </div>
@@ -413,14 +421,14 @@ onMounted(async () => {
                                 'seventh': currentHighlightNotes.includes('sevenths') ? GSevenths?.includes(index + 1) && currentStrings.G: '',
                                 'blue': currentHighlightNotes.includes('blues') ? GBlues?.includes(index + 1) && currentStrings.G: '',
                             }">
-                            <span v-if="currentHighlightNotes.includes('roots') && GRoots?.includes(index + 1) && currentStrings.G" class="note-names">C</span>
-                            <span v-if="currentHighlightNotes.includes('seconds') && GSeconds?.includes(index + 1) && currentStrings.G" class="note-names">D</span>
-                            <span v-if="currentHighlightNotes.includes('thirds') && GThirds?.includes(index + 1) && currentStrings.G" class="note-names">E</span>
-                            <span v-if="currentHighlightNotes.includes('fourths') && GFourths?.includes(index + 1) && currentStrings.G" class="note-names">F</span>
-                            <span v-if="currentHighlightNotes.includes('fifths') && GFifths?.includes(index + 1) && currentStrings.G" class="note-names">G</span>
-                            <span v-if="currentHighlightNotes.includes('sixths') && GSixths?.includes(index + 1) && currentStrings.G" class="note-names">A</span>
-                            <span v-if="currentHighlightNotes.includes('sevenths') && GSevenths?.includes(index + 1) && currentStrings.G" class="note-names">B</span>
-                            <span v-if="currentHighlightNotes.includes('blues') && GBlues?.includes(index + 1) && currentStrings.G" class="note-names">E♭</span>
+                            <span v-if="currentHighlightNotes.includes('roots') && GRoots?.includes(index + 1) && currentStrings.G" class="note-names">{{ rootNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('seconds') && GSeconds?.includes(index + 1) && currentStrings.G" class="note-names">{{ secondNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('thirds') && GThirds?.includes(index + 1) && currentStrings.G" class="note-names">{{ thirdNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('fourths') && GFourths?.includes(index + 1) && currentStrings.G" class="note-names">{{ fourthNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('fifths') && GFifths?.includes(index + 1) && currentStrings.G" class="note-names">{{ fifthNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('sixths') && GSixths?.includes(index + 1) && currentStrings.G" class="note-names">{{ sixthNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('sevenths') && GSevenths?.includes(index + 1) && currentStrings.G" class="note-names">{{ seventhNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('blues') && GBlues?.includes(index + 1) && currentStrings.G" class="note-names">{{ blueNoteName }}</span>
                         </div>
                     </label>
                 </div>
@@ -443,14 +451,14 @@ onMounted(async () => {
                                 'seventh': currentHighlightNotes.includes('sevenths') ? BSevenths?.includes(index + 1) && currentStrings.B: '',
                                 'blue': currentHighlightNotes.includes('blues') ? BBlues?.includes(index + 1) && currentStrings.B: '',
                             }">
-                            <span v-if="currentHighlightNotes.includes('roots') && BRoots?.includes(index + 1) && currentStrings.B" class="note-names">C</span>
-                            <span v-if="currentHighlightNotes.includes('seconds') && BSeconds?.includes(index + 1) && currentStrings.B" class="note-names">D</span>
-                            <span v-if="currentHighlightNotes.includes('thirds') && BThirds?.includes(index + 1) && currentStrings.B" class="note-names">E</span>
-                            <span v-if="currentHighlightNotes.includes('fourths') && BFourths?.includes(index + 1) && currentStrings.B" class="note-names">F</span>
-                            <span v-if="currentHighlightNotes.includes('fifths') && BFifths?.includes(index + 1) && currentStrings.B" class="note-names">G</span>
-                            <span v-if="currentHighlightNotes.includes('sixths') && BSixths?.includes(index + 1) && currentStrings.B" class="note-names">A</span>
-                            <span v-if="currentHighlightNotes.includes('sevenths') && BSevenths?.includes(index + 1) && currentStrings.B" class="note-names">B</span>
-                            <span v-if="currentHighlightNotes.includes('blues') && BBlues?.includes(index + 1) && currentStrings.B" class="note-names">E♭</span>
+                            <span v-if="currentHighlightNotes.includes('roots') && BRoots?.includes(index + 1) && currentStrings.B" class="note-names">{{ rootNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('seconds') && BSeconds?.includes(index + 1) && currentStrings.B" class="note-names">{{ secondNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('thirds') && BThirds?.includes(index + 1) && currentStrings.B" class="note-names">{{ thirdNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('fourths') && BFourths?.includes(index + 1) && currentStrings.B" class="note-names">{{ fourthNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('fifths') && BFifths?.includes(index + 1) && currentStrings.B" class="note-names">{{ fifthNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('sixths') && BSixths?.includes(index + 1) && currentStrings.B" class="note-names">{{ sixthNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('sevenths') && BSevenths?.includes(index + 1) && currentStrings.B" class="note-names">{{ seventhNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('blues') && BBlues?.includes(index + 1) && currentStrings.B" class="note-names">{{ blueNoteName }}</span>
                         </div>
                     </label>
                 </div>
@@ -473,14 +481,14 @@ onMounted(async () => {
                                 'seventh': currentHighlightNotes.includes('sevenths') ? eSevenths?.includes(index + 1) && currentStrings.e: '',
                                 'blue': currentHighlightNotes.includes('blues') ? eBlues?.includes(index + 1) && currentStrings.e: '',
                             }">
-                            <span v-if="currentHighlightNotes.includes('roots') && eRoots?.includes(index + 1) && currentStrings.e" class="note-names">C</span>
-                            <span v-if="currentHighlightNotes.includes('seconds') && eSeconds?.includes(index + 1) && currentStrings.e" class="note-names">D</span>
-                            <span v-if="currentHighlightNotes.includes('thirds') && eThirds?.includes(index + 1) && currentStrings.e" class="note-names">E</span>
-                            <span v-if="currentHighlightNotes.includes('fourths') && eFourths?.includes(index + 1) && currentStrings.e" class="note-names">F</span>
-                            <span v-if="currentHighlightNotes.includes('fifths') && eFifths?.includes(index + 1) && currentStrings.e" class="note-names">G</span>
-                            <span v-if="currentHighlightNotes.includes('sixths') && eSixths?.includes(index + 1) && currentStrings.e" class="note-names">A</span>
-                            <span v-if="currentHighlightNotes.includes('sevenths') && eSevenths?.includes(index + 1) && currentStrings.e" class="note-names">B</span>
-                            <span v-if="currentHighlightNotes.includes('blues') && eBlues?.includes(index + 1) && currentStrings.e" class="note-names">E♭</span>
+                            <span v-if="currentHighlightNotes.includes('roots') && eRoots?.includes(index + 1) && currentStrings.e" class="note-names">{{ rootNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('seconds') && eSeconds?.includes(index + 1) && currentStrings.e" class="note-names">{{ secondNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('thirds') && eThirds?.includes(index + 1) && currentStrings.e" class="note-names">{{ thirdNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('fourths') && eFourths?.includes(index + 1) && currentStrings.e" class="note-names">{{ fourthNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('fifths') && eFifths?.includes(index + 1) && currentStrings.e" class="note-names">{{ fifthNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('sixths') && eSixths?.includes(index + 1) && currentStrings.e" class="note-names">{{ sixthNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('sevenths') && eSevenths?.includes(index + 1) && currentStrings.e" class="note-names">{{ seventhNoteName }}</span>
+                            <span v-if="currentHighlightNotes.includes('blues') && eBlues?.includes(index + 1) && currentStrings.e" class="note-names">{{ blueNoteName }}</span>
                         </div>
                     </label>
                 </div>
