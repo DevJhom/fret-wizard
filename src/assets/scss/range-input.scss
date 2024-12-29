@@ -13,7 +13,7 @@ input[type="range"]:focus {
 input[type="range"]::-webkit-slider-runnable-track {
   background-color: #242525;
   border-radius: 0.5rem;
-  height: 1rem;
+  height: 0.5rem;
 }
 
 input[type="range"]::-webkit-slider-thumb {
@@ -23,8 +23,8 @@ input[type="range"]::-webkit-slider-thumb {
   background-color: $yellow;
   opacity: 0.75;
   border-radius: 1rem;
-  height: 2rem;
-  width: 2rem;
+  height: 1.5rem;
+  width: 1.5rem;
 }
 
 input[type="range"]:focus::-webkit-slider-thumb {
@@ -35,15 +35,15 @@ input[type="range"]:focus::-webkit-slider-thumb {
 input[type="range"]::-moz-range-track {
   background-color: #c1c9cd;
   border-radius: 0.5rem;
-  height: 1rem;
+  height: 0.5rem;
 }
 
 input[type="range"]::-moz-range-thumb {
   background-color: #808080;
   border: none; 
   border-radius: 1rem;
-  height: 2rem;
-  width: 2rem;
+  height: 1rem;
+  width: 1rem;
 }
 
 input[type="range"]:focus::-moz-range-thumb{

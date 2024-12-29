@@ -268,7 +268,7 @@ onMounted(async () => {
 </script>
 
 <template>
-    <div class="my-guitar d-flex flex-column justify-content-center align-items-center">
+    <div class="my-guitar d-flex flex-column align-items-center mt-4">
         <!-- Key Selector -->
         <div class="d-flex justify-content-center align-items-center">
             <span class="me-2 text-yellow fw-bold">
@@ -283,7 +283,7 @@ onMounted(async () => {
             </div>
         </div>
         <!-- Pattern Selector -->
-        <div class="d-flex justify-content-center align-items-center mt-5">
+        <div class="d-flex justify-content-center align-items-center mt-4">
             <span class="me-2 text-yellow fw-bold">
                 Pattern
             </span>
@@ -504,7 +504,7 @@ onMounted(async () => {
                 </div>
             </div>
         </div>
-        <div class="mt-5">
+        <div class="mt-4">
             <span class="me-3 text-yellow fw-bold">
                 Number of Frets
             </span>
@@ -535,6 +535,11 @@ onMounted(async () => {
     border-radius: 9px;
     padding: 5px;
     color: $yellow;
+    cursor: pointer;
+}
+
+.custom-radio span {
+    cursor: pointer;
 }
 
 /* FRETBOARD */
