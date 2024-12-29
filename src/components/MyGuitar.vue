@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, computed } from 'vue';
-import { getCurrentKey, updateCurrentKey, getScale, updateCurrentScale, updateScale } from '@services/service';
+import { getCurrentKey, updateCurrentKey, getScale, updateCurrentScale, updateScale } from '@services/mock_service';
 import { getRoots, getSeconds, getThirds, getFourths, getFifths, getSixths, getSevenths, getBlues } from './intervals';
 import { KEY_TO_NUMBER, getRootNoteName, getSecondNoteName, getThirdNoteName, getFourthNoteName, getFifthNoteName, getSixthNoteName, getSeventhNoteName, getBlueNoteName } from './noteNames';
 import { usePatternStore } from '@/stores/usePatternStore';
@@ -309,6 +309,14 @@ onMounted(async () => {
         <!-- Fretboard -->
         <div class="d-flex text-nowrap w-75">
             <div class="d-inline-block string-name">e</div>
+            <!-- Open positions (To be implemented later) -->
+            <!-- <div class="d-inline-block">
+                <label class="notes small">
+                    <input type="checkbox" v-model="E[2]"/>
+                        <div class="checkbox__checkmark">
+                    </div>
+                </label>
+            </div> -->
             <div class="fret-start string-E">
                 <div v-for="(_, index) in E" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}">
                     <label v-if="index < fretAmount" class="notes">
@@ -494,8 +502,8 @@ onMounted(async () => {
                 </div>
             </div>
         </div>
-        <!-- CAGED  -->
-        <div class="w-75 text-start">
+        <!-- THE CAGED SYSTEM (To be implemented later) -->
+        <!-- <div class="w-75 text-start">
             <div v-for="(_, index) in e" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}" style="border-right: none;">
                 <div v-if="index < fretAmount">
                     <span v-if="GetCAGEDPosition(index) && (index < fretAmount - 2)" class="CAGED-name">
@@ -503,7 +511,7 @@ onMounted(async () => {
                     </span>
                 </div>
             </div>
-        </div>
+        </div> -->
         <div class="mt-4">
             <span class="me-3 text-yellow fw-bold">
                 Number of Frets
@@ -519,7 +527,7 @@ onMounted(async () => {
 <style scoped lang="scss">
 .my-guitar {
     width: 85vw;
-    height: 100vh;
+    height: 100%;
 }
 
 .custom-radio {
