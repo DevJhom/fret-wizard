@@ -66,12 +66,12 @@ const sevenths: Intervals = {
 }
 
 const blues: Intervals = {
-    E: [],
-    A: [],
-    D: [],
-    G: [],
-    B: [],
-    e: []
+    E: [11,23],
+    A: [4,16],
+    D: [8,20],
+    G: [1,13],
+    B: [6,18],
+    e: [11,23]
 }
 
 export const KEY_TO_NUMBER: { [key: string]: number } = {

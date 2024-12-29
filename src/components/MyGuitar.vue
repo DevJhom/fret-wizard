@@ -142,9 +142,10 @@ const onChangeCurrentKey = () => {
     updateCurrentKey(currentKey.value);
 }
 
-const onChangeCurrentScale = () => {
+const onChangeCurrentPattern = () => {
     fetchScale();
     updateCurrentScale(currentPattern.value);
+    patternStore.updateCurrentHighlightNotes();
 }
 
 watch([E, A, D, G, B, e], (newValue) => {
@@ -280,7 +281,7 @@ onMounted(async () => {
             </span>
             <div v-for="(scale, index) in patterns" :key="scale" class="d-inline-block custom-radio">
                 <label class="d-flex flex-column">
-                    <input type="radio" name="scales" v-model="currentPattern" :value="patterns[index]" @change="onChangeCurrentScale()">
+                    <input type="radio" name="scales" v-model="currentPattern" :value="patterns[index]" @change="onChangeCurrentPattern()">
                         <span class="label px-3">{{ scale }}</span>
                     </input>
                 </label>
@@ -322,6 +323,7 @@ onMounted(async () => {
                             <span v-if="currentHighlightNotes.includes('fifths') && EFifths?.includes(index + 1)" class="note-names">G</span>
                             <span v-if="currentHighlightNotes.includes('sixths') && ESixths?.includes(index + 1)" class="note-names">A</span>
                             <span v-if="currentHighlightNotes.includes('sevenths') && ESevenths?.includes(index + 1)" class="note-names">B</span>
+                            <span v-if="currentHighlightNotes.includes('blues') && EBlues?.includes(index + 1)" class="note-names">E♭</span>
                         </div>
                     </label>
                 </div>
@@ -351,6 +353,7 @@ onMounted(async () => {
                             <span v-if="currentHighlightNotes.includes('fifths') && AFifths?.includes(index + 1)" class="note-names">G</span>
                             <span v-if="currentHighlightNotes.includes('sixths') && ASixths?.includes(index + 1)" class="note-names">A</span>
                             <span v-if="currentHighlightNotes.includes('sevenths') && ASevenths?.includes(index + 1)" class="note-names">B</span>
+                            <span v-if="currentHighlightNotes.includes('blues') && ABlues?.includes(index + 1)" class="note-names">E♭</span>
                         </div>
                     </label>
                 </div>
@@ -380,6 +383,7 @@ onMounted(async () => {
                             <span v-if="currentHighlightNotes.includes('fifths') && DFifths?.includes(index + 1)" class="note-names">G</span>
                             <span v-if="currentHighlightNotes.includes('sixths') && DSixths?.includes(index + 1)" class="note-names">A</span>
                             <span v-if="currentHighlightNotes.includes('sevenths') && DSevenths?.includes(index + 1)" class="note-names">B</span>
+                            <span v-if="currentHighlightNotes.includes('blues') && DBlues?.includes(index + 1)" class="note-names">E♭</span>
                         </div>
                     </label>
                 </div>
@@ -409,6 +413,7 @@ onMounted(async () => {
                             <span v-if="currentHighlightNotes.includes('fifths') && GFifths?.includes(index + 1)" class="note-names">G</span>
                             <span v-if="currentHighlightNotes.includes('sixths') && GSixths?.includes(index + 1)" class="note-names">A</span>
                             <span v-if="currentHighlightNotes.includes('sevenths') && GSevenths?.includes(index + 1)" class="note-names">B</span>
+                            <span v-if="currentHighlightNotes.includes('blues') && GBlues?.includes(index + 1)" class="note-names">E♭</span>
                         </div>
                     </label>
                 </div>
@@ -438,6 +443,7 @@ onMounted(async () => {
                             <span v-if="currentHighlightNotes.includes('fifths') && BFifths?.includes(index + 1)" class="note-names">G</span>
                             <span v-if="currentHighlightNotes.includes('sixths') && BSixths?.includes(index + 1)" class="note-names">A</span>
                             <span v-if="currentHighlightNotes.includes('sevenths') && BSevenths?.includes(index + 1)" class="note-names">B</span>
+                            <span v-if="currentHighlightNotes.includes('blues') && BBlues?.includes(index + 1)" class="note-names">E♭</span>
                         </div>
                     </label>
                 </div>
@@ -467,6 +473,7 @@ onMounted(async () => {
                             <span v-if="currentHighlightNotes.includes('fifths') && eFifths?.includes(index + 1)" class="note-names">G</span>
                             <span v-if="currentHighlightNotes.includes('sixths') && eSixths?.includes(index + 1)" class="note-names">A</span>
                             <span v-if="currentHighlightNotes.includes('sevenths') && eSevenths?.includes(index + 1)" class="note-names">B</span>
+                            <span v-if="currentHighlightNotes.includes('blues') && eBlues?.includes(index + 1)" class="note-names">E♭</span>
                         </div>
                     </label>
                 </div>
@@ -476,7 +483,7 @@ onMounted(async () => {
         <div class="w-75 text-start">
             <div v-for="(_, index) in e" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}" style="border-right: none;">
                 <div v-if="index < fretAmount">
-                    <span v-if="GetCAGEDPosition(index)" class="CAGED-name">
+                    <span v-if="GetCAGEDPosition(index) && (index < fretAmount - 2)" class="CAGED-name">
                         {{ GetCAGEDName(index) }}
                     </span>
                 </div>

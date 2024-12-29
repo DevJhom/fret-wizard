@@ -30,5 +30,8 @@ export const usePatternStore = defineStore('pattern', {
     setCurrentPattern(pattern: string) {
       this.currentPattern = pattern;
     },
+    updateCurrentHighlightNotes() {
+      this.currentHighlightNotes = this.currentHighlightNotes.filter(note => this.highlightNotes.includes(note));
+    }
   },
 });
