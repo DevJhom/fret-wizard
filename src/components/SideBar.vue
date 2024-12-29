@@ -18,7 +18,6 @@ const toggleSidebar = () => {
 <template>
     <div id="sidebar" class="side-bar">
         <div class="hamburger text-start" @click="toggleSidebar()">☰</div>
-
         <Transition name="fade"> 
             <div v-show="isCollapsed">
                 <div class="notes d-flex flex-column text-start mt-5">
@@ -126,7 +125,7 @@ const toggleSidebar = () => {
 .side-bar {
     width: 15vw;
     height: 100%;
-    padding: 2rem;
+    padding: 1rem 2rem;
     background-color: #3c3e41;
     transition: 0.5s;
 }
@@ -139,6 +138,7 @@ const toggleSidebar = () => {
 
 .hamburger {
     font-size: 1.5rem;
+    margin-top: -4px;
     color: $yellow;
     cursor: pointer;
 }
