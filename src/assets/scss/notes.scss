@@ -12,7 +12,7 @@
     height: 18px;
     width: 18px;
     border-radius: 11px;
-    transition: background-color 0.25s ease;
+    transition: background-color 0.75s ease-in;
 }
 
 .notes .checkbox__checkmark:after {
@@ -23,7 +23,7 @@
     background-color: #242525;
     border-radius: 50%;
     transform: scale(0);
-    transition: transform 0.25s ease;
+    // transition: transform 0.5s ease;
 }
 
 .notes .note-names {
