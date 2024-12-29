@@ -3,12 +3,28 @@ import { defineStore } from 'pinia';
 interface State {
   currentPattern: string;
   currentHighlightNotes: string[];
+  currentStrings: {
+    E: boolean,
+    A: boolean,
+    D: boolean,
+    G: boolean,
+    B: boolean,
+    e: boolean
+  }
 }
 
 export const usePatternStore = defineStore('pattern', {
   state: (): State => ({
     currentPattern: "Pentatonic Scale",
     currentHighlightNotes: ["roots"],
+    currentStrings: {
+      E: true,
+      A: true,
+      D: true,
+      G: true,
+      B: true,
+      e: true
+    }
   }),
   getters: {
     highlightNotes: (state: State) => {

@@ -4,7 +4,7 @@ import { usePatternStore } from '@/stores/usePatternStore';
 import { storeToRefs } from 'pinia';
 
 const patternStore = usePatternStore();
-const { currentHighlightNotes } = storeToRefs(patternStore);
+const { currentHighlightNotes, currentStrings } = storeToRefs(patternStore);
 
 const isCollapsed = ref(true);
 
@@ -54,33 +54,33 @@ const toggleSidebar = () => {
                 </div>
                 <div class="highlightNotes-filter notes d-flex flex-column text-end">
                     <label class="d-flex notes">
-                        <input type="checkbox" :value="true" v-model="currentHighlightNotes"/>
-                        <div class="checkbox__checkmark"></div>
+                        <input type="checkbox" :value="currentStrings.E" v-model="currentStrings.E"/>
+                        <div class="checkbox__checkmark" :class="{'yellow': currentStrings.E}"></div>
                         <span class="ms-3">e</span>
                     </label>
                     <label class="d-flex notes">
-                        <input type="checkbox" :value="true" v-model="currentHighlightNotes"/>
-                        <div class="checkbox__checkmark"></div>
+                        <input type="checkbox" :value="currentStrings.A" v-model="currentStrings.A"/>
+                        <div class="checkbox__checkmark" :class="{'yellow': currentStrings.A}"></div>
                         <span class="ms-3">B</span>
                     </label>
                     <label class="d-flex notes">
-                        <input type="checkbox" :value="true" v-model="currentHighlightNotes"/>
-                        <div class="checkbox__checkmark"></div>
+                        <input type="checkbox" :value="currentStrings.D" v-model="currentStrings.D"/>
+                        <div class="checkbox__checkmark" :class="{'yellow': currentStrings.D}"></div>
                         <span class="ms-3">G</span>
                     </label>
                     <label class="d-flex notes">
-                        <input type="checkbox" :value="true" v-model="currentHighlightNotes"/>
-                        <div class="checkbox__checkmark"></div>
+                        <input type="checkbox" :value="currentStrings.G" v-model="currentStrings.G"/>
+                        <div class="checkbox__checkmark" :class="{'yellow': currentStrings.G}"></div>
                         <span class="ms-3">D</span>
                     </label>            
                     <label class="d-flex notes">
-                        <input type="checkbox" :value="true" v-model="currentHighlightNotes"/>
-                        <div class="checkbox__checkmark"></div>
+                        <input type="checkbox" :value="currentStrings.B" v-model="currentStrings.B"/>
+                        <div class="checkbox__checkmark" :class="{'yellow': currentStrings.B}"></div>
                         <span class="ms-3">A</span>
                     </label>            
                     <label class="d-flex notes">
-                        <input type="checkbox" :value="true" v-model="currentHighlightNotes"/>
-                        <div class="checkbox__checkmark"></div>
+                        <input type="checkbox" :value="currentStrings.e" v-model="currentStrings.e"/>
+                        <div class="checkbox__checkmark" :class="{'yellow': currentStrings.e}"></div>
                         <span class="ms-3">E</span>
                     </label>
                 </div>
