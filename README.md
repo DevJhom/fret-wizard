@@ -26,7 +26,13 @@ Fretwizard is a web-based guitar visualization tool built with Vue.js framework.
 
 FretWizard provides interactive fretboard diagrams to visualize scales, chords, and patterns across the guitar neck. It can be used to transpose to different keys and explore music theory concepts directly on their browser.
 
-[![FretWizard Screen Shot][fretwizard-screenshot]](./public/FretWizard.gif)
+Open fretwizard on the browser.
+
+![fretwizard-screenshot](./public/fretwizard.png)
+
+Customize the fretboard based on what you need to practice.
+
+![fretwizard-screenshot](./public/fretwizard-customize.png)
 
 View Demo - https://devjhom.github.io/fret-wizard/
 
