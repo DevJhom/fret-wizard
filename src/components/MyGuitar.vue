@@ -3,7 +3,7 @@ import { ref, watch, onMounted, computed } from 'vue';
 import { getCurrentKey, updateCurrentKey, getScale, updateCurrentScale, updateScale } from '@services/mock_service';
 import { getRoots, getSeconds, getThirds, getFourths, getFifths, getSixths, getSevenths, getBlues } from './intervals';
 import { KEY_TO_NUMBER, getRootNoteName, getSecondNoteName, getThirdNoteName, getFourthNoteName, getFifthNoteName, getSixthNoteName, getSeventhNoteName, getBlueNoteName } from './noteNames';
-import { CAGED, isCAGED } from './CAGED';
+import { isCAGED, isCAGEDNameHere, GetCAGEDName } from './CAGED';
 import { usePatternStore } from '@/stores/usePatternStore';
 import { storeToRefs } from 'pinia';
 
@@ -177,95 +177,6 @@ const mapCurrentKeyToNumber = computed(() => {
 const currentHighlightCAGED = computed(() => {
     return Object.keys(currentCAGED.value).filter(key => currentCAGED.value[key]);
 })
-
-const CAGEDNamePosition = ref([
-    {
-        name: "C Shape",
-        position: computed(() => -11 + mapCurrentKeyToNumber.value),
-        isChecked: false
-    },
-    {
-        name: "A Shape",
-        position: computed(() => -9 + mapCurrentKeyToNumber.value),
-        isChecked: false
-    },
-    {
-        name: "G Shape",
-        position: computed(() => -7 + mapCurrentKeyToNumber.value),
-        isChecked: false
-    },
-    {
-        name: "E Shape",
-        position: computed(() => -4 + mapCurrentKeyToNumber.value),
-        isChecked: false
-    },
-    {
-        name: "D Shape",
-        position: computed(() => -2 + mapCurrentKeyToNumber.value),
-        isChecked: false
-    },
-    {
-        name: "C Shape",
-        position: computed(() => 1 + mapCurrentKeyToNumber.value),
-        isChecked: false
-    },
-    {
-        name: "A Shape",
-        position: computed(() => 3 + mapCurrentKeyToNumber.value),
-        isChecked: false
-    },
-    {
-        name: "G Shape",
-        position: computed(() => 5 + mapCurrentKeyToNumber.value),
-        isChecked: false
-    },
-    {
-        name: "E Shape",
-        position: computed(() => 8 + mapCurrentKeyToNumber.value),
-        isChecked: false
-    },
-    {
-        name: "D Shape",
-        position: computed(() => 10 + mapCurrentKeyToNumber.value),
-        isChecked: false
-    },
-    {
-        name: "C Shape",
-        position: computed(() => 12 + mapCurrentKeyToNumber.value),
-        isChecked: false
-    },
-    {
-        name: "A Shape",
-        position: computed(() => 15 + mapCurrentKeyToNumber.value),
-        isChecked: false
-    },
-    {
-        name: "G Shape",
-        position: computed(() => 17 + mapCurrentKeyToNumber.value),
-        isChecked: false
-    },
-    {
-        name: "E Shape",
-        position: computed(() => 20 + mapCurrentKeyToNumber.value),
-        isChecked: false
-    },
-    {
-        name: "D Shape",
-        position: computed(() => 22 + mapCurrentKeyToNumber.value),
-        isChecked: false
-    },
-]);
-
-const GetCAGEDPosition = (index: number) => {
-   return CAGEDNamePosition.value.some(obj => Object.values(obj).includes(index));
-}
-
-const GetCAGEDName = (index: number) => {
-    const filtered = CAGEDNamePosition.value.find(obj => obj.position == index);
-
-    if(filtered)
-        return filtered.name;
-}
 
 onMounted(async () => {
     await fetchCurrentKey();
@@ -509,11 +420,11 @@ onMounted(async () => {
             </div>
         </div>
         <!-- THE CAGED SYSTEM -->
-        <div class="w-75 text-start">
-            <div v-for="(_, index) in e" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}" style="border-right: none;">
+        <div class="w-75 text-start CAGED-name-container">
+            <div v-for="(_, index) in e" :key="index" class="d-inline-block CAGED-box" :class="{'fret': index < fretAmount}" style="border-right: none;">
                 <div v-if="index < fretAmount">
-                    <span v-if="GetCAGEDPosition(index) && (index < fretAmount - 2)" class="CAGED-name">
-                        {{ GetCAGEDName(index) }}
+                    <span v-if="isCAGEDNameHere(index, currentCAGED)" class="CAGED-name text-yellow">
+                        {{ GetCAGEDName(index, currentCAGED) }}
                     </span>
                 </div>
             </div>
@@ -605,8 +516,19 @@ onMounted(async () => {
     border-right: 1px solid gray;
 }
 
+.CAGED-name-container {
+    padding-left: 2rem;
+}
+
+.CAGED-box {
+    min-width: 2rem;
+    max-width: 2rem;
+    min-height: 10px;
+}
+
 .CAGED-name {
     white-space: nowrap;
+    text-overflow: string;
     font-size: 12px;
 }
 
