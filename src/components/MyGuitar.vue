@@ -102,33 +102,34 @@ const fetchCurrentKey = async () => {
 
 const fetchScale = async () => {
     const data = await getScale(mapScaleName(), "C");
+    const tempData = JSON.parse(JSON.stringify(data))
 
     for (let i = 0; i < mapCurrentKeyToNumber.value; i++) {
-        const lastValueOfE = data.E.pop(); 
-        data.E.unshift(lastValueOfE);
+        const lastValueOfE = tempData.E.pop(); 
+        tempData.E.unshift(lastValueOfE);
 
-        const lastValueOfA = data.A.pop(); 
-        data.A.unshift(lastValueOfA);
+        const lastValueOfA = tempData.A.pop(); 
+        tempData.A.unshift(lastValueOfA);
 
-        const lastValueOfD = data.D.pop(); 
-        data.D.unshift(lastValueOfD);
+        const lastValueOfD = tempData.D.pop(); 
+        tempData.D.unshift(lastValueOfD);
 
-        const lastValueOfG = data.G.pop(); 
-        data.G.unshift(lastValueOfG);
+        const lastValueOfG = tempData.G.pop(); 
+        tempData.G.unshift(lastValueOfG);
 
-        const lastValueOfB = data.B.pop(); 
-        data.B.unshift(lastValueOfB);
+        const lastValueOfB = tempData.B.pop(); 
+        tempData.B.unshift(lastValueOfB);
 
-        const lastValueOfe = data.e.pop(); 
-        data.e.unshift(lastValueOfe);
+        const lastValueOfe = tempData.e.pop(); 
+        tempData.e.unshift(lastValueOfe);
     }
 
-    E.value = data.E;
-    A.value = data.A;
-    D.value = data.D;
-    G.value = data.G;
-    B.value = data.B;
-    e.value = data.e;
+    E.value = tempData.E;
+    A.value = tempData.A;
+    D.value = tempData.D;
+    G.value = tempData.G;
+    B.value = tempData.B;
+    e.value = tempData.e;
 }
 
 const mapScaleName: () => string = () => {
@@ -240,14 +241,14 @@ onMounted(async () => {
                         <input type="checkbox" v-model="E[index]"/>
                         <div class="checkbox__checkmark" 
                             :class="{
-                                'root-note': currentHighlightNotes.includes('roots') ? ERoots?.includes(index + 1) && currentStrings.E && isCAGED(index, 'E', currentHighlightCAGED): '', 
-                                'second': currentHighlightNotes.includes('seconds') ? ESeconds?.includes(index + 1) && currentStrings.E && isCAGED(index, 'E', currentHighlightCAGED): '',
-                                'third': currentHighlightNotes.includes('thirds') ? EThirds?.includes(index + 1) && currentStrings.E && isCAGED(index, 'E', currentHighlightCAGED): '',
-                                'fourth': currentHighlightNotes.includes('fourths') ? EFourths?.includes(index + 1) && currentStrings.E && isCAGED(index, 'E', currentHighlightCAGED): '',
-                                'fifth': currentHighlightNotes.includes('fifths') ? EFifths?.includes(index + 1) && currentStrings.E && isCAGED(index, 'E', currentHighlightCAGED): '',
-                                'sixth': currentHighlightNotes.includes('sixths') ? ESixths?.includes(index + 1) && currentStrings.E && isCAGED(index, 'E', currentHighlightCAGED): '',
-                                'seventh': currentHighlightNotes.includes('sevenths') ? ESevenths?.includes(index + 1) && currentStrings.E && isCAGED(index, 'E', currentHighlightCAGED): '',
-                                'blue': currentHighlightNotes.includes('blues') ? EBlues?.includes(index + 1) && currentStrings.E && isCAGED(index, 'E', currentHighlightCAGED): '',
+                                'root-note': currentHighlightNotes.includes('roots') ? ERoots?.includes(index + 1) && currentStrings.E && isCAGED(index, 'E', currentKey, currentHighlightCAGED): '', 
+                                'second': currentHighlightNotes.includes('seconds') ? ESeconds?.includes(index + 1) && currentStrings.E && isCAGED(index, 'E', currentKey, currentHighlightCAGED): '',
+                                'third': currentHighlightNotes.includes('thirds') ? EThirds?.includes(index + 1) && currentStrings.E && isCAGED(index, 'E', currentKey, currentHighlightCAGED): '',
+                                'fourth': currentHighlightNotes.includes('fourths') ? EFourths?.includes(index + 1) && currentStrings.E && isCAGED(index, 'E', currentKey, currentHighlightCAGED): '',
+                                'fifth': currentHighlightNotes.includes('fifths') ? EFifths?.includes(index + 1) && currentStrings.E && isCAGED(index, 'E', currentKey, currentHighlightCAGED): '',
+                                'sixth': currentHighlightNotes.includes('sixths') ? ESixths?.includes(index + 1) && currentStrings.E && isCAGED(index, 'E', currentKey, currentHighlightCAGED): '',
+                                'seventh': currentHighlightNotes.includes('sevenths') ? ESevenths?.includes(index + 1) && currentStrings.E && isCAGED(index, 'E', currentKey, currentHighlightCAGED): '',
+                                'blue': currentHighlightNotes.includes('blues') ? EBlues?.includes(index + 1) && currentStrings.E && isCAGED(index, 'E', currentKey, currentHighlightCAGED): '',
                             }">
                             <span v-if="currentHighlightNotes.includes('roots') && ERoots?.includes(index + 1) && currentStrings.E" class="note-names">{{ rootNoteName }}</span>
                             <span v-if="currentHighlightNotes.includes('seconds') && ESeconds?.includes(index + 1) && currentStrings.E" class="note-names">{{ secondNoteName }}</span>
@@ -270,14 +271,14 @@ onMounted(async () => {
                         <input type="checkbox" v-model="A[index]"/>
                         <div class="checkbox__checkmark" 
                             :class="{
-                                'root-note': currentHighlightNotes.includes('roots') ? ARoots?.includes(index + 1) && currentStrings.A && isCAGED(index, 'A', currentHighlightCAGED): '', 
-                                'second': currentHighlightNotes.includes('seconds') ? ASeconds?.includes(index + 1) && currentStrings.A && isCAGED(index, 'A', currentHighlightCAGED): '',
-                                'third': currentHighlightNotes.includes('thirds') ? AThirds?.includes(index + 1) && currentStrings.A && isCAGED(index, 'A', currentHighlightCAGED): '',
-                                'fourth': currentHighlightNotes.includes('fourths') ? AFourths?.includes(index + 1) && currentStrings.A && isCAGED(index, 'A', currentHighlightCAGED): '',
-                                'fifth': currentHighlightNotes.includes('fifths') ? AFifths?.includes(index + 1) && currentStrings.A && isCAGED(index, 'A', currentHighlightCAGED): '',
-                                'sixth': currentHighlightNotes.includes('sixths') ? ASixths?.includes(index + 1) && currentStrings.A && isCAGED(index, 'A', currentHighlightCAGED): '',
-                                'seventh': currentHighlightNotes.includes('sevenths') ? ASevenths?.includes(index + 1) && currentStrings.A && isCAGED(index, 'A', currentHighlightCAGED): '',
-                                'blue': currentHighlightNotes.includes('blues') ? ABlues?.includes(index + 1) && currentStrings.A && isCAGED(index, 'A', currentHighlightCAGED): '',
+                                'root-note': currentHighlightNotes.includes('roots') ? ARoots?.includes(index + 1) && currentStrings.A && isCAGED(index, 'A', currentKey, currentHighlightCAGED): '', 
+                                'second': currentHighlightNotes.includes('seconds') ? ASeconds?.includes(index + 1) && currentStrings.A && isCAGED(index, 'A', currentKey, currentHighlightCAGED): '',
+                                'third': currentHighlightNotes.includes('thirds') ? AThirds?.includes(index + 1) && currentStrings.A && isCAGED(index, 'A', currentKey, currentHighlightCAGED): '',
+                                'fourth': currentHighlightNotes.includes('fourths') ? AFourths?.includes(index + 1) && currentStrings.A && isCAGED(index, 'A', currentKey, currentHighlightCAGED): '',
+                                'fifth': currentHighlightNotes.includes('fifths') ? AFifths?.includes(index + 1) && currentStrings.A && isCAGED(index, 'A', currentKey, currentHighlightCAGED): '',
+                                'sixth': currentHighlightNotes.includes('sixths') ? ASixths?.includes(index + 1) && currentStrings.A && isCAGED(index, 'A', currentKey, currentHighlightCAGED): '',
+                                'seventh': currentHighlightNotes.includes('sevenths') ? ASevenths?.includes(index + 1) && currentStrings.A && isCAGED(index, 'A', currentKey, currentHighlightCAGED): '',
+                                'blue': currentHighlightNotes.includes('blues') ? ABlues?.includes(index + 1) && currentStrings.A && isCAGED(index, 'A', currentKey, currentHighlightCAGED): '',
                             }">
                             <span v-if="currentHighlightNotes.includes('roots') && ARoots?.includes(index + 1) && currentStrings.A" class="note-names">{{ rootNoteName }}</span>
                             <span v-if="currentHighlightNotes.includes('seconds') && ASeconds?.includes(index + 1) && currentStrings.A" class="note-names">{{ secondNoteName }}</span>
@@ -300,14 +301,14 @@ onMounted(async () => {
                         <input type="checkbox" v-model="D[index]"/>
                         <div class="checkbox__checkmark" 
                             :class="{
-                                'root-note': currentHighlightNotes.includes('roots') ? DRoots?.includes(index + 1) && currentStrings.D && isCAGED(index, 'D', currentHighlightCAGED): '', 
-                                'second': currentHighlightNotes.includes('seconds') ? DSeconds?.includes(index + 1) && currentStrings.D && isCAGED(index, 'D', currentHighlightCAGED): '',
-                                'third': currentHighlightNotes.includes('thirds') ? DThirds?.includes(index + 1) && currentStrings.D && isCAGED(index, 'D', currentHighlightCAGED): '',
-                                'fourth': currentHighlightNotes.includes('fourths') ? DFourths?.includes(index + 1) && currentStrings.D && isCAGED(index, 'D', currentHighlightCAGED): '',
-                                'fifth': currentHighlightNotes.includes('fifths') ? DFifths?.includes(index + 1) && currentStrings.D && isCAGED(index, 'D', currentHighlightCAGED): '',
-                                'sixth': currentHighlightNotes.includes('sixths') ? DSixths?.includes(index + 1) && currentStrings.D && isCAGED(index, 'D', currentHighlightCAGED): '',
-                                'seventh': currentHighlightNotes.includes('sevenths') ? DSevenths?.includes(index + 1) && currentStrings.D && isCAGED(index, 'D', currentHighlightCAGED): '',
-                                'blue': currentHighlightNotes.includes('blues') ? DBlues?.includes(index + 1) && currentStrings.D && isCAGED(index, 'D', currentHighlightCAGED): '',
+                                'root-note': currentHighlightNotes.includes('roots') ? DRoots?.includes(index + 1) && currentStrings.D && isCAGED(index, 'D', currentKey, currentHighlightCAGED): '', 
+                                'second': currentHighlightNotes.includes('seconds') ? DSeconds?.includes(index + 1) && currentStrings.D && isCAGED(index, 'D', currentKey, currentHighlightCAGED): '',
+                                'third': currentHighlightNotes.includes('thirds') ? DThirds?.includes(index + 1) && currentStrings.D && isCAGED(index, 'D', currentKey, currentHighlightCAGED): '',
+                                'fourth': currentHighlightNotes.includes('fourths') ? DFourths?.includes(index + 1) && currentStrings.D && isCAGED(index, 'D', currentKey, currentHighlightCAGED): '',
+                                'fifth': currentHighlightNotes.includes('fifths') ? DFifths?.includes(index + 1) && currentStrings.D && isCAGED(index, 'D', currentKey, currentHighlightCAGED): '',
+                                'sixth': currentHighlightNotes.includes('sixths') ? DSixths?.includes(index + 1) && currentStrings.D && isCAGED(index, 'D', currentKey, currentHighlightCAGED): '',
+                                'seventh': currentHighlightNotes.includes('sevenths') ? DSevenths?.includes(index + 1) && currentStrings.D && isCAGED(index, 'D', currentKey, currentHighlightCAGED): '',
+                                'blue': currentHighlightNotes.includes('blues') ? DBlues?.includes(index + 1) && currentStrings.D && isCAGED(index, 'D', currentKey, currentHighlightCAGED): '',
                             }">
                             <span v-if="currentHighlightNotes.includes('roots') && DRoots?.includes(index + 1) && currentStrings.D" class="note-names">{{ rootNoteName }}</span>
                             <span v-if="currentHighlightNotes.includes('seconds') && DSeconds?.includes(index + 1) && currentStrings.D" class="note-names">{{ secondNoteName }}</span>
@@ -337,14 +338,14 @@ onMounted(async () => {
                         <input type="checkbox" v-model="G[index]"/>
                         <div class="checkbox__checkmark" 
                             :class="{
-                                'root-note': currentHighlightNotes.includes('roots') ? GRoots?.includes(index + 1) && currentStrings.G && isCAGED(index, 'G', currentHighlightCAGED): '', 
-                                'second': currentHighlightNotes.includes('seconds') ? GSeconds?.includes(index + 1) && currentStrings.G && isCAGED(index, 'G', currentHighlightCAGED): '',
-                                'third': currentHighlightNotes.includes('thirds') ? GThirds?.includes(index + 1) && currentStrings.G && isCAGED(index, 'G', currentHighlightCAGED): '',
-                                'fourth': currentHighlightNotes.includes('fourths') ? GFourths?.includes(index + 1) && currentStrings.G && isCAGED(index, 'G', currentHighlightCAGED): '',
-                                'fifth': currentHighlightNotes.includes('fifths') ? GFifths?.includes(index + 1) && currentStrings.G && isCAGED(index, 'G', currentHighlightCAGED): '',
-                                'sixth': currentHighlightNotes.includes('sixths') ? GSixths?.includes(index + 1) && currentStrings.G && isCAGED(index, 'G', currentHighlightCAGED): '',
-                                'seventh': currentHighlightNotes.includes('sevenths') ? GSevenths?.includes(index + 1) && currentStrings.G && isCAGED(index, 'G', currentHighlightCAGED): '',
-                                'blue': currentHighlightNotes.includes('blues') ? GBlues?.includes(index + 1) && currentStrings.G && isCAGED(index, 'G', currentHighlightCAGED): '',
+                                'root-note': currentHighlightNotes.includes('roots') ? GRoots?.includes(index + 1) && currentStrings.G && isCAGED(index, 'G', currentKey, currentHighlightCAGED): '', 
+                                'second': currentHighlightNotes.includes('seconds') ? GSeconds?.includes(index + 1) && currentStrings.G && isCAGED(index, 'G', currentKey, currentHighlightCAGED): '',
+                                'third': currentHighlightNotes.includes('thirds') ? GThirds?.includes(index + 1) && currentStrings.G && isCAGED(index, 'G', currentKey, currentHighlightCAGED): '',
+                                'fourth': currentHighlightNotes.includes('fourths') ? GFourths?.includes(index + 1) && currentStrings.G && isCAGED(index, 'G', currentKey, currentHighlightCAGED): '',
+                                'fifth': currentHighlightNotes.includes('fifths') ? GFifths?.includes(index + 1) && currentStrings.G && isCAGED(index, 'G', currentKey, currentHighlightCAGED): '',
+                                'sixth': currentHighlightNotes.includes('sixths') ? GSixths?.includes(index + 1) && currentStrings.G && isCAGED(index, 'G', currentKey, currentHighlightCAGED): '',
+                                'seventh': currentHighlightNotes.includes('sevenths') ? GSevenths?.includes(index + 1) && currentStrings.G && isCAGED(index, 'G', currentKey, currentHighlightCAGED): '',
+                                'blue': currentHighlightNotes.includes('blues') ? GBlues?.includes(index + 1) && currentStrings.G && isCAGED(index, 'G', currentKey, currentHighlightCAGED): '',
                             }">
                             <span v-if="currentHighlightNotes.includes('roots') && GRoots?.includes(index + 1) && currentStrings.G" class="note-names">{{ rootNoteName }}</span>
                             <span v-if="currentHighlightNotes.includes('seconds') && GSeconds?.includes(index + 1) && currentStrings.G" class="note-names">{{ secondNoteName }}</span>
@@ -367,14 +368,14 @@ onMounted(async () => {
                         <input type="checkbox" v-model="B[index]"/>
                         <div class="checkbox__checkmark" 
                             :class="{
-                                'root-note': currentHighlightNotes.includes('roots') ? BRoots?.includes(index + 1) && currentStrings.B && isCAGED(index, 'B', currentHighlightCAGED): '', 
-                                'second': currentHighlightNotes.includes('seconds') ? BSeconds?.includes(index + 1) && currentStrings.B && isCAGED(index, 'B', currentHighlightCAGED): '',
-                                'third': currentHighlightNotes.includes('thirds') ? BThirds?.includes(index + 1) && currentStrings.B && isCAGED(index, 'B', currentHighlightCAGED): '',
-                                'fourth': currentHighlightNotes.includes('fourths') ? BFourths?.includes(index + 1) && currentStrings.B && isCAGED(index, 'B', currentHighlightCAGED): '',
-                                'fifth': currentHighlightNotes.includes('fifths') ? BFifths?.includes(index + 1) && currentStrings.B && isCAGED(index, 'B', currentHighlightCAGED): '',
-                                'sixth': currentHighlightNotes.includes('sixths') ? BSixths?.includes(index + 1) && currentStrings.B && isCAGED(index, 'B', currentHighlightCAGED): '',
-                                'seventh': currentHighlightNotes.includes('sevenths') ? BSevenths?.includes(index + 1) && currentStrings.B && isCAGED(index, 'B', currentHighlightCAGED): '',
-                                'blue': currentHighlightNotes.includes('blues') ? BBlues?.includes(index + 1) && currentStrings.B && isCAGED(index, 'B', currentHighlightCAGED): '',
+                                'root-note': currentHighlightNotes.includes('roots') ? BRoots?.includes(index + 1) && currentStrings.B && isCAGED(index, 'B', currentKey, currentHighlightCAGED): '', 
+                                'second': currentHighlightNotes.includes('seconds') ? BSeconds?.includes(index + 1) && currentStrings.B && isCAGED(index, 'B', currentKey, currentHighlightCAGED): '',
+                                'third': currentHighlightNotes.includes('thirds') ? BThirds?.includes(index + 1) && currentStrings.B && isCAGED(index, 'B', currentKey, currentHighlightCAGED): '',
+                                'fourth': currentHighlightNotes.includes('fourths') ? BFourths?.includes(index + 1) && currentStrings.B && isCAGED(index, 'B', currentKey, currentHighlightCAGED): '',
+                                'fifth': currentHighlightNotes.includes('fifths') ? BFifths?.includes(index + 1) && currentStrings.B && isCAGED(index, 'B', currentKey, currentHighlightCAGED): '',
+                                'sixth': currentHighlightNotes.includes('sixths') ? BSixths?.includes(index + 1) && currentStrings.B && isCAGED(index, 'B', currentKey, currentHighlightCAGED): '',
+                                'seventh': currentHighlightNotes.includes('sevenths') ? BSevenths?.includes(index + 1) && currentStrings.B && isCAGED(index, 'B', currentKey, currentHighlightCAGED): '',
+                                'blue': currentHighlightNotes.includes('blues') ? BBlues?.includes(index + 1) && currentStrings.B && isCAGED(index, 'B', currentKey, currentHighlightCAGED): '',
                             }">
                             <span v-if="currentHighlightNotes.includes('roots') && BRoots?.includes(index + 1) && currentStrings.B" class="note-names">{{ rootNoteName }}</span>
                             <span v-if="currentHighlightNotes.includes('seconds') && BSeconds?.includes(index + 1) && currentStrings.B" class="note-names">{{ secondNoteName }}</span>
@@ -397,14 +398,14 @@ onMounted(async () => {
                         <input type="checkbox" v-model="e[index]"/>
                         <div class="checkbox__checkmark" 
                             :class="{
-                                'root-note': currentHighlightNotes.includes('roots') ? eRoots?.includes(index + 1) && currentStrings.e && isCAGED(index, 'e', currentHighlightCAGED): '', 
-                                'second': currentHighlightNotes.includes('seconds') ? eSeconds?.includes(index + 1) && currentStrings.e && isCAGED(index, 'e', currentHighlightCAGED): '',
-                                'third': currentHighlightNotes.includes('thirds') ? eThirds?.includes(index + 1) && currentStrings.e && isCAGED(index, 'e', currentHighlightCAGED): '',
-                                'fourth': currentHighlightNotes.includes('fourths') ? eFourths?.includes(index + 1) && currentStrings.e && isCAGED(index, 'e', currentHighlightCAGED): '',
-                                'fifth': currentHighlightNotes.includes('fifths') ? eFifths?.includes(index + 1) && currentStrings.e && isCAGED(index, 'e', currentHighlightCAGED): '',
-                                'sixth': currentHighlightNotes.includes('sixths') ? eSixths?.includes(index + 1) && currentStrings.e && isCAGED(index, 'e', currentHighlightCAGED): '',
-                                'seventh': currentHighlightNotes.includes('sevenths') ? eSevenths?.includes(index + 1) && currentStrings.e && isCAGED(index, 'e', currentHighlightCAGED): '',
-                                'blue': currentHighlightNotes.includes('blues') ? eBlues?.includes(index + 1) && currentStrings.e && isCAGED(index, 'e', currentHighlightCAGED): '',
+                                'root-note': currentHighlightNotes.includes('roots') ? eRoots?.includes(index + 1) && currentStrings.e && isCAGED(index, 'e', currentKey, currentHighlightCAGED): '', 
+                                'second': currentHighlightNotes.includes('seconds') ? eSeconds?.includes(index + 1) && currentStrings.e && isCAGED(index, 'e', currentKey, currentHighlightCAGED): '',
+                                'third': currentHighlightNotes.includes('thirds') ? eThirds?.includes(index + 1) && currentStrings.e && isCAGED(index, 'e', currentKey, currentHighlightCAGED): '',
+                                'fourth': currentHighlightNotes.includes('fourths') ? eFourths?.includes(index + 1) && currentStrings.e && isCAGED(index, 'e', currentKey, currentHighlightCAGED): '',
+                                'fifth': currentHighlightNotes.includes('fifths') ? eFifths?.includes(index + 1) && currentStrings.e && isCAGED(index, 'e', currentKey, currentHighlightCAGED): '',
+                                'sixth': currentHighlightNotes.includes('sixths') ? eSixths?.includes(index + 1) && currentStrings.e && isCAGED(index, 'e', currentKey, currentHighlightCAGED): '',
+                                'seventh': currentHighlightNotes.includes('sevenths') ? eSevenths?.includes(index + 1) && currentStrings.e && isCAGED(index, 'e', currentKey, currentHighlightCAGED): '',
+                                'blue': currentHighlightNotes.includes('blues') ? eBlues?.includes(index + 1) && currentStrings.e && isCAGED(index, 'e', currentKey, currentHighlightCAGED): '',
                             }">
                             <span v-if="currentHighlightNotes.includes('roots') && eRoots?.includes(index + 1) && currentStrings.e" class="note-names">{{ rootNoteName }}</span>
                             <span v-if="currentHighlightNotes.includes('seconds') && eSeconds?.includes(index + 1) && currentStrings.e" class="note-names">{{ secondNoteName }}</span>
@@ -429,7 +430,7 @@ onMounted(async () => {
                 </div>
             </div>
         </div>
-        <div class="mt-4">
+        <div class="mt-5">
             <span class="me-3 text-yellow fw-bold">
                 Number of Frets
             </span>
