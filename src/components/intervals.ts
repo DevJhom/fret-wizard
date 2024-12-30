@@ -50,12 +50,12 @@ const fifths: Intervals = {
 }
 
 const sixths: Intervals = {
-    E: [5,17,29],  
-    A: [-2,10,22], 
-    D: [2,14,26],  
+    E: [-7,5,17,29],  
+    A: [-4,10,22], 
+    D: [-10,2,14,26],  
     G: [-5,7,19],
     B: [0,12,24],  
-    e: [5,17,29]
+    e: [-7,5,17,29]
 }
 
 const sevenths: Intervals = {
