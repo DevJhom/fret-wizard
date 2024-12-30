@@ -1,4 +1,5 @@
 import { CurrentCAGED } from '@/stores/usePatternStore';
+import { KEY_TO_NUMBER } from './noteNames';
 
 export const CAGED = {
     CShape: {
@@ -43,7 +44,9 @@ export const CAGED = {
     }
 }
 
-export const isCAGED = (index: number, stringName: string, highlightCAGED?: string[] ): boolean => {
+export const isCAGED = (index: number, stringName: string, currentKey: string, highlightCAGED?: string[]): boolean => {
+    index = index - KEY_TO_NUMBER[currentKey];
+
     if (highlightCAGED) {
         if (highlightCAGED.includes("CShape") && CAGED.CShape?.[stringName].includes(index)) 
             return true;
