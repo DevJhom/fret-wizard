@@ -4,7 +4,7 @@ import { usePatternStore } from '@/stores/usePatternStore';
 import { storeToRefs } from 'pinia';
 
 const patternStore = usePatternStore();
-const { currentHighlightNotes, currentStrings } = storeToRefs(patternStore);
+const { currentHighlightNotes, currentCAGED, currentStrings } = storeToRefs(patternStore);
 
 const isCollapsed = ref(true);
 
@@ -46,6 +46,41 @@ const toggleSidebar = () => {
                     </label>
                 </div>
 
+                <!-- Shapes (CAGED) -->
+                <div class="notes d-flex flex-column text-start mt-5">
+                    <span class="me-2 text-yellow fw-bold">
+                        Shapes (CAGED)
+                    </span>
+                </div>
+                <div class="highlightNotes-filter notes d-flex flex-column text-end">
+                    <label class="d-flex notes">
+                        <input type="checkbox" :value="currentCAGED.CShape" v-model="currentCAGED.CShape"/>
+                        <div class="checkbox__checkmark" :class="{'yellow': currentCAGED.CShape}"></div>
+                        <span class="ms-3">C</span>
+                    </label>
+                    <label class="d-flex notes">
+                        <input type="checkbox" :value="currentCAGED.AShape" v-model="currentCAGED.AShape"/>
+                        <div class="checkbox__checkmark" :class="{'yellow': currentCAGED.AShape}"></div>
+                        <span class="ms-3">A</span>
+                    </label>
+                    <label class="d-flex notes">
+                        <input type="checkbox" :value="currentCAGED.GShape" v-model="currentCAGED.GShape"/>
+                        <div class="checkbox__checkmark" :class="{'yellow': currentCAGED.GShape}"></div>
+                        <span class="ms-3">G</span>
+                    </label>
+                    <label class="d-flex notes">
+                        <input type="checkbox" :value="currentCAGED.EShape" v-model="currentCAGED.EShape"/>
+                        <div class="checkbox__checkmark" :class="{'yellow': currentCAGED.EShape}"></div>
+                        <span class="ms-3">E</span>
+                    </label>            
+                    <label class="d-flex notes">
+                        <input type="checkbox" :value="currentCAGED.DShape" v-model="currentCAGED.DShape"/>
+                        <div class="checkbox__checkmark" :class="{'yellow': currentCAGED.DShape}"></div>
+                        <span class="ms-3">D</span>
+                    </label>            
+                </div>
+
+                <!-- Strings (EADGBe) -->
                 <div class="notes d-flex flex-column text-start mt-5">
                     <span class="me-2 text-yellow fw-bold">
                         Strings (EADGBe)
@@ -84,39 +119,6 @@ const toggleSidebar = () => {
                     </label>
                 </div>
                 
-                <!-- THE CAGED SYSTEM -->
-                <div class="notes d-flex flex-column text-start mt-5">
-                    <span class="me-2 text-yellow fw-bold">
-                        Shapes (CAGED)
-                    </span>
-                </div>
-                <div class="highlightNotes-filter notes d-flex flex-column text-end">
-                    <label class="d-flex notes">
-                        <input type="checkbox" :value="true" v-model="currentHighlightNotes"/>
-                        <div class="checkbox__checkmark"></div>
-                        <span class="ms-3">C</span>
-                    </label>
-                    <label class="d-flex notes">
-                        <input type="checkbox" :value="true" v-model="currentHighlightNotes"/>
-                        <div class="checkbox__checkmark"></div>
-                        <span class="ms-3">A</span>
-                    </label>
-                    <label class="d-flex notes">
-                        <input type="checkbox" :value="true" v-model="currentHighlightNotes"/>
-                        <div class="checkbox__checkmark"></div>
-                        <span class="ms-3">G</span>
-                    </label>
-                    <label class="d-flex notes">
-                        <input type="checkbox" :value="true" v-model="currentHighlightNotes"/>
-                        <div class="checkbox__checkmark"></div>
-                        <span class="ms-3">E</span>
-                    </label>            
-                    <label class="d-flex notes">
-                        <input type="checkbox" :value="true" v-model="currentHighlightNotes"/>
-                        <div class="checkbox__checkmark"></div>
-                        <span class="ms-3">D</span>
-                    </label>            
-                </div>
             </div>
         </Transition>
     </div>

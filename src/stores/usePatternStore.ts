@@ -13,6 +13,13 @@ interface State {
     G: boolean;
     B: boolean;
     e: boolean;
+  };
+  currentCAGED: {
+    CShape: boolean;
+    AShape: boolean;
+    GShape: boolean;
+    EShape: boolean;
+    DShape: boolean;
   }
 }
 
@@ -22,7 +29,7 @@ export const usePatternStore = defineStore('pattern', {
     allPatterns : ["Pentatonic Scale", "Blue Scale", "Diatonic Scale", "Triad Arpeggio", "Custom"],
     currentKey: "C",
     currentPattern: "Pentatonic Scale",
-    currentHighlightNotes: ["roots"],
+    currentHighlightNotes: ["roots", "seconds", "thirds", "fifths", "sixths"],
     currentStrings: {
       E: true,
       A: true,
@@ -31,6 +38,13 @@ export const usePatternStore = defineStore('pattern', {
       B: true,
       e: true
     },
+    currentCAGED: {
+      CShape: true,
+      AShape: true,
+      GShape: true,
+      EShape: true,
+      DShape: true
+    }
   }),
   getters: {
     highlightNotes: (state: State) => {
