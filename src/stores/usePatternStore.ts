@@ -6,21 +6,25 @@ interface State {
   currentKey: string;
   currentPattern: string;
   currentHighlightNotes: string[];
-  currentStrings: {
-    E: boolean;
-    A: boolean;
-    D: boolean;
-    G: boolean;
-    B: boolean;
-    e: boolean;
-  };
-  currentCAGED: {
-    CShape: boolean;
-    AShape: boolean;
-    GShape: boolean;
-    EShape: boolean;
-    DShape: boolean;
-  }
+  currentStrings: CurrentStrings;
+  currentCAGED: CurrentCAGED;
+}
+
+export interface CurrentStrings {
+  E: boolean;
+  A: boolean;
+  D: boolean;
+  G: boolean;
+  B: boolean;
+  e: boolean;
+}
+
+export interface CurrentCAGED {
+  CShape: boolean;
+  AShape: boolean;
+  GShape: boolean;
+  EShape: boolean;
+  DShape: boolean;
 }
 
 export const usePatternStore = defineStore('pattern', {
