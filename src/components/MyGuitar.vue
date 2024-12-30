@@ -8,7 +8,7 @@ import { usePatternStore } from '@/stores/usePatternStore';
 import { storeToRefs } from 'pinia';
 
 const patternStore = usePatternStore();
-const { allKeys, allPatterns, currentKey, currentPattern, currentHighlightNotes, currentStrings } = storeToRefs(patternStore);
+const { allKeys, allPatterns, currentKey, currentPattern, currentHighlightNotes, currentStrings, currentCAGED } = storeToRefs(patternStore);
 
 const fretAmount = ref(24);
 const fretIndicator = new Array(24);
@@ -174,7 +174,9 @@ const mapCurrentKeyToNumber = computed(() => {
 });
 
 //THE CAGED System
-const currentHighlightCAGED = ["C","A","G","E","D"];
+const currentHighlightCAGED = computed(() => {
+    return Object.keys(currentCAGED.value).filter(key => currentCAGED.value[key]);
+})
 
 const CAGEDNamePosition = ref([
     {

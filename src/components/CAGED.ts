@@ -44,19 +44,19 @@ export const CAGED = {
 
 export const isCAGED = (index: number, stringName: string, highlightCAGED?: string[] ): boolean => {
     if (highlightCAGED) {
-        if (highlightCAGED.includes("C") && CAGED.CShape?.[stringName].includes(index)) 
+        if (highlightCAGED.includes("CShape") && CAGED.CShape?.[stringName].includes(index)) 
             return true;
         
-        if (highlightCAGED.includes("A") && CAGED.AShape?.[stringName].includes(index)) 
+        if (highlightCAGED.includes("AShape") && CAGED.AShape?.[stringName].includes(index)) 
             return true;
         
-        if (highlightCAGED.includes("G") && CAGED.GShape?.[stringName].includes(index)) 
+        if (highlightCAGED.includes("GShape") && CAGED.GShape?.[stringName].includes(index)) 
             return true;
         
-        if (highlightCAGED.includes("E") && CAGED.EShape?.[stringName].includes(index)) 
+        if (highlightCAGED.includes("EShape") && CAGED.EShape?.[stringName].includes(index)) 
             return true;
         
-        if (highlightCAGED.includes("D") && CAGED.DShape?.[stringName].includes(index)) 
+        if (highlightCAGED.includes("DShape") && CAGED.DShape?.[stringName].includes(index)) 
             return true;
     }
 };
