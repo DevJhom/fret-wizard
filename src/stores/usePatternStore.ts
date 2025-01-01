@@ -30,7 +30,7 @@ export interface CurrentCAGED {
 export const usePatternStore = defineStore('pattern', {
   state: (): State => ({
     allKeys : ["C","C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"],
-    allPatterns : ["Pentatonic Scale", "Blue Scale", "Diatonic Scale", "Triad Arpeggio", "Custom"],
+    allPatterns : ["Pentatonic Scale", "Blue Scale", "Diatonic Scale", "Triad", "Custom"],
     currentKey: "C",
     currentPattern: "Pentatonic Scale",
     currentHighlightNotes: ["roots", "seconds", "thirds", "fifths", "sixths"],
@@ -59,7 +59,7 @@ export const usePatternStore = defineStore('pattern', {
           return ["roots", "seconds", "thirds", "fifths", "sixths", "blues"];
         case "Diatonic Scale":
           return ["roots", "seconds", "thirds", "fourths", "fifths", "sixths", "sevenths"];
-        case "Triad Arpeggio":
+        case "Triad":
           return ["roots", "thirds", "fifths"];
         default:
           return ["roots", "thirds", "fifths"];

@@ -139,8 +139,8 @@ const mapScaleName: () => string = () => {
         return 'blue_scale';
     if(currentPattern.value == 'Diatonic Scale')
         return 'diatonic_scale';
-    if(currentPattern.value == 'Triad Arpeggio')
-        return 'triad_arpeggio';
+    if(currentPattern.value == 'Triad')
+        return 'triad';
     if(currentPattern.value == 'Custom')
         return 'custom';
 

@@ -19,8 +19,8 @@ export const getScale = async (scale: string, key: string) => {
         return data.blue_scale.C;
     else if (scale == "diatonic_scale")
         return data.diatonic_scale.C
-    else if (scale == "triad_arpeggio")
-        return data.triad_arpeggio.C
+    else if (scale == "triad")
+        return data.triad.C
 }
 
 export const updateCurrentScale = async (scale: string) => {}
