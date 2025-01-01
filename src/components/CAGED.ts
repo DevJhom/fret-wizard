@@ -88,7 +88,9 @@ export const CAGEDNamePosition = {
     }
 }
 
-export const isCAGEDNameHere = (index: number, currentCAGED: CurrentCAGED) => {
+export const isCAGEDNameHere = (index: number, currentCAGED: CurrentCAGED, currentKey: string) => {
+    index = index - KEY_TO_NUMBER[currentKey];
+
     if (currentCAGED.CShape && CAGEDNamePosition.CShape.position.includes(index))
         return true;
 
@@ -105,7 +107,9 @@ export const isCAGEDNameHere = (index: number, currentCAGED: CurrentCAGED) => {
         return true;
 }
 
-export const GetCAGEDName = (index: number, currentCAGED: CurrentCAGED) => {
+export const GetCAGEDName = (index: number, currentCAGED: CurrentCAGED, currentKey: string) => {
+    index = index - KEY_TO_NUMBER[currentKey];
+
     if (currentCAGED.CShape && CAGEDNamePosition.CShape.position.includes(index))
         return CAGEDNamePosition.CShape.name;
 
