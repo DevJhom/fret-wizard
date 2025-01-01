@@ -293,7 +293,7 @@ onMounted(async () => {
                                 <span v-if="currentHighlightNotes.includes('fourths') && AFourths?.includes(index + 1) && currentStrings.A" class="note-names">{{ fourthNoteName }}</span>
                                 <span v-if="currentHighlightNotes.includes('fifths') && AFifths?.includes(index + 1) && currentStrings.A" class="note-names">{{ fifthNoteName }}</span>
                                 <span v-if="currentHighlightNotes.includes('sixths') && ASixths?.includes(index + 1) && currentStrings.A" class="note-names">{{ sixthNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('sevenths') && ASevenths?.includes(index + 1) && currentStrings.A" class="note-names">{{ sixthNoteName }}</span>
+                                <span v-if="currentHighlightNotes.includes('sevenths') && ASevenths?.includes(index + 1) && currentStrings.A" class="note-names">{{ seventhNoteName }}</span>
                                 <span v-if="currentHighlightNotes.includes('blues') && ABlues?.includes(index + 1) && currentStrings.A" class="note-names">{{ blueNoteName }}</span>
                             </div>
                         </label>
