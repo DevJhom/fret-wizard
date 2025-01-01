@@ -32,8 +32,8 @@ export const usePatternStore = defineStore('pattern', {
     allKeys : ["C","C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"],
     allPatterns : ["Pentatonic Scale", "Blue Scale", "Diatonic Scale", "Triad", "Custom"],
     currentKey: "C",
-    currentPattern: "Diatonic Scale",
-    currentHighlightNotes: ["roots", "seconds", "thirds", "fourths", "fifths", "sixths", "sevenths"],
+    currentPattern: "Pentatonic Scale",
+    currentHighlightNotes: ["roots"],
     currentStrings: {
       E: true,
       A: true,
