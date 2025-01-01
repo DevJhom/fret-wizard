@@ -68,12 +68,12 @@ const sevenths: Intervals = {
 }
 
 const blues: Intervals = {
-    E: [11,23],
-    A: [4,16],
-    D: [8,20],
-    G: [1,13],
-    B: [6,18],
-    e: [11,23]
+    E: [-1,11,23],
+    A: [-8,4,16],
+    D: [-4,8,20],
+    G: [-11,1,13],
+    B: [-6,6,18],
+    e: [-1,11,23]
 }
 
 export const getRoots = (currentKey: string, stringName: string) => {
