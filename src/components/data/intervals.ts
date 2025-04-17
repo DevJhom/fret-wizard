@@ -1,4 +1,4 @@
-import { KEY_TO_NUMBER } from "./noteNames";
+import { KEY_TO_NUMBER } from "@data/noteNames";
 
 interface Intervals {
     [key: string]: number[];

@@ -24,10 +24,11 @@
     "paths": {
       "@/*": ["src/*"],
       "@components/*": ["src/components/*"],
+      "@data/*": ["src/components/data/*"],
       "@stores/*": ["src/stores/*"],
       "@services/*": ["src/services/*"],
       "@assets/*": ["src/assets/*"],
-      "@scss/*": ["src/scss/*"]
+      "@scss/*": ["src/scss/*"],
     }
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"],

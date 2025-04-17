@@ -9,11 +9,12 @@ export default defineConfig({
     alias: {
       '@': '/src/',
       '@components': '/src/components',
+      '@data': '/src/components/data',
       '@stores': '/src/stores',
       '@services': '/src/services',
       '@assets': '/src/assets',
       '@images': '/src/assets/images',
-      '@scss': '/src/assets/scss',
+      '@scss': '/src/assets/scss'
     }
   },
   css: {
