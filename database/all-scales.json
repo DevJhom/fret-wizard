@@ -7,7 +7,7 @@
   },
   "pentatonic_scale": {
     "C": {
-      "E": [
+      "e": [
         false,
         false,
         true,
@@ -33,7 +33,7 @@
         false,
         true
       ],
-      "A": [
+      "B": [
         true,
         false,
         true,
@@ -59,32 +59,6 @@
         false,
         false
       ],
-      "D": [
-        false,
-        true,
-        false,
-        false,
-        true,
-        false,
-        true,
-        false,
-        true,
-        false,
-        false,
-        true,
-        false,
-        true,
-        false,
-        false,
-        true,
-        false,
-        true,
-        false,
-        true,
-        false,
-        false,
-        true
-      ],
       "G": [
         false,
         true,
@@ -94,6 +68,32 @@
         false,
         true,
         false,
+        true,
+        false,
+        false,
+        true,
+        false,
+        true,
+        false,
+        false,
+        true,
+        false,
+        true,
+        false,
+        true,
+        false,
+        false,
+        true
+      ],
+      "D": [
+        false,
+        true,
+        false,
+        false,
+        true,
+        false,
+        true,
+        false,
         false,
         true,
         false,
@@ -111,7 +111,7 @@
         false,
         true
       ],
-      "B": [
+      "A": [
         false,
         false,
         true,
@@ -137,7 +137,7 @@
         false,
         true
       ],
-      "e": [
+      "E": [
         false,
         false,
         true,
@@ -167,7 +167,7 @@
   },
   "blue_scale": {
     "C": {
-      "E": [
+      "e": [
         false,
         false,
         true,
@@ -193,7 +193,7 @@
         true,
         true
       ],
-      "A": [
+      "B": [
         true,
         false,
         true,
@@ -219,33 +219,33 @@
         false,
         false
       ],
-      "D": [
-        false,
-        true,
-        false,
-        false,
-        true,
-        false,
-        true,
-        true,
-        true,
-        false,
-        false,
-        true,
-        false,
-        true,
-        false,
-        false,
-        true,
-        false,
-        true,
-        true,
-        true,
-        false,
-        false,
-        true
-      ],
       "G": [
+        false,
+        true,
+        false,
+        false,
+        true,
+        false,
+        true,
+        true,
+        true,
+        false,
+        false,
+        true,
+        false,
+        true,
+        false,
+        false,
+        true,
+        false,
+        true,
+        true,
+        true,
+        false,
+        false,
+        true
+      ],
+      "D": [
         true,
         true,
         false,
@@ -271,7 +271,7 @@
         false,
         true
       ],
-      "B": [
+      "A": [
         false,
         false,
         true,
@@ -297,7 +297,7 @@
         false,
         true
       ],
-      "e": [
+      "E": [
         false,
         false,
         true,
@@ -325,7 +325,7 @@
       ]
     },
     "B": {
-      "E": [
+      "e": [
         false,
         true,
         false,
@@ -351,7 +351,7 @@
         true,
         false
       ],
-      "A": [
+      "B": [
         false,
         true,
         true,
@@ -376,32 +376,6 @@
         false,
         false,
         true
-      ],
-      "D": [
-        true,
-        false,
-        false,
-        true,
-        false,
-        true,
-        true,
-        true,
-        false,
-        false,
-        true,
-        false,
-        true,
-        false,
-        false,
-        true,
-        false,
-        true,
-        true,
-        true,
-        false,
-        false,
-        true,
-        false
       ],
       "G": [
         true,
@@ -410,6 +384,32 @@
         true,
         false,
         true,
+        true,
+        true,
+        false,
+        false,
+        true,
+        false,
+        true,
+        false,
+        false,
+        true,
+        false,
+        true,
+        true,
+        true,
+        false,
+        false,
+        true,
+        false
+      ],
+      "D": [
+        true,
+        false,
+        false,
+        true,
+        false,
+        true,
         false,
         false,
         true,
@@ -429,7 +429,7 @@
         true,
         true
       ],
-      "B": [
+      "A": [
         false,
         true,
         false,
@@ -455,7 +455,7 @@
         true,
         false
       ],
-      "e": [
+      "E": [
         false,
         true,
         false,
@@ -485,7 +485,7 @@
   },
   "diatonic_scale": {
     "C": {
-      "E": [
+      "e": [
         true,
         false,
         true,
@@ -511,7 +511,7 @@
         false,
         true
       ],
-      "A": [
+      "B": [
         true,
         false,
         true,
@@ -533,32 +533,6 @@
         false,
         true,
         false,
-        true,
-        false,
-        true
-      ],
-      "D": [
-        false,
-        true,
-        false,
-        true,
-        true,
-        false,
-        true,
-        false,
-        true,
-        true,
-        false,
-        true,
-        false,
-        true,
-        false,
-        true,
-        true,
-        false,
-        true,
-        false,
-        true,
         true,
         false,
         true
@@ -566,6 +540,32 @@
       "G": [
         false,
         true,
+        false,
+        true,
+        true,
+        false,
+        true,
+        false,
+        true,
+        true,
+        false,
+        true,
+        false,
+        true,
+        false,
+        true,
+        true,
+        false,
+        true,
+        false,
+        true,
+        true,
+        false,
+        true
+      ],
+      "D": [
+        false,
+        true,
         true,
         false,
         true,
@@ -589,7 +589,7 @@
         false,
         true
       ],
-      "B": [
+      "A": [
         false,
         true,
         true,
@@ -615,7 +615,7 @@
         false,
         true
       ],
-      "e": [
+      "E": [
         true,
         false,
         true,
@@ -645,7 +645,7 @@
   },
   "triad": {
     "C": {
-      "E": [
+      "e": [
         false,
         false,
         true,
@@ -671,7 +671,7 @@
         false,
         true
       ],
-      "A": [
+      "B": [
         true,
         false,
         false,
@@ -696,35 +696,35 @@
         false,
         false,
         false
-      ],
-      "D": [
-        false,
-        false,
-        false,
-        false,
-        true,
-        false,
-        false,
-        false,
-        true,
-        false,
-        false,
-        true,
-        false,
-        false,
-        false,
-        false,
-        true,
-        false,
-        false,
-        false,
-        true,
-        false,
-        false,
-        true
       ],
       "G": [
         false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        false,
+        true,
+        false,
+        false,
+        true
+      ],
+      "D": [
+        false,
         true,
         false,
         false,
@@ -749,7 +749,7 @@
         false,
         false
       ],
-      "B": [
+      "A": [
         false,
         false,
         true,
@@ -775,7 +775,7 @@
         false,
         false
       ],
-      "e": [
+      "E": [
         false,
         false,
         true,
@@ -805,85 +805,7 @@
   },
   "none": {
     "C": {
-      "E": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
-      "A": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
-      "D": [
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
-      ],
-      "G": [
+      "e": [
         false,
         false,
         false,
@@ -935,7 +857,85 @@
         false,
         false
       ],
-      "e": [
+      "G": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "D": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "A": [
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false,
+        false
+      ],
+      "E": [
         false,
         false,
         false,
