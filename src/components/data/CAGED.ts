@@ -1,5 +1,5 @@
 import { CurrentCAGED } from '@/stores/usePatternStore';
-import { KEY_TO_NUMBER } from './noteNames';
+import { KEY_TO_NUMBER } from '@data/noteNames';
 
 // position = fret number - 1
 export const CAGED = {
