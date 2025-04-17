@@ -1,99 +1,25 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, computed } from 'vue';
 import { getCurrentKey, updateCurrentKey, getScale, updateCurrentScale, updateScale } from '@services/mock_service';
-import { getRoots, getSeconds, getThirds, getFourths, getFifths, getSixths, getSevenths, getBlues } from '@data/intervals';
-import { KEY_TO_NUMBER, getRootNoteName, getSecondNoteName, getThirdNoteName, getFourthNoteName, getFifthNoteName, getSixthNoteName, getSeventhNoteName, getBlueNoteName } from './data/noteNames';
-import { isCAGED, isCAGEDNameHere, GetCAGEDName } from '@data/CAGED';
+import { KEY_TO_NUMBER } from './data/noteNames';
+import { isCAGEDNameHere, GetCAGEDName } from '@data/CAGED';
 import { usePatternStore } from '@/stores/usePatternStore';
 import { storeToRefs } from 'pinia';
+import MyString from './MyString.vue';
 
 const patternStore = usePatternStore();
-const { allKeys, allPatterns, currentKey, currentPattern, currentHighlightNotes, currentStrings, currentCAGED } = storeToRefs(patternStore);
+const { allKeys, allPatterns, currentKey, currentPattern, currentCAGED } = storeToRefs(patternStore);
 
 const fretAmount = ref(24);
 const fretIndicator = new Array(24);
 
 // Strings
-const E = ref();
-const A = ref();
-const D = ref();
-const G = ref();
-const B = ref();
-const e = ref();
-
-// Roots
-const ERoots = computed(() => getRoots(currentKey.value, "E"));
-const ARoots = computed(() => getRoots(currentKey.value, "A"));
-const DRoots = computed(() => getRoots(currentKey.value, "D"));
-const GRoots = computed(() => getRoots(currentKey.value, "G"));
-const BRoots = computed(() => getRoots(currentKey.value, "B"));
-const eRoots = computed(() => getRoots(currentKey.value, "e"));
-
-// Seconds
-const ESeconds = computed(() => getSeconds(currentKey.value, "E"));
-const ASeconds = computed(() => getSeconds(currentKey.value, "A"));
-const DSeconds = computed(() => getSeconds(currentKey.value, "D"));
-const GSeconds = computed(() => getSeconds(currentKey.value, "G"));
-const BSeconds = computed(() => getSeconds(currentKey.value, "B"));
-const eSeconds = computed(() => getSeconds(currentKey.value, "e"));
-
-// Thirds
-const EThirds = computed(() => getThirds(currentKey.value, "E"));
-const AThirds = computed(() => getThirds(currentKey.value, "A"));
-const DThirds = computed(() => getThirds(currentKey.value, "D"));
-const GThirds = computed(() => getThirds(currentKey.value, "G"));
-const BThirds = computed(() => getThirds(currentKey.value, "B"));
-const eThirds = computed(() => getThirds(currentKey.value, "e"));
-
-// Fourths
-const EFourths = computed(() => getFourths(currentKey.value, "E"));
-const AFourths = computed(() => getFourths(currentKey.value, "A"));
-const DFourths = computed(() => getFourths(currentKey.value, "D"));
-const GFourths = computed(() => getFourths(currentKey.value, "G"));
-const BFourths = computed(() => getFourths(currentKey.value, "B"));
-const eFourths = computed(() => getFourths(currentKey.value, "e"));
-
-// Fifths
-const EFifths = computed(() => getFifths(currentKey.value, "E"));
-const AFifths = computed(() => getFifths(currentKey.value, "A"));
-const DFifths = computed(() => getFifths(currentKey.value, "D"));
-const GFifths = computed(() => getFifths(currentKey.value, "G"));
-const BFifths = computed(() => getFifths(currentKey.value, "B"));
-const eFifths = computed(() => getFifths(currentKey.value, "e"));
-
-// Sixths
-const ESixths = computed(() => getSixths(currentKey.value, "E"));
-const ASixths = computed(() => getSixths(currentKey.value, "A"));
-const DSixths = computed(() => getSixths(currentKey.value, "D"));
-const GSixths = computed(() => getSixths(currentKey.value, "G"));
-const BSixths = computed(() => getSixths(currentKey.value, "B"));
-const eSixths = computed(() => getSixths(currentKey.value, "e"));
-
-// Sevenths
-const ESevenths = computed(() => getSevenths(currentKey.value, "E"));
-const ASevenths = computed(() => getSevenths(currentKey.value, "A"));
-const DSevenths = computed(() => getSevenths(currentKey.value, "D"));
-const GSevenths = computed(() => getSevenths(currentKey.value, "G"));
-const BSevenths = computed(() => getSevenths(currentKey.value, "B"));
-const eSevenths = computed(() => getSevenths(currentKey.value, "e"));
-
-// Blues
-const EBlues = computed(() => getBlues(currentKey.value, "E"));
-const ABlues = computed(() => getBlues(currentKey.value, "A"));
-const DBlues = computed(() => getBlues(currentKey.value, "D"));
-const GBlues = computed(() => getBlues(currentKey.value, "G"));
-const BBlues = computed(() => getBlues(currentKey.value, "B"));
-const eBlues = computed(() => getBlues(currentKey.value, "e"));
-
-// Note Names
-const rootNoteName = computed(() => getRootNoteName(currentKey.value));
-const secondNoteName = computed(() => getSecondNoteName(currentKey.value));
-const thirdNoteName = computed(() => getThirdNoteName(currentKey.value));
-const fourthNoteName = computed(() => getFourthNoteName(currentKey.value));
-const fifthNoteName = computed(() => getFifthNoteName(currentKey.value));
-const sixthNoteName = computed(() => getSixthNoteName(currentKey.value));
-const seventhNoteName = computed(() => getSeventhNoteName(currentKey.value));
-const blueNoteName = computed(() => getBlueNoteName(currentKey.value));
+const E = ref([]);
+const A = ref([]);
+const D = ref([]);
+const G = ref([]);
+const B = ref([]);
+const e = ref([]);
 
 const fetchCurrentKey = async () => {
     const data = await getCurrentKey();
@@ -174,11 +100,6 @@ const mapCurrentKeyToNumber = computed(() => {
   return number;
 });
 
-//THE CAGED System
-const currentHighlightCAGED = computed(() => {
-    return Object.keys(currentCAGED.value).filter(key => currentCAGED.value[key]);
-})
-
 onMounted(async () => {
     await fetchCurrentKey();
     await fetchScale();
@@ -243,91 +164,31 @@ onMounted(async () => {
                     </label>
                 </div> -->
                 <div class="fret-start string-e">
-                    <div v-for="(_, index) in e" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}">
-                        <label v-if="index < fretAmount" class="notes">
-                            <input type="checkbox" v-model="e[index]"/>
-                            <div class="checkbox__checkmark" 
-                                :class="{
-                                    'root-note': currentHighlightNotes.includes('roots') ? eRoots?.includes(index + 1) && currentStrings.e && isCAGED(index, 'e', currentKey, currentHighlightCAGED): '', 
-                                    'second': currentHighlightNotes.includes('seconds') ? eSeconds?.includes(index + 1) && currentStrings.e && isCAGED(index, 'e', currentKey, currentHighlightCAGED): '',
-                                    'third': currentHighlightNotes.includes('thirds') ? eThirds?.includes(index + 1) && currentStrings.e && isCAGED(index, 'e', currentKey, currentHighlightCAGED): '',
-                                    'fourth': currentHighlightNotes.includes('fourths') ? eFourths?.includes(index + 1) && currentStrings.e && isCAGED(index, 'e', currentKey, currentHighlightCAGED): '',
-                                    'fifth': currentHighlightNotes.includes('fifths') ? eFifths?.includes(index + 1) && currentStrings.e && isCAGED(index, 'e', currentKey, currentHighlightCAGED): '',
-                                    'sixth': currentHighlightNotes.includes('sixths') ? eSixths?.includes(index + 1) && currentStrings.e && isCAGED(index, 'e', currentKey, currentHighlightCAGED): '',
-                                    'seventh': currentHighlightNotes.includes('sevenths') ? eSevenths?.includes(index + 1) && currentStrings.e && isCAGED(index, 'e', currentKey, currentHighlightCAGED): '',
-                                    'blue': currentHighlightNotes.includes('blues') ? eBlues?.includes(index + 1) && currentStrings.e && isCAGED(index, 'e', currentKey, currentHighlightCAGED): '',
-                                }">
-                                <span v-if="currentHighlightNotes.includes('roots') && eRoots?.includes(index + 1) && currentStrings.e" class="note-names">{{ rootNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('seconds') && eSeconds?.includes(index + 1) && currentStrings.e" class="note-names">{{ secondNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('thirds') && eThirds?.includes(index + 1) && currentStrings.e" class="note-names">{{ thirdNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('fourths') && eFourths?.includes(index + 1) && currentStrings.e" class="note-names">{{ fourthNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('fifths') && eFifths?.includes(index + 1) && currentStrings.e" class="note-names">{{ fifthNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('sixths') && eSixths?.includes(index + 1) && currentStrings.e" class="note-names">{{ sixthNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('sevenths') && eSevenths?.includes(index + 1) && currentStrings.e" class="note-names">{{ seventhNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('blues') && eBlues?.includes(index + 1) && currentStrings.e" class="note-names">{{ blueNoteName }}</span>
-                            </div>
-                        </label>
-                    </div>
+                    <MyString
+                        :string-name="'e'"
+                        :string-data="e"
+                        :fret-amount="fretAmount"
+                    />
                 </div>
             </div>
             <div class="d-flex text-nowrap w-75">
                 <div class="d-inline-block string-name">B</div>
                 <div class="fret-start string-B">
-                    <div v-for="(_, index) in B" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}">
-                        <label v-if="index < fretAmount" class="notes">
-                            <input type="checkbox" v-model="B[index]"/>
-                            <div class="checkbox__checkmark" 
-                                :class="{
-                                    'root-note': currentHighlightNotes.includes('roots') ? BRoots?.includes(index + 1) && currentStrings.B && isCAGED(index, 'B', currentKey, currentHighlightCAGED): '', 
-                                    'second': currentHighlightNotes.includes('seconds') ? BSeconds?.includes(index + 1) && currentStrings.B && isCAGED(index, 'B', currentKey, currentHighlightCAGED): '',
-                                    'third': currentHighlightNotes.includes('thirds') ? BThirds?.includes(index + 1) && currentStrings.B && isCAGED(index, 'B', currentKey, currentHighlightCAGED): '',
-                                    'fourth': currentHighlightNotes.includes('fourths') ? BFourths?.includes(index + 1) && currentStrings.B && isCAGED(index, 'B', currentKey, currentHighlightCAGED): '',
-                                    'fifth': currentHighlightNotes.includes('fifths') ? BFifths?.includes(index + 1) && currentStrings.B && isCAGED(index, 'B', currentKey, currentHighlightCAGED): '',
-                                    'sixth': currentHighlightNotes.includes('sixths') ? BSixths?.includes(index + 1) && currentStrings.B && isCAGED(index, 'B', currentKey, currentHighlightCAGED): '',
-                                    'seventh': currentHighlightNotes.includes('sevenths') ? BSevenths?.includes(index + 1) && currentStrings.B && isCAGED(index, 'B', currentKey, currentHighlightCAGED): '',
-                                    'blue': currentHighlightNotes.includes('blues') ? BBlues?.includes(index + 1) && currentStrings.B && isCAGED(index, 'B', currentKey, currentHighlightCAGED): '',
-                                }">
-                                <span v-if="currentHighlightNotes.includes('roots') && BRoots?.includes(index + 1) && currentStrings.B" class="note-names">{{ rootNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('seconds') && BSeconds?.includes(index + 1) && currentStrings.B" class="note-names">{{ secondNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('thirds') && BThirds?.includes(index + 1) && currentStrings.B" class="note-names">{{ thirdNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('fourths') && BFourths?.includes(index + 1) && currentStrings.B" class="note-names">{{ fourthNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('fifths') && BFifths?.includes(index + 1) && currentStrings.B" class="note-names">{{ fifthNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('sixths') && BSixths?.includes(index + 1) && currentStrings.B" class="note-names">{{ sixthNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('sevenths') && BSevenths?.includes(index + 1) && currentStrings.B" class="note-names">{{ seventhNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('blues') && BBlues?.includes(index + 1) && currentStrings.B" class="note-names">{{ blueNoteName }}</span>
-                            </div>
-                        </label>
-                    </div>
+                    <MyString
+                        :string-name="'B'"
+                        :string-data="B"
+                        :fret-amount="fretAmount"
+                    />
                 </div>
             </div>
             <div class="d-flex text-nowrap w-75">
                 <div class="d-inline-block string-name">G</div>
                 <div class="fret-start string-G">
-                    <div v-for="(_, index) in G" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}">
-                        <label v-if="index < fretAmount" class="notes">
-                            <input type="checkbox" v-model="G[index]"/>
-                            <div class="checkbox__checkmark" 
-                                :class="{
-                                    'root-note': currentHighlightNotes.includes('roots') ? GRoots?.includes(index + 1) && currentStrings.G && isCAGED(index, 'G', currentKey, currentHighlightCAGED): '', 
-                                    'second': currentHighlightNotes.includes('seconds') ? GSeconds?.includes(index + 1) && currentStrings.G && isCAGED(index, 'G', currentKey, currentHighlightCAGED): '',
-                                    'third': currentHighlightNotes.includes('thirds') ? GThirds?.includes(index + 1) && currentStrings.G && isCAGED(index, 'G', currentKey, currentHighlightCAGED): '',
-                                    'fourth': currentHighlightNotes.includes('fourths') ? GFourths?.includes(index + 1) && currentStrings.G && isCAGED(index, 'G', currentKey, currentHighlightCAGED): '',
-                                    'fifth': currentHighlightNotes.includes('fifths') ? GFifths?.includes(index + 1) && currentStrings.G && isCAGED(index, 'G', currentKey, currentHighlightCAGED): '',
-                                    'sixth': currentHighlightNotes.includes('sixths') ? GSixths?.includes(index + 1) && currentStrings.G && isCAGED(index, 'G', currentKey, currentHighlightCAGED): '',
-                                    'seventh': currentHighlightNotes.includes('sevenths') ? GSevenths?.includes(index + 1) && currentStrings.G && isCAGED(index, 'G', currentKey, currentHighlightCAGED): '',
-                                    'blue': currentHighlightNotes.includes('blues') ? GBlues?.includes(index + 1) && currentStrings.G && isCAGED(index, 'G', currentKey, currentHighlightCAGED): '',
-                                }">
-                                <span v-if="currentHighlightNotes.includes('roots') && GRoots?.includes(index + 1) && currentStrings.G" class="note-names">{{ rootNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('seconds') && GSeconds?.includes(index + 1) && currentStrings.G" class="note-names">{{ secondNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('thirds') && GThirds?.includes(index + 1) && currentStrings.G" class="note-names">{{ thirdNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('fourths') && GFourths?.includes(index + 1) && currentStrings.G" class="note-names">{{ fourthNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('fifths') && GFifths?.includes(index + 1) && currentStrings.G" class="note-names">{{ fifthNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('sixths') && GSixths?.includes(index + 1) && currentStrings.G" class="note-names">{{ sixthNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('sevenths') && GSevenths?.includes(index + 1) && currentStrings.G" class="note-names">{{ seventhNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('blues') && GBlues?.includes(index + 1) && currentStrings.G" class="note-names">{{ blueNoteName }}</span>
-                            </div>
-                        </label>
-                    </div>
+                    <MyString
+                        :string-name="'G'"
+                        :string-data="G"
+                        :fret-amount="fretAmount"
+                    />
                 </div>
             </div>
             <!-- Fret Dots (To be implemented later) -->
@@ -341,91 +202,32 @@ onMounted(async () => {
             <div class="d-flex text-nowrap w-75">
                 <div class="d-inline-block string-name">D</div>
                 <div class="fret-start string-D">
-                    <div v-for="(_, index) in D" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}">
-                        <label v-if="index < fretAmount" class="notes">
-                            <input type="checkbox" v-model="D[index]"/>
-                            <div class="checkbox__checkmark" 
-                                :class="{
-                                    'root-note': currentHighlightNotes.includes('roots') ? DRoots?.includes(index + 1) && currentStrings.D && isCAGED(index, 'D', currentKey, currentHighlightCAGED): '', 
-                                    'second': currentHighlightNotes.includes('seconds') ? DSeconds?.includes(index + 1) && currentStrings.D && isCAGED(index, 'D', currentKey, currentHighlightCAGED): '',
-                                    'third': currentHighlightNotes.includes('thirds') ? DThirds?.includes(index + 1) && currentStrings.D && isCAGED(index, 'D', currentKey, currentHighlightCAGED): '',
-                                    'fourth': currentHighlightNotes.includes('fourths') ? DFourths?.includes(index + 1) && currentStrings.D && isCAGED(index, 'D', currentKey, currentHighlightCAGED): '',
-                                    'fifth': currentHighlightNotes.includes('fifths') ? DFifths?.includes(index + 1) && currentStrings.D && isCAGED(index, 'D', currentKey, currentHighlightCAGED): '',
-                                    'sixth': currentHighlightNotes.includes('sixths') ? DSixths?.includes(index + 1) && currentStrings.D && isCAGED(index, 'D', currentKey, currentHighlightCAGED): '',
-                                    'seventh': currentHighlightNotes.includes('sevenths') ? DSevenths?.includes(index + 1) && currentStrings.D && isCAGED(index, 'D', currentKey, currentHighlightCAGED): '',
-                                    'blue': currentHighlightNotes.includes('blues') ? DBlues?.includes(index + 1) && currentStrings.D && isCAGED(index, 'D', currentKey, currentHighlightCAGED): '',
-                                }">
-                                <span v-if="currentHighlightNotes.includes('roots') && DRoots?.includes(index + 1) && currentStrings.D" class="note-names">{{ rootNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('seconds') && DSeconds?.includes(index + 1) && currentStrings.D" class="note-names">{{ secondNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('thirds') && DThirds?.includes(index + 1) && currentStrings.D" class="note-names">{{ thirdNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('fourths') && DFourths?.includes(index + 1) && currentStrings.D" class="note-names">{{ fourthNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('fifths') && DFifths?.includes(index + 1) && currentStrings.D" class="note-names">{{ fifthNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('sixths') && DSixths?.includes(index + 1) && currentStrings.D" class="note-names">{{ sixthNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('sevenths') && DSevenths?.includes(index + 1) && currentStrings.D" class="note-names">{{ seventhNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('blues') && DBlues?.includes(index + 1) && currentStrings.D" class="note-names">{{ blueNoteName }}</span>
-                            </div>
-                        </label>
-                    </div>
+                    <MyString
+                        :string-name="'D'"
+                        :string-data="D"
+                        :fret-amount="fretAmount"
+                    />
                 </div>
             </div>
             <div class="d-flex text-nowrap w-75">
                 <div class="d-inline-block string-name">A</div>
                 <div class="fret-start string-A">
-                    <div v-for="(_, index) in A" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}">
-                        <label v-if="index < fretAmount" class="notes">
-                            <input type="checkbox" v-model="A[index]"/>
-                            <div class="checkbox__checkmark" 
-                                :class="{
-                                    'root-note': currentHighlightNotes.includes('roots') ? ARoots?.includes(index + 1) && currentStrings.A && isCAGED(index, 'A', currentKey, currentHighlightCAGED): '', 
-                                    'second': currentHighlightNotes.includes('seconds') ? ASeconds?.includes(index + 1) && currentStrings.A && isCAGED(index, 'A', currentKey, currentHighlightCAGED): '',
-                                    'third': currentHighlightNotes.includes('thirds') ? AThirds?.includes(index + 1) && currentStrings.A && isCAGED(index, 'A', currentKey, currentHighlightCAGED): '',
-                                    'fourth': currentHighlightNotes.includes('fourths') ? AFourths?.includes(index + 1) && currentStrings.A && isCAGED(index, 'A', currentKey, currentHighlightCAGED): '',
-                                    'fifth': currentHighlightNotes.includes('fifths') ? AFifths?.includes(index + 1) && currentStrings.A && isCAGED(index, 'A', currentKey, currentHighlightCAGED): '',
-                                    'sixth': currentHighlightNotes.includes('sixths') ? ASixths?.includes(index + 1) && currentStrings.A && isCAGED(index, 'A', currentKey, currentHighlightCAGED): '',
-                                    'seventh': currentHighlightNotes.includes('sevenths') ? ASevenths?.includes(index + 1) && currentStrings.A && isCAGED(index, 'A', currentKey, currentHighlightCAGED): '',
-                                    'blue': currentHighlightNotes.includes('blues') ? ABlues?.includes(index + 1) && currentStrings.A && isCAGED(index, 'A', currentKey, currentHighlightCAGED): '',
-                                }">
-                                <span v-if="currentHighlightNotes.includes('roots') && ARoots?.includes(index + 1) && currentStrings.A" class="note-names">{{ rootNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('seconds') && ASeconds?.includes(index + 1) && currentStrings.A" class="note-names">{{ secondNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('thirds') && AThirds?.includes(index + 1) && currentStrings.A" class="note-names">{{ thirdNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('fourths') && AFourths?.includes(index + 1) && currentStrings.A" class="note-names">{{ fourthNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('fifths') && AFifths?.includes(index + 1) && currentStrings.A" class="note-names">{{ fifthNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('sixths') && ASixths?.includes(index + 1) && currentStrings.A" class="note-names">{{ sixthNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('sevenths') && ASevenths?.includes(index + 1) && currentStrings.A" class="note-names">{{ seventhNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('blues') && ABlues?.includes(index + 1) && currentStrings.A" class="note-names">{{ blueNoteName }}</span>
-                            </div>
-                        </label>
-                    </div>
+                    <MyString
+                        :string-name="'A'"
+                        :string-data="A"
+                        :fret-amount="fretAmount"
+                    />
                 </div>
             </div>
             <div class="d-flex text-nowrap w-75">
                 <div class="d-inline-block string-name">E</div>
                 <div class="fret-start string-E last-string">
-                    <div v-for="(_, index) in E" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}"  style="border-right: none">
-                        <label v-if="index < fretAmount" class="notes">
-                            <input type="checkbox" v-model="E[index]"/>
-                            <div class="checkbox__checkmark" 
-                                :class="{
-                                    'root-note': currentHighlightNotes.includes('roots') ? ERoots?.includes(index + 1) && currentStrings.E && isCAGED(index, 'E', currentKey, currentHighlightCAGED): '', 
-                                    'second': currentHighlightNotes.includes('seconds') ? ESeconds?.includes(index + 1) && currentStrings.E && isCAGED(index, 'E', currentKey, currentHighlightCAGED): '',
-                                    'third': currentHighlightNotes.includes('thirds') ? EThirds?.includes(index + 1) && currentStrings.E && isCAGED(index, 'E', currentKey, currentHighlightCAGED): '',
-                                    'fourth': currentHighlightNotes.includes('fourths') ? EFourths?.includes(index + 1) && currentStrings.E && isCAGED(index, 'E', currentKey, currentHighlightCAGED): '',
-                                    'fifth': currentHighlightNotes.includes('fifths') ? EFifths?.includes(index + 1) && currentStrings.E && isCAGED(index, 'E', currentKey, currentHighlightCAGED): '',
-                                    'sixth': currentHighlightNotes.includes('sixths') ? ESixths?.includes(index + 1) && currentStrings.E && isCAGED(index, 'E', currentKey, currentHighlightCAGED): '',
-                                    'seventh': currentHighlightNotes.includes('sevenths') ? ESevenths?.includes(index + 1) && currentStrings.E && isCAGED(index, 'E', currentKey, currentHighlightCAGED): '',
-                                    'blue': currentHighlightNotes.includes('blues') ? EBlues?.includes(index + 1) && currentStrings.E && isCAGED(index, 'E', currentKey, currentHighlightCAGED): '',
-                                }">
-                                <span v-if="currentHighlightNotes.includes('roots') && ERoots?.includes(index + 1) && currentStrings.E" class="note-names">{{ rootNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('seconds') && ESeconds?.includes(index + 1) && currentStrings.E" class="note-names">{{ secondNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('thirds') && EThirds?.includes(index + 1) && currentStrings.E" class="note-names">{{ thirdNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('fourths') && EFourths?.includes(index + 1) && currentStrings.E" class="note-names">{{ fourthNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('fifths') && EFifths?.includes(index + 1) && currentStrings.E" class="note-names">{{ fifthNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('sixths') && ESixths?.includes(index + 1) && currentStrings.E" class="note-names">{{ sixthNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('sevenths') && ESevenths?.includes(index + 1) && currentStrings.E" class="note-names">{{ seventhNoteName }}</span>
-                                <span v-if="currentHighlightNotes.includes('blues') && EBlues?.includes(index + 1) && currentStrings.E" class="note-names">{{ blueNoteName }}</span>
-                            </div>
-                        </label>
-                    </div>
+                    <MyString
+                        :string-name="'E'"
+                        :string-data="E"
+                        :fret-amount="fretAmount"
+                        :is-last-string="true"
+                    />
                 </div>
             </div>
 
@@ -527,12 +329,6 @@ onMounted(async () => {
 
 .last-string {
     border-left-color: transparent;
-}
-
-.fret {
-    min-width: 2rem;
-    max-width: 50px;
-    border-right: 1px solid gray;
 }
 
 .CAGED-name-container {
