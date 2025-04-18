@@ -5,7 +5,7 @@ import { storeToRefs } from 'pinia';
 import { usePatternStore } from '@/stores/usePatternStore';
 import { isCAGED } from '@data/CAGED';
 import { getRoots, getSeconds, getThirds, getFourths, getFifths, getSixths, getSevenths, getBlues } from '@data/intervals';
-import { getRootNoteName, getSecondNoteName, getThirdNoteName, getFourthNoteName, getFifthNoteName, getSixthNoteName, getSeventhNoteName, getBlueNoteName } from './data/noteNames';
+import { getRootNoteName, getSecondNoteName, getThirdNoteName, getFourthNoteName, getFifthNoteName, getSixthNoteName, getSeventhNoteName, getBlueNoteName } from '@data/noteNames';
 
 const patternStore = usePatternStore();
 const { currentKey, currentHighlightNotes, currentStrings, currentCAGED } = storeToRefs(patternStore);
@@ -66,14 +66,14 @@ const currentHighlightCAGED = computed(() => {
                     'seventh': currentHighlightNotes.includes('sevenths') ? xSevenths?.includes(index + 1) && isStringActive && isCAGED(index, stringName, currentKey, currentHighlightCAGED): '',
                     'blue': currentHighlightNotes.includes('blues') ? xBlues?.includes(index + 1) && isStringActive && isCAGED(index, stringName, currentKey, currentHighlightCAGED): '',
                 }">
-                <span v-if="currentHighlightNotes.includes('roots') && xRoots?.includes(index + 1) && isStringActive" class="note-names">{{ rootNoteName }}</span>
-                <span v-if="currentHighlightNotes.includes('seconds') && xSeconds?.includes(index + 1) && isStringActive" class="note-names">{{ secondNoteName }}</span>
-                <span v-if="currentHighlightNotes.includes('thirds') && xThirds?.includes(index + 1) && isStringActive" class="note-names">{{ thirdNoteName }}</span>
-                <span v-if="currentHighlightNotes.includes('fourths') && xFourths?.includes(index + 1) && isStringActive" class="note-names">{{ fourthNoteName }}</span>
-                <span v-if="currentHighlightNotes.includes('fifths') && xFifths?.includes(index + 1) && isStringActive" class="note-names">{{ fifthNoteName }}</span>
-                <span v-if="currentHighlightNotes.includes('sixths') && xSixths?.includes(index + 1) && isStringActive" class="note-names">{{ sixthNoteName }}</span>
-                <span v-if="currentHighlightNotes.includes('sevenths') && xSevenths?.includes(index + 1) && isStringActive" class="note-names">{{ seventhNoteName }}</span>
-                <span v-if="currentHighlightNotes.includes('blues') && xBlues?.includes(index + 1) && isStringActive" class="note-names">{{ blueNoteName }}</span>
+                <span v-if="currentHighlightNotes.includes('roots') && xRoots?.includes(index + 1) && isStringActive && isCAGED(index, stringName, currentKey, currentHighlightCAGED)" class="note-names">{{ rootNoteName }}</span>
+                <span v-if="currentHighlightNotes.includes('seconds') && xSeconds?.includes(index + 1) && isStringActive && isCAGED(index, stringName, currentKey, currentHighlightCAGED)" class="note-names">{{ secondNoteName }}</span>
+                <span v-if="currentHighlightNotes.includes('thirds') && xThirds?.includes(index + 1) && isStringActive && isCAGED(index, stringName, currentKey, currentHighlightCAGED)" class="note-names">{{ thirdNoteName }}</span>
+                <span v-if="currentHighlightNotes.includes('fourths') && xFourths?.includes(index + 1) && isStringActive && isCAGED(index, stringName, currentKey, currentHighlightCAGED)" class="note-names">{{ fourthNoteName }}</span>
+                <span v-if="currentHighlightNotes.includes('fifths') && xFifths?.includes(index + 1) && isStringActive && isCAGED(index, stringName, currentKey, currentHighlightCAGED)" class="note-names">{{ fifthNoteName }}</span>
+                <span v-if="currentHighlightNotes.includes('sixths') && xSixths?.includes(index + 1) && isStringActive && isCAGED(index, stringName, currentKey, currentHighlightCAGED)" class="note-names">{{ sixthNoteName }}</span>
+                <span v-if="currentHighlightNotes.includes('sevenths') && xSevenths?.includes(index + 1) && isStringActive && isCAGED(index, stringName, currentKey, currentHighlightCAGED)" class="note-names">{{ seventhNoteName }}</span>
+                <span v-if="currentHighlightNotes.includes('blues') && xBlues?.includes(index + 1) && isStringActive && isCAGED(index, stringName, currentKey, currentHighlightCAGED)" class="note-names">{{ blueNoteName }}</span>
             </div>
         </label>
     </div>
