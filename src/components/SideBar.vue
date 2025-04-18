@@ -21,12 +21,17 @@ const toggleSidebar = () => {
         <Transition name="fade"> 
             <div v-show="isCollapsed">
                 <!-- Accidental -->
-                <div class="d-flex flex-column text-start mt-5">
+                <div class="d-flex mt-5 accidental-radio">
                     <label>
-                        <input type="radio" value="sharp" v-model="currentAccidental" @change="patternStore.updateToEqualAccidental()"/> Sharp ♯
+                        <input type="radio" value="sharp" v-model="currentAccidental" @change="patternStore.updateToEqualAccidental()">
+                            <div class="label"> Sharp ♯ </div>
+                        </input>
                     </label>
+
                     <label>
-                        <input type="radio" value="flat" v-model="currentAccidental" @change="patternStore.updateToEqualAccidental()"/> Flat ♭
+                        <input type="radio" value="flat" v-model="currentAccidental" @change="patternStore.updateToEqualAccidental()"> 
+                            <div class="label"> Flat ♭ </div>
+                        </input>
                     </label>
                 </div>
 
@@ -166,7 +171,7 @@ const toggleSidebar = () => {
 
 .highlightNotes-filter .checkbox__checkmark {
     margin-top: 4px !important;
-    background-color: #242525;
+    background-color: $black;
 }
 
 .fade-enter-active,
@@ -177,5 +182,31 @@ const toggleSidebar = () => {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0; 
+}
+
+// Accidental
+.accidental-radio label {
+    width: 100%;
+    padding: 3px;
+    background-color: $black;
+    cursor: pointer;
+}
+
+.accidental-radio label:first-child {
+    border-radius: 8px 0 0 8px;
+}
+
+.accidental-radio label:last-child {
+    border-radius: 0 8px 8px 0;
+}
+
+.accidental-radio input {
+    display: none;
+}
+
+.accidental-radio input:checked + .label {
+    background-color: $yellow;
+    border-radius: 5px;
+    color: $black;
 }
 </style>
