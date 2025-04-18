@@ -1,13 +1,14 @@
 import { defineStore } from 'pinia';
+import { allNoteNamesInSharp, allNoteNamesInFlat } from '@/components/data/noteNames';
 
 interface State {
-  allKeys: string[];
   allPatterns: string[];
   currentKey: string;
   currentPattern: string;
   currentHighlightNotes: string[];
   currentStrings: CurrentStrings;
   currentCAGED: CurrentCAGED;
+  currentAccidental: "sharp" | "flat";
 }
 
 export interface CurrentStrings {
@@ -29,9 +30,9 @@ export interface CurrentCAGED {
 
 export const usePatternStore = defineStore('pattern', {
   state: (): State => ({
-    allKeys : ["C","C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"],
     allPatterns : ["Pentatonic Scale", "Blue Scale", "Diatonic Scale", "Triad", "Custom"],
     currentKey: "C",
+    currentAccidental: "sharp",
     currentPattern: "Pentatonic Scale",
     currentHighlightNotes: ["roots"],
     currentStrings: {
@@ -51,6 +52,9 @@ export const usePatternStore = defineStore('pattern', {
     }
   }),
   getters: {
+    allKeys: (state: State) => {
+      return (state.currentAccidental == "sharp" ? allNoteNamesInSharp : allNoteNamesInFlat);
+    },
     highlightNotes: (state: State) => {
       switch (state.currentPattern) {
         case "Pentatonic Scale":
@@ -72,6 +76,16 @@ export const usePatternStore = defineStore('pattern', {
     },
     updateCurrentHighlightNotes() {
       this.currentHighlightNotes = this.currentHighlightNotes.filter(note => this.highlightNotes.includes(note));
+    },
+    updateToEqualAccidental() {
+      if (this.currentAccidental == "sharp") {
+        const index = allNoteNamesInFlat.indexOf(this.currentKey);
+        this.currentKey = allNoteNamesInSharp[index];
+      }
+      if (this.currentAccidental == "flat") {
+        const index = allNoteNamesInSharp.indexOf(this.currentKey);
+        this.currentKey = allNoteNamesInFlat[index];
+      }
     }
   },
 });

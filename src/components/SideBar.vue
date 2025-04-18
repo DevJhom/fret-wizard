@@ -4,7 +4,7 @@ import { usePatternStore } from '@/stores/usePatternStore';
 import { storeToRefs } from 'pinia';
 
 const patternStore = usePatternStore();
-const { currentHighlightNotes, currentCAGED, currentStrings } = storeToRefs(patternStore);
+const { currentHighlightNotes, currentCAGED, currentStrings, currentAccidental } = storeToRefs(patternStore);
 
 const isCollapsed = ref(true);
 
@@ -20,6 +20,17 @@ const toggleSidebar = () => {
         <div class="hamburger text-start" @click="toggleSidebar()">☰</div>
         <Transition name="fade"> 
             <div v-show="isCollapsed">
+                <!-- Accidental -->
+                <div class="d-flex flex-column text-start mt-5">
+                    <label>
+                        <input type="radio" value="sharp" v-model="currentAccidental" @change="patternStore.updateToEqualAccidental()"/> Sharp ♯
+                    </label>
+                    <label>
+                        <input type="radio" value="flat" v-model="currentAccidental" @change="patternStore.updateToEqualAccidental()"/> Flat ♭
+                    </label>
+                </div>
+
+                <!-- Notes -->
                 <div class="notes d-flex flex-column text-start mt-5">
                     <span class="me-2 text-yellow fw-bold">
                         Notes 
