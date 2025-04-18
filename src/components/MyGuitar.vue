@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, computed } from 'vue';
 import { getCurrentKey, updateCurrentKey, getScale, updateCurrentScale, updateScale } from '@services/mock_service';
-import { KEY_TO_NUMBER } from './data/noteNames';
+import { KEY_TO_NUMBER } from '@data/noteNames';
 import { isCAGEDNameHere, GetCAGEDName } from '@data/CAGED';
 import { usePatternStore } from '@/stores/usePatternStore';
 import { storeToRefs } from 'pinia';
@@ -260,11 +260,11 @@ onMounted(async () => {
 .my-guitar {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
     width: 85vw;
     height: 100%;
-    padding-bottom: 20%;
+    padding-bottom: 10%;
 }
 
 .custom-radio {
