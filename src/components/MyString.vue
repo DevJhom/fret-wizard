@@ -8,7 +8,7 @@ import { getRoots, getSeconds, getThirds, getFourths, getFifths, getSixths, getS
 import { getRootNoteName, getSecondNoteName, getThirdNoteName, getFourthNoteName, getFifthNoteName, getSixthNoteName, getSeventhNoteName, getBlueNoteName } from '@data/noteNames';
 
 const patternStore = usePatternStore();
-const { currentKey, currentHighlightNotes, currentStrings, currentCAGED } = storeToRefs(patternStore);
+const { currentKey, currentHighlightNotes, currentStrings, currentCAGED, currentAccidental } = storeToRefs(patternStore);
 
 const props = defineProps({
   stringName: String,
@@ -31,14 +31,14 @@ const xSevenths = computed(() => getSevenths(currentKey.value, props.stringName)
 const xBlues = computed(() => getBlues(currentKey.value, props.stringName));
 
 // Note Names
-const rootNoteName = computed(() => getRootNoteName(currentKey.value));
-const secondNoteName = computed(() => getSecondNoteName(currentKey.value));
-const thirdNoteName = computed(() => getThirdNoteName(currentKey.value));
-const fourthNoteName = computed(() => getFourthNoteName(currentKey.value));
-const fifthNoteName = computed(() => getFifthNoteName(currentKey.value));
-const sixthNoteName = computed(() => getSixthNoteName(currentKey.value));
-const seventhNoteName = computed(() => getSeventhNoteName(currentKey.value));
-const blueNoteName = computed(() => getBlueNoteName(currentKey.value));
+const rootNoteName = computed(() => getRootNoteName(currentKey.value, currentAccidental.value));
+const secondNoteName = computed(() => getSecondNoteName(currentKey.value, currentAccidental.value));
+const thirdNoteName = computed(() => getThirdNoteName(currentKey.value, currentAccidental.value));
+const fourthNoteName = computed(() => getFourthNoteName(currentKey.value, currentAccidental.value));
+const fifthNoteName = computed(() => getFifthNoteName(currentKey.value, currentAccidental.value));
+const sixthNoteName = computed(() => getSixthNoteName(currentKey.value, currentAccidental.value));
+const seventhNoteName = computed(() => getSeventhNoteName(currentKey.value, currentAccidental.value));
+const blueNoteName = computed(() => getBlueNoteName(currentKey.value, currentAccidental.value));
 
 const isStringActive = computed(() => {
     return currentStrings.value[props.stringName];
