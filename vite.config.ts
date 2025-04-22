@@ -22,7 +22,8 @@ export default defineConfig({
       scss: {
         additionalData: `
         @import "./src/assets/scss/variables.scss";
-        @import "./src/assets/scss/notes.scss";
+        @import "./src/assets/scss/notes-input.scss";
+        @import "./src/assets/scss/switch-input.scss";
         @import "./src/assets/scss/range-input.scss";
         `
       }
