@@ -1,0 +1,24 @@
+.switch-radio label {
+    width: 100%;
+    padding: 3px;
+    background-color: $black;
+    cursor: pointer;
+}
+
+.switch-radio label:first-child {
+    border-radius: 8px 0 0 8px;
+}
+
+.switch-radio label:last-child {
+    border-radius: 0 8px 8px 0;
+}
+
+.switch-radio input {
+    display: none;
+}
+
+.switch-radio input:checked + .label {
+    background-color: $yellow;
+    border-radius: 5px;
+    color: $black;
+}

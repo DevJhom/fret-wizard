@@ -2,9 +2,10 @@
 import { ref } from 'vue';
 import { usePatternStore } from '@/stores/usePatternStore';
 import { storeToRefs } from 'pinia';
+import { Tonality, Accidental } from '@data/constants';
 
 const patternStore = usePatternStore();
-const { currentHighlightNotes, currentCAGED, currentStrings, currentAccidental } = storeToRefs(patternStore);
+const { currentHighlightNotes, currentCAGED, currentStrings, currentAccidental, currentTonality } = storeToRefs(patternStore);
 
 const isCollapsed = ref(true);
 
@@ -20,16 +21,31 @@ const toggleSidebar = () => {
         <div class="hamburger text-start" @click="toggleSidebar()">☰</div>
         <Transition name="fade"> 
             <div v-show="isCollapsed">
-                <!-- Accidental -->
-                <div class="d-flex mt-5 accidental-radio">
+                <!-- Tonality -->
+                <div class="d-flex mt-5 switch-radio">
                     <label>
-                        <input type="radio" value="sharp" v-model="currentAccidental" @change="patternStore.updateToEqualAccidental()">
+                        <input type="radio" name="tonality" :value="Tonality.MAJOR" v-model="currentTonality" @change="patternStore.updateTonality()">
+                            <div class="label"> Major </div>
+                        </input>
+                    </label>
+
+                    <label>
+                        <input type="radio" name="tonality" :value="Tonality.MINOR" v-model="currentTonality" @change="patternStore.updateTonality()"> 
+                            <div class="label"> Minor </div>
+                        </input>
+                    </label>
+                </div>
+
+                <!-- Accidental -->
+                <div class="d-flex mt-3 switch-radio">
+                    <label>
+                        <input type="radio" name="accidental" :value="Accidental.SHARP" v-model="currentAccidental" @change="patternStore.updateToEqualAccidental()">
                             <div class="label"> Sharp ♯ </div>
                         </input>
                     </label>
 
                     <label>
-                        <input type="radio" value="flat" v-model="currentAccidental" @change="patternStore.updateToEqualAccidental()"> 
+                        <input type="radio" name="accidental" :value="Accidental.FLAT" v-model="currentAccidental" @change="patternStore.updateToEqualAccidental()"> 
                             <div class="label"> Flat ♭ </div>
                         </input>
                     </label>
@@ -182,31 +198,5 @@ const toggleSidebar = () => {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0; 
-}
-
-// Accidental
-.accidental-radio label {
-    width: 100%;
-    padding: 3px;
-    background-color: $black;
-    cursor: pointer;
-}
-
-.accidental-radio label:first-child {
-    border-radius: 8px 0 0 8px;
-}
-
-.accidental-radio label:last-child {
-    border-radius: 0 8px 8px 0;
-}
-
-.accidental-radio input {
-    display: none;
-}
-
-.accidental-radio input:checked + .label {
-    background-color: $yellow;
-    border-radius: 5px;
-    color: $black;
 }
 </style>

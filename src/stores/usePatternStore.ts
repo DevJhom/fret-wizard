@@ -1,15 +1,6 @@
 import { defineStore } from 'pinia';
-import { allNoteNamesInSharp, allNoteNamesInFlat } from '@/components/data/noteNames';
-
-interface State {
-  allPatterns: string[];
-  currentKey: string;
-  currentPattern: string;
-  currentHighlightNotes: string[];
-  currentStrings: CurrentStrings;
-  currentCAGED: CurrentCAGED;
-  currentAccidental: "sharp" | "flat";
-}
+import { Tonality, Accidental } from '@data/constants';
+import { majorSharpAllNotes, majorFlatAllNotes, minorSharpAllNotes, minorFlatAllNotes } from '@/components/data/constants';
 
 export interface CurrentStrings {
   E: boolean;
@@ -28,11 +19,23 @@ export interface CurrentCAGED {
   DShape: boolean;
 }
 
+interface State {
+  allPatterns: string[];
+  currentKey: string;
+  currentPattern: string;
+  currentHighlightNotes: string[];
+  currentStrings: CurrentStrings;
+  currentCAGED: CurrentCAGED;
+  currentAccidental: Accidental.SHARP | Accidental.FLAT;
+  currentTonality: Tonality.MAJOR | Tonality.MINOR;
+}
+
 export const usePatternStore = defineStore('pattern', {
   state: (): State => ({
     allPatterns : ["Pentatonic Scale", "Blue Scale", "Diatonic Scale", "Triad", "Custom"],
     currentKey: "C",
-    currentAccidental: "sharp",
+    currentAccidental: Accidental.SHARP,
+    currentTonality: Tonality.MAJOR,
     currentPattern: "Pentatonic Scale",
     currentHighlightNotes: ["roots"],
     currentStrings: {
@@ -53,7 +56,12 @@ export const usePatternStore = defineStore('pattern', {
   }),
   getters: {
     allKeys: (state: State) => {
-      return (state.currentAccidental == "sharp" ? allNoteNamesInSharp : allNoteNamesInFlat);
+      if (state.currentTonality == Tonality.MAJOR) {
+        return (state.currentAccidental == Accidental.SHARP ? majorSharpAllNotes : majorFlatAllNotes);
+      }
+      if (state.currentTonality == Tonality.MINOR) {
+        return (state.currentAccidental == Accidental.SHARP ? minorSharpAllNotes : minorFlatAllNotes);
+      }
     },
     highlightNotes: (state: State) => {
       switch (state.currentPattern) {
@@ -78,13 +86,21 @@ export const usePatternStore = defineStore('pattern', {
       this.currentHighlightNotes = this.currentHighlightNotes.filter(note => this.highlightNotes.includes(note));
     },
     updateToEqualAccidental() {
-      if (this.currentAccidental == "sharp") {
-        const index = allNoteNamesInFlat.indexOf(this.currentKey);
-        this.currentKey = allNoteNamesInSharp[index];
+      if (this.currentAccidental == Accidental.SHARP) {
+        const index = majorFlatAllNotes.indexOf(this.currentKey);
+        this.currentKey = majorSharpAllNotes[index];
       }
-      if (this.currentAccidental == "flat") {
-        const index = allNoteNamesInSharp.indexOf(this.currentKey);
-        this.currentKey = allNoteNamesInFlat[index];
+      if (this.currentAccidental == Accidental.FLAT) {
+        const index = majorSharpAllNotes.indexOf(this.currentKey);
+        this.currentKey = majorFlatAllNotes[index];
+      }
+    },
+    updateTonality() {
+      if (this.currentTonality == Tonality.MAJOR) {
+        this.currentKey = "C";
+      }
+      if (this.currentTonality == Tonality.MINOR) {
+        this.currentKey = "A";
       }
     }
   },

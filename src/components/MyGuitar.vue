@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, computed } from 'vue';
-import { getCurrentKey, updateCurrentKey, getScale, updateCurrentScale, updateScale } from '@services/mock_service';
-import { KEY_TO_NUMBER } from '@data/noteNames';
+import { Tonality, MAJOR_KEY_TO_NUMBER } from '@data/constants';
+import { findRelativeMajor } from '@data/noteNames';
 import { isCAGEDNameHere, GetCAGEDName } from '@data/CAGED';
+import { getCurrentKey, updateCurrentKey, getScale, updateCurrentScale, updateScale } from '@services/mock_service';
 import { usePatternStore } from '@/stores/usePatternStore';
 import { storeToRefs } from 'pinia';
-import MyString from './MyString.vue';
+import MyString from '@components/MyString.vue';
 
 const patternStore = usePatternStore();
-const { allKeys, allPatterns, currentKey, currentPattern, currentCAGED } = storeToRefs(patternStore);
+const { allKeys, allPatterns, currentKey, currentPattern, currentCAGED, currentTonality, currentAccidental } = storeToRefs(patternStore);
 
 const fretAmount = ref(24);
 const fretIndicator = new Array(24);
@@ -27,10 +28,21 @@ const fetchCurrentKey = async () => {
 }
 
 const fetchScale = async () => {
+    // Fetch the default key "C" and shift the data based on "currentKeyToNumber"
     const data = await getScale(mapScaleName(), "C");
     const tempData = JSON.parse(JSON.stringify(data))
 
-    for (let i = 0; i < mapCurrentKeyToNumber.value; i++) {
+    let currentKeyToNumber = 0;
+
+    if (currentTonality.value == Tonality.MAJOR) {
+        currentKeyToNumber = MAJOR_KEY_TO_NUMBER[currentKey.value];
+    }
+    if (currentTonality.value == Tonality.MINOR) {
+        const relativeMajor = findRelativeMajor(currentKey.value, currentAccidental.value);
+        currentKeyToNumber = MAJOR_KEY_TO_NUMBER[relativeMajor];
+    }
+
+    for (let i = 0; i < currentKeyToNumber; i++) {
         const lastValueOfE = tempData.E.pop(); 
         tempData.E.unshift(lastValueOfE);
 
@@ -95,11 +107,6 @@ watch([E, A, D, G, B, e], (newValue) => {
     })
 }, { deep: true })
 
-const mapCurrentKeyToNumber = computed(() => {
-  const number = KEY_TO_NUMBER[currentKey.value];
-  return number;
-});
-
 onMounted(async () => {
     await fetchCurrentKey();
     await fetchScale();
@@ -122,6 +129,14 @@ onMounted(async () => {
                         </input>
                     </label>
                 </div>
+                <span class="me-2 text-yellow fw-bold">
+                    <template v-if="currentTonality == Tonality.MAJOR">
+                        (Major)
+                    </template>
+                    <template v-if="currentTonality == Tonality.MINOR">
+                        (Minor)
+                    </template>
+                </span>
             </div>
             <!-- Pattern Selector -->
             <div class="d-flex justify-content-center align-items-center mt-4">
