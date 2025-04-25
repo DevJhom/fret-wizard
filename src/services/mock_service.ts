@@ -1,3 +1,4 @@
+import { Pattern } from '@/components/data/constants';
 import data from '../../database/all-scales.json';
 
 type GuitarStrings = {
@@ -13,13 +14,13 @@ export const getCurrentKey = async () => {
 export const updateCurrentKey = async (key: string) => {}
 
 export const getScale = async (scale: string, key: string) => {
-    if (scale == "pentatonic_scale")
+    if (scale == Pattern.Pentatonic)
         return data.pentatonic_scale.C;
-    else if (scale == "blue_scale")
+    else if (scale == Pattern.Blue)
         return data.blue_scale.C;
-    else if (scale == "diatonic_scale")
+    else if (scale == Pattern.Diatonic)
         return data.diatonic_scale.C
-    else if (scale == "triad")
+    else if (scale == Pattern.Triad)
         return data.triad.C
 }
 
