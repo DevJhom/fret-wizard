@@ -200,6 +200,13 @@ export const getSevenths = (tonality: Tonality, currentKey: string, stringName: 
 };
 
 export const getBlues = (tonality: Tonality, currentKey: string, stringName: string) => {
-  const shift = MAJOR_KEY_TO_NUMBER[currentKey];
-  return blues[stringName].map(note => (note + shift));
+  if (tonality == Tonality.MAJOR) {
+    const shift = MAJOR_KEY_TO_NUMBER[currentKey];
+    return blues[stringName].map(note => (note + shift));
+  }
+
+  if (tonality == Tonality.MINOR) {
+    const shift = MINOR_KEY_TO_NUMBER[currentKey];
+    return blues[stringName].map(note => (note + shift));
+  }
 };

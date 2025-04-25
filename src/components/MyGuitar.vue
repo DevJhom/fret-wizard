@@ -29,7 +29,7 @@ const fetchCurrentKey = async () => {
 
 const fetchScale = async () => {
     // Fetch the default key "C" and shift the data based on "currentKeyToNumber"
-    const data = await getScale(mapScaleName(), "C");
+    const data = await getScale(currentPattern.value, "C");
     const tempData = JSON.parse(JSON.stringify(data))
 
     let currentKeyToNumber = 0;
@@ -70,21 +70,6 @@ const fetchScale = async () => {
     e.value = tempData.e;
 }
 
-const mapScaleName: () => string = () => {
-    if(currentPattern.value == 'Pentatonic Scale')
-        return 'pentatonic_scale';
-    if(currentPattern.value == 'Blue Scale')
-        return 'blue_scale';
-    if(currentPattern.value == 'Diatonic Scale')
-        return 'diatonic_scale';
-    if(currentPattern.value == 'Triad')
-        return 'triad';
-    if(currentPattern.value == 'Custom')
-        return 'custom';
-
-    return '';
-};
-
 const onChangeCurrentKey = () => {
     fetchScale();
     updateCurrentKey(currentKey.value);
@@ -97,7 +82,7 @@ const onChangeCurrentPattern = () => {
 }
 
 watch([E, A, D, G, B, e], (newValue) => {
-    updateScale(mapScaleName(), currentKey.value, {
+    updateScale(currentPattern.value, currentKey.value, {
         E: Object.assign([], newValue[0]), 
         A: Object.assign([], newValue[1]), 
         D: Object.assign([], newValue[2]), 

@@ -8,6 +8,14 @@ export enum Tonality {
     MINOR = "minor"
 }
 
+export enum Pattern {
+  Pentatonic = "Pentatonic Scale",
+  Blue = "Blue Scale",
+  Diatonic = "Diatonic Scale",
+  Triad = "Triad",
+  Chromatic = "Chromatic Scale"
+}
+
 export const majorSharpAllNotes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 export const majorFlatAllNotes = ["C", "D♭", "D", "E♭", "E", "F", "G♭", "G", "A♭", "A", "B♭", "B"];
 

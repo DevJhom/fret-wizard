@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { Tonality, Accidental } from '@data/constants';
+import { Tonality, Accidental, Pattern } from '@data/constants';
 import { majorSharpAllNotes, majorFlatAllNotes, minorSharpAllNotes, minorFlatAllNotes } from '@/components/data/constants';
 
 export interface CurrentStrings {
@@ -32,11 +32,11 @@ interface State {
 
 export const usePatternStore = defineStore('pattern', {
   state: (): State => ({
-    allPatterns : ["Pentatonic Scale", "Blue Scale", "Diatonic Scale", "Triad", "Custom"],
+    allPatterns: [Pattern.Pentatonic, Pattern.Blue, Pattern.Diatonic, Pattern.Triad],
     currentKey: "C",
     currentAccidental: Accidental.SHARP,
     currentTonality: Tonality.MAJOR,
-    currentPattern: "Pentatonic Scale",
+    currentPattern: Pattern.Pentatonic,
     currentHighlightNotes: ["roots"],
     currentStrings: {
       E: true,
@@ -65,21 +65,21 @@ export const usePatternStore = defineStore('pattern', {
     },
     highlightNotes: (state: State) => {
       switch (state.currentPattern) {
-        case "Pentatonic Scale":
+        case Pattern.Pentatonic:
           if (state.currentTonality == Tonality.MAJOR)
             return ["roots", "seconds", "thirds", "fifths", "sixths"];
           if (state.currentTonality == Tonality.MINOR)
             return ["roots", "thirds", "fourths", "fifths", "sevenths"];
           break;
-        case "Blue Scale":
+        case Pattern.Blue:
           if (state.currentTonality == Tonality.MAJOR)
             return ["roots", "seconds", "thirds", "fifths", "sixths", "blues"];
           if (state.currentTonality == Tonality.MINOR)
             return ["roots", "thirds", "fourths", "fifths", "sevenths", "blues"];
           break;
-        case "Diatonic Scale":
+        case Pattern.Diatonic:
           return ["roots", "seconds", "thirds", "fourths", "fifths", "sixths", "sevenths"];
-        case "Triad":
+        case Pattern.Triad:
           return ["roots", "thirds", "fifths"];
         default:
           return ["roots", "thirds", "fifths"];
