@@ -29,7 +29,7 @@ const fetchCurrentKey = async () => {
 
 const fetchScale = async () => {
     // Fetch the default key "C" and shift the data based on "currentKeyToNumber"
-    const data = await getScale(currentPattern.value, "C");
+    const data = await getScale(currentTonality.value, currentPattern.value, "C");
     const tempData = JSON.parse(JSON.stringify(data))
 
     let currentKeyToNumber = 0;
