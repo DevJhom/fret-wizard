@@ -24,13 +24,13 @@ const toggleSidebar = () => {
                 <!-- Tonality -->
                 <div class="d-flex mt-5 switch-radio">
                     <label>
-                        <input type="radio" name="tonality" :value="Tonality.MAJOR" v-model="currentTonality" @change="patternStore.updateTonality()">
+                        <input type="radio" name="tonality" :value="Tonality.MAJOR" v-model="currentTonality">
                             <div class="label"> Major </div>
                         </input>
                     </label>
 
                     <label>
-                        <input type="radio" name="tonality" :value="Tonality.MINOR" v-model="currentTonality" @change="patternStore.updateTonality()"> 
+                        <input type="radio" name="tonality" :value="Tonality.MINOR" v-model="currentTonality"> 
                             <div class="label"> Minor </div>
                         </input>
                     </label>

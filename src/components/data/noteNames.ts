@@ -12,6 +12,17 @@ export const findRelativeMajor = (currentKey: string, currentAccidental: Acciden
   }
 }
 
+export const findRelativeMinor = (currentKey: string, currentAccidental: Accidental) => {
+  if (currentAccidental == Accidental.SHARP) {
+    const index = majorSharpAllNotes.indexOf(currentKey);
+    return minorSharpAllNotes[index];
+  }
+  if (currentAccidental == Accidental.FLAT) {
+    const index = majorFlatAllNotes.indexOf(currentKey);
+    return minorFlatAllNotes[index];
+  }
+}
+
 // Major Key Formula - W – W – H – W – W – W – H
 //                   - 2 – 4 – 5 – 7 – 9 – 11 – 12
 

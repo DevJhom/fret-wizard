@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { ref, watch, onMounted, computed } from 'vue';
-import { Tonality, MAJOR_KEY_TO_NUMBER } from '@data/constants';
-import { findRelativeMajor } from '@data/noteNames';
+import { ref, watch, onMounted } from 'vue';
+import { Tonality, MAJOR_KEY_TO_NUMBER, Pattern, MINOR_KEY_TO_NUMBER } from '@data/constants';
 import { isCAGEDNameHere, GetCAGEDName } from '@data/CAGED';
 import { getCurrentKey, updateCurrentKey, getScale, updateCurrentScale, updateScale } from '@services/mock_service';
 import { usePatternStore } from '@/stores/usePatternStore';
@@ -38,8 +37,7 @@ const fetchScale = async () => {
         currentKeyToNumber = MAJOR_KEY_TO_NUMBER[currentKey.value];
     }
     if (currentTonality.value == Tonality.MINOR) {
-        const relativeMajor = findRelativeMajor(currentKey.value, currentAccidental.value);
-        currentKeyToNumber = MAJOR_KEY_TO_NUMBER[relativeMajor];
+        currentKeyToNumber = MINOR_KEY_TO_NUMBER[currentKey.value];
     }
 
     for (let i = 0; i < currentKeyToNumber; i++) {
@@ -91,6 +89,14 @@ watch([E, A, D, G, B, e], (newValue) => {
         e: Object.assign([], newValue[5])
     })
 }, { deep: true })
+
+watch(currentTonality, () => {
+    patternStore.updateTonality();
+
+    if (currentPattern.value == Pattern.Triad) {
+        fetchScale();
+    }
+})
 
 onMounted(async () => {
     await fetchCurrentKey();
