@@ -58,7 +58,7 @@ const toggleSidebar = () => {
                     </span>
                 </div>
                 <div class="highlightNotes-filter notes d-flex flex-column text-end">
-                    <label v-for="(highlightNote) in patternStore.highlightNotes" :key="highlightNote" class="d-flex notes">
+                    <label v-for="(highlightNote, index) in patternStore.highlightNotes" :key="index" class="d-flex notes">
                         <input type="checkbox" :value="highlightNote" v-model="currentHighlightNotes"/>
                         <div class="checkbox__checkmark"
                             :class="{
