@@ -8,7 +8,7 @@ import { storeToRefs } from 'pinia';
 import MyString from '@components/MyString.vue';
 
 const patternStore = usePatternStore();
-const { allKeys, allPatterns, currentKey, currentPattern, currentCAGED, currentTonality, currentAccidental } = storeToRefs(patternStore);
+const { allKeys, allPatterns, currentKey, currentPattern, currentCAGED, currentTonality, currentHighlightNotes } = storeToRefs(patternStore);
 
 const fretAmount = ref(24);
 const fretIndicator = new Array(24);
@@ -92,6 +92,7 @@ watch([E, A, D, G, B, e], (newValue) => {
 
 watch(currentTonality, () => {
     patternStore.updateTonality();
+    patternStore.updateCurrentHighlightNotes();
 
     if (currentPattern.value == Pattern.Triad) {
         fetchScale();
@@ -241,8 +242,8 @@ onMounted(async () => {
             <div class="CAGED-name-container text-start">
                 <div v-for="(_, index) in e" :key="index" class="d-inline-block CAGED-box" :class="{'fret': index < fretAmount}" style="border-right: none;">
                     <div v-if="index < fretAmount">
-                        <span v-if="isCAGEDNameHere(index, currentCAGED, currentKey)" class="CAGED-name text-yellow">
-                            {{ GetCAGEDName(index, currentCAGED, currentKey) }}
+                        <span v-if="isCAGEDNameHere(index, currentCAGED, currentKey, currentTonality)" class="CAGED-name text-yellow">
+                            {{ GetCAGEDName(index, currentCAGED, currentKey, currentTonality) }}
                         </span>
                     </div>
                 </div>
