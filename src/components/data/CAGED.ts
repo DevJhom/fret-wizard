@@ -93,8 +93,11 @@ export const CAGEDNamePosition = {
     }
 }
 
-export const isCAGEDNameHere = (index: number, currentCAGED: CurrentCAGED, currentKey: string) => {
-    index = index - MAJOR_KEY_TO_NUMBER[currentKey];
+export const isCAGEDNameHere = (index: number, currentCAGED: CurrentCAGED, currentKey: string, tonality: Tonality) => {
+    if (tonality == Tonality.MAJOR)
+        index = index - MAJOR_KEY_TO_NUMBER[currentKey];
+    if (tonality == Tonality.MINOR)
+        index = index - MAJOR_KEY_TO_NUMBER[currentKey] - 3;
 
     if (currentCAGED.CShape && CAGEDNamePosition.CShape.position.includes(index))
         return true;
@@ -112,8 +115,11 @@ export const isCAGEDNameHere = (index: number, currentCAGED: CurrentCAGED, curre
         return true;
 }
 
-export const GetCAGEDName = (index: number, currentCAGED: CurrentCAGED, currentKey: string) => {
-    index = index - MAJOR_KEY_TO_NUMBER[currentKey];
+export const GetCAGEDName = (index: number, currentCAGED: CurrentCAGED, currentKey: string, tonality: Tonality) => {
+    if (tonality == Tonality.MAJOR)
+        index = index - MAJOR_KEY_TO_NUMBER[currentKey];
+    if (tonality == Tonality.MINOR)
+        index = index - MAJOR_KEY_TO_NUMBER[currentKey] - 3;
 
     if (currentCAGED.CShape && CAGEDNamePosition.CShape.position.includes(index))
         return CAGEDNamePosition.CShape.name;
