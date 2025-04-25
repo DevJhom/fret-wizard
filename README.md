@@ -97,11 +97,12 @@ This project requires NPM to be installed on your system.
 This is a personal project that I'm building as a learning experience and for my own use. Development will be ongoing, and more features will be added over time as I have the opportunity. The current roadmap includes:
 
 - [x] Major Scales
+- [x] Minor Scales
 - [x] Triad
 - [x] The CAGED System
 - [x] Transpose to different keys
-- [ ] Minor Scales
 - [ ] Chords
+- [ ] Chromatic Notes 
 - [ ] Custom features
 
 See the [open issues](https://github.com/DevJhom/fret-wizard/issues) for a full list of proposed features (and known issues).
