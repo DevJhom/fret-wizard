@@ -66,9 +66,17 @@ export const usePatternStore = defineStore('pattern', {
     highlightNotes: (state: State) => {
       switch (state.currentPattern) {
         case "Pentatonic Scale":
-          return ["roots", "seconds", "thirds", "fifths", "sixths"];
+          if (state.currentTonality == Tonality.MAJOR)
+            return ["roots", "seconds", "thirds", "fifths", "sixths"];
+          if (state.currentTonality == Tonality.MINOR)
+            return ["roots", "thirds", "fourths", "fifths", "sevenths"];
+          break;
         case "Blue Scale":
-          return ["roots", "seconds", "thirds", "fifths", "sixths", "blues"];
+          if (state.currentTonality == Tonality.MAJOR)
+            return ["roots", "seconds", "thirds", "fifths", "sixths", "blues"];
+          if (state.currentTonality == Tonality.MINOR)
+            return ["roots", "thirds", "fourths", "fifths", "sevenths", "blues"];
+          break;
         case "Diatonic Scale":
           return ["roots", "seconds", "thirds", "fourths", "fifths", "sixths", "sevenths"];
         case "Triad":
