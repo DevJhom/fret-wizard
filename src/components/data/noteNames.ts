@@ -42,7 +42,7 @@ export const getSecondNoteName = (tonality: Tonality, currentKey: string, curren
   if (tonality == Tonality.MINOR) {
     const shift = MINOR_KEY_TO_NUMBER[currentKey];
     const allNoteNames = (currentAccidental == Accidental.SHARP ? minorSharpAllNotes : minorFlatAllNotes);
-    return allNoteNames[(3 + shift) % 12];
+    return allNoteNames[(2 + shift) % 12];
   }
 };
 
@@ -56,7 +56,7 @@ export const getThirdNoteName = (tonality: Tonality, currentKey: string, current
   if (tonality == Tonality.MINOR) {
     const shift = MINOR_KEY_TO_NUMBER[currentKey];
     const allNoteNames = (currentAccidental == Accidental.SHARP ? minorSharpAllNotes : minorFlatAllNotes);
-    return allNoteNames[(5 + shift) % 12];
+    return allNoteNames[(3 + shift) % 12];
   }
 };
 
@@ -70,7 +70,7 @@ export const getFourthNoteName = (tonality: Tonality, currentKey: string, curren
   if (tonality == Tonality.MINOR) {
     const shift = MINOR_KEY_TO_NUMBER[currentKey];
     const allNoteNames = (currentAccidental == Accidental.SHARP ? minorSharpAllNotes : minorFlatAllNotes);
-    return allNoteNames[(8 + shift) % 12];
+    return allNoteNames[(5 + shift) % 12];
   }
 };
 
@@ -98,7 +98,7 @@ export const getSixthNoteName = (tonality: Tonality, currentKey: string, current
   if (tonality == Tonality.MINOR) {
     const shift = MINOR_KEY_TO_NUMBER[currentKey];
     const allNoteNames = (currentAccidental == Accidental.SHARP ? minorSharpAllNotes : minorFlatAllNotes);
-    return allNoteNames[(10 + shift) % 12];
+    return allNoteNames[(8 + shift) % 12];
   }
 };
 
@@ -112,7 +112,7 @@ export const getSeventhNoteName = (tonality: Tonality, currentKey: string, curre
   if (tonality == Tonality.MINOR) {
     const shift = MINOR_KEY_TO_NUMBER[currentKey];
     const allNoteNames = (currentAccidental == Accidental.SHARP ? minorSharpAllNotes : minorFlatAllNotes);
-    return allNoteNames[(2 + shift) % 12];
+    return allNoteNames[(10 + shift) % 12];
   }
 };
 

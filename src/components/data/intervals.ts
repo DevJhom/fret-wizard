@@ -5,7 +5,17 @@ interface Intervals {
     [key: string]: number[];
 }
 
-// Intervals for "C" Major Key
+/*
+Intervals for "C" Major Key
+1. roots
+2. major seconds
+3. major thirds
+4. perfect fourths
+5. perfect fifths
+6. major sixths
+7. major sevenths
+*/
+
 const roots: Intervals = {
     e: [-4,8,20],
     B: [-11,1,13],
@@ -78,20 +88,24 @@ const blues: Intervals = {
     E: [-1,11,23]
 }
 
-// Intervals for "A" Minor Key
-// See "Relative Minor" concept
+/*
+Intervals for "A" Minor Key
+1. roots
+2. major seconds
+3. minor thirds 
+4. perfect fourths
+5. perfect fifths
+6. minor sixths 
+7. minor sevenths 
+See "Relative Minor" concept
+*/
+
 const minorKeyRoots = sixths;
-const minorKeySeconds = roots;
-const minorKeyThirds = seconds;
-const minorKeyFourths: Intervals = { // minorKeyFourths = thirds + 1
-    e: [1,13,25],
-    B: [-6,6,18],
-    G: [-2,10,22],
-    D: [-9,3,15],
-    A: [-4,8,20],
-    E: [1,13,25]
-}
-const minorKeyFifths: Intervals = { // minorKeyFifths = fourths - 1
+const minorKeySeconds = sevenths;
+const minorKeyThirds = roots;
+const minorKeyFourths = seconds;
+const minorKeyFifths: Intervals = { 
+  // minorKeyFifths = fourths - 1
     e: [0,12,24],  
     B: [-19,-7,5,17],  
     G: [-3,9,21], 
@@ -99,15 +113,8 @@ const minorKeyFifths: Intervals = { // minorKeyFifths = fourths - 1
     A: [-5,7,19],  
     E: [0,12,24],  
 }
-const minorKeySixths = fifths;
-const minorKeySevenths: Intervals = { // minorKeySevenths = roots - 1
-    e: [-5,7,19],
-    B: [-12,0,12,24],
-    G: [-8,4,16],
-    D: [-3,9,21],
-    A: [-10,2,14],
-    E: [-5,7,19],
-}
+const minorKeySixths = fourths;
+const minorKeySevenths = fifths;
 
 export const getRoots = (tonality: Tonality, currentKey: string, stringName: string) => {
   if (tonality == Tonality.MAJOR) {
