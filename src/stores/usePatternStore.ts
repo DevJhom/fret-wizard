@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia';
 import { Tonality, Accidental, Pattern } from '@data/constants';
 import { majorSharpAllNotes, majorFlatAllNotes, minorSharpAllNotes, minorFlatAllNotes } from '@/components/data/constants';
+import { findRelativeMajor, findRelativeMinor } from '@/components/data/noteNames';
 
 export interface CurrentStrings {
   E: boolean;
@@ -105,10 +106,10 @@ export const usePatternStore = defineStore('pattern', {
     },
     updateTonality() {
       if (this.currentTonality == Tonality.MAJOR) {
-        this.currentKey = "C";
+        this.currentKey = findRelativeMajor(this.currentKey, this.currentAccidental);
       }
       if (this.currentTonality == Tonality.MINOR) {
-        this.currentKey = "A";
+        this.currentKey = findRelativeMinor(this.currentKey, this.currentAccidental);
       }
     }
   },

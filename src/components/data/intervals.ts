@@ -54,7 +54,7 @@ const fourths: Intervals = {
 
 const fifths: Intervals = {
     e: [-9,3,15],
-    B: [-2,8,20],
+    B: [-4,8,20],
     G: [0,12,24],
     D: [-7,5,17],
     A: [-2,10,22],
@@ -63,7 +63,7 @@ const fifths: Intervals = {
 
 const sixths: Intervals = {
     e: [-7,5,17,29],  
-    B: [-4,10,22], 
+    B: [-2,10,22], 
     G: [-10,2,14,26],  
     D: [-5,7,19],
     A: [0,12,24],  
