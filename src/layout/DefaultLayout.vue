@@ -8,13 +8,15 @@ const isLandscape = ref(true);
 
 const refreshPage = () => {
  window.location.reload();
-}
+};
 
-window.matchMedia("(orientation: portrait)").addEventListener("change", (event) => {
+isLandscape.value = window.matchMedia("(orientation: landscape)").matches;
+
+window.matchMedia("(orientation: landscape)").addEventListener("change", (event) => {
   if (event.matches) {
-    isLandscape.value = false;
-  } else {
     isLandscape.value = true;
+  } else {
+    isLandscape.value = false;
   }
 });
 </script>
