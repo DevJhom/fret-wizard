@@ -1,14 +1,27 @@
 <script setup lang="ts">
+import { ref } from 'vue';
 import MyGuitar from '@components/MyGuitar.vue';
 import SideBar from '@components/SideBar.vue';
+import RotateMessage from '@/components/RotateMessage.vue';
+
+const isLandscape = ref(true);
 
 const refreshPage = () => {
  window.location.reload();
 }
+
+window.matchMedia("(orientation: portrait)").addEventListener("change", (event) => {
+  if (event.matches) {
+    isLandscape.value = false;
+  } else {
+    isLandscape.value = true;
+  }
+});
 </script>
 
 <template>
-  <div class="d-flex">
+  <RotateMessage v-if="!isLandscape"/>
+  <div v-else class="d-flex">
     <SideBar/>
     <div class="d-flex flex-column">
       <span class="logo" @click="refreshPage()">
