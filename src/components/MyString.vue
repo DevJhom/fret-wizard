@@ -86,5 +86,11 @@ const currentHighlightCAGED = computed(() => {
     max-width: 50px;
     border-right: 1px solid gray;
 }
+
+@media only screen and (max-width: 1024px) and (orientation: landscape) {
+    .fret {
+        min-width: 1.5rem;
+    }
+}
 </style>
 

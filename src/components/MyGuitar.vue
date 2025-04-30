@@ -361,4 +361,15 @@ onMounted(async () => {
 //     width: 100%;
 //     margin-top: 70px;
 // }
+
+@media only screen and (max-width: 1024px) and (orientation: landscape) {
+    .fret-indicator {
+        min-width: 1.5rem;
+    }
+
+    .CAGED-box {
+        min-width: 1.5rem;
+        max-width: 1.5rem;
+    }
+}
 </style>
