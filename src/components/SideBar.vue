@@ -40,13 +40,13 @@ const toggleSidebar = () => {
                 <div class="d-flex mt-3 switch-radio">
                     <label>
                         <input type="radio" name="accidental" :value="Accidental.SHARP" v-model="currentAccidental" @change="patternStore.updateToEqualAccidental()">
-                            <div class="label"> Sharp ♯ </div>
+                            <div class="label text-nowrap"> Sharp ♯ </div>
                         </input>
                     </label>
 
                     <label>
                         <input type="radio" name="accidental" :value="Accidental.FLAT" v-model="currentAccidental" @change="patternStore.updateToEqualAccidental()"> 
-                            <div class="label"> Flat ♭ </div>
+                            <div class="label text-nowrap"> Flat ♭ </div>
                         </input>
                     </label>
                 </div>
