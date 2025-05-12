@@ -1,10 +1,11 @@
 <script setup lang="ts">
+import RotatePhone from '@/assets/icons/RotatePhone.vue';
 </script>
 
 <template>
   <div class="warning-message">
-    <h2> Rotate Your Phone </h2>
-    <h3> For Better Experience </h3>
+    <RotatePhone/>
+    <h2 class="mt-4"> Rotate Your Phone </h2>
   </div>
 </template>
 
