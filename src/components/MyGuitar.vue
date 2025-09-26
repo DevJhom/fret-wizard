@@ -157,8 +157,11 @@ onMounted(async () => {
         </div>
 
         <MyFretboard
-            :fret-amount="fretAmount"
-            :fret-indicator="fretIndicator"
+            :fretAmount="fretAmount"
+            :fretIndicator="fretIndicator"
+            :currentCAGED="currentCAGED"
+            :currentKey="currentKey"
+            :currentTonality="currentTonality"
             :E="E"
             :A="A"
             :D="D"
@@ -168,8 +171,11 @@ onMounted(async () => {
         />
 
         <MyFretboard
-            :fret-amount="fretAmount"
-            :fret-indicator="fretIndicator"
+            :fretAmount="fretAmount"
+            :fretIndicator="fretIndicator"
+            :currentCAGED="currentCAGED"
+            :currentKey="currentKey"
+            :currentTonality="currentTonality"
             :E="E"
             :A="A"
             :D="D"
@@ -177,7 +183,6 @@ onMounted(async () => {
             :B="B"
             :e="e"
         />
-
     </div>
 </template>
 
