@@ -1,11 +1,16 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import { CurrentCAGED } from '@/stores/usePatternStore';
 import { isCAGEDNameHere, GetCAGEDName } from '@data/CAGED';
+import { Tonality } from '@data/constants';
 import MyString from '@components/MyString.vue';
 
 const props = defineProps<{
     fretAmount: number,
     fretIndicator: number[],
+    currentCAGED: CurrentCAGED, 
+    currentKey: string,
+    currentTonality: Tonality, 
     E: string[],
     A: string[],
     D: string[],
@@ -124,9 +129,9 @@ const e = computed(() => props.e);
                 <div v-for="(_, index) in e" :key="index" class="d-inline-block CAGED-box" :class="{'fret': index < fretAmount}" style="border-right: none;">
                     <div v-if="index < fretAmount">
                         <!-- to be refactored -->
-                        <!-- <span v-if="isCAGEDNameHere(index, currentCAGED, currentKey, currentTonality)" class="CAGED-name text-yellow">
+                        <span v-if="isCAGEDNameHere(index, currentCAGED, currentKey, currentTonality)" class="CAGED-name text-yellow">
                             {{ GetCAGEDName(index, currentCAGED, currentKey, currentTonality) }}
-                        </span> -->
+                        </span>
                     </div>
                 </div>
             </div>
