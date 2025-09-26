@@ -1,25 +1,33 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue';
 import { Tonality, MAJOR_KEY_TO_NUMBER, Pattern, MINOR_KEY_TO_NUMBER } from '@data/constants';
-import { isCAGEDNameHere, GetCAGEDName } from '@data/CAGED';
 import { getCurrentKey, updateCurrentKey, getScale, updateCurrentScale, updateScale } from '@services/mock_service';
-import { usePatternStore } from '@/stores/usePatternStore';
+import { usePatternStore, CurrentCAGED } from '@/stores/usePatternStore';
 import { storeToRefs } from 'pinia';
 import MyFretboard from './MyFretboard.vue';
 
 const patternStore = usePatternStore();
 const { allKeys, allPatterns, currentKey, currentPattern, currentCAGED, currentTonality, currentHighlightNotes } = storeToRefs(patternStore);
 
+interface FretBoard {
+    fretAmount: number,
+    fretIndicator: number[],
+    // currentCAGED: CurrentCAGED, 
+    currentKey: string,
+    // currentTonality: Tonality, 
+    E: string[],
+    A: string[],
+    D: string[],
+    G: string[],
+    B: string[],
+    e: string[]
+}
+
 const fretAmount = ref(24);
 const fretIndicator = new Array(24);
 
-// Strings
-const E = ref([]);
-const A = ref([]);
-const D = ref([]);
-const G = ref([]);
-const B = ref([]);
-const e = ref([]);
+const fretboards = ref<FretBoard[]>([]);
+const currentFretboard = ref(0);
 
 const fetchCurrentKey = async () => {
     const data = await getCurrentKey();
@@ -60,48 +68,95 @@ const fetchScale = async () => {
         tempData.e.unshift(lastValueOfe);
     }
 
-    E.value = tempData.E;
-    A.value = tempData.A;
-    D.value = tempData.D;
-    G.value = tempData.G;
-    B.value = tempData.B;
-    e.value = tempData.e;
+    return {
+        E: tempData.E,
+        A: tempData.A,
+        D: tempData.D,
+        G: tempData.G,
+        B: tempData.B,
+        e: tempData.e,
+    }
+}
+
+const addFretboard = async () => {
+    const data = await fetchScale();
+
+    const fretboard: FretBoard = {
+        fretAmount: fretAmount.value,
+        fretIndicator: fretIndicator,
+        currentKey: currentKey.value,
+        E: data.E,
+        A: data.A,
+        D: data.D,
+        G: data.G,
+        B: data.B,
+        e: data.e,
+    }
+
+    fretboards.value.push(JSON.parse(JSON.stringify(fretboard)));
+    currentFretboard.value = fretboards.value.length - 1;
+}
+
+const updateFretboard = async () => {
+    const data = await fetchScale();
+
+    const fretboard: FretBoard = {
+        fretAmount: fretAmount.value,
+        fretIndicator: fretIndicator,
+        currentKey: currentKey.value,
+        E: data.E,
+        A: data.A,
+        D: data.D,
+        G: data.G,
+        B: data.B,
+        e: data.e,
+    }
+
+    fretboards.value[currentFretboard.value] = JSON.parse(JSON.stringify(fretboard));
+}
+
+const selectFretboard = (index: number) => {
+    currentFretboard.value = index;
 }
 
 const onChangeCurrentKey = () => {
-    fetchScale();
+    updateFretboard();
+    //fetchScale(); 
     updateCurrentKey(currentKey.value);
 }
 
 const onChangeCurrentPattern = () => {
-    fetchScale();
+    //fetchScale(); 
     updateCurrentScale(currentPattern.value);
     patternStore.updateCurrentHighlightNotes();
 }
 
+/*
 watch([E, A, D, G, B, e], (newValue) => {
+    console.log("new Value", newValue)
     updateScale(currentPattern.value, currentKey.value, {
-        E: Object.assign([], newValue[0]), 
-        A: Object.assign([], newValue[1]), 
-        D: Object.assign([], newValue[2]), 
-        G: Object.assign([], newValue[3]),
-        B: Object.assign([], newValue[4]),
-        e: Object.assign([], newValue[5])
+        // E: Object.assign([], newValue[0]), 
+        // A: Object.assign([], newValue[1]), 
+        // D: Object.assign([], newValue[2]), 
+        // G: Object.assign([], newValue[3]),
+        // B: Object.assign([], newValue[4]),
+        // e: Object.assign([], newValue[5])
     })
 }, { deep: true })
+*/
 
 watch(currentTonality, () => {
     patternStore.updateTonality();
     patternStore.updateCurrentHighlightNotes();
 
     if (currentPattern.value == Pattern.Triad) {
-        fetchScale();
+        //fetchScale();
     }
 })
 
 onMounted(async () => {
     await fetchCurrentKey();
-    await fetchScale();
+    await addFretboard();
 })
 </script>
 
@@ -131,7 +186,7 @@ onMounted(async () => {
                 </span>
             </div>
             <!-- Pattern Selector -->
-            <div class="d-flex justify-content-center align-items-center mt-4">
+            <div class="d-flex justify-content-center align-items-center mt-3">
                 <span class="me-2 text-yellow fw-bold">
                     Pattern
                 </span>
@@ -146,7 +201,7 @@ onMounted(async () => {
         </div>
 
         <!-- NUMBER OF FRET -->
-        <div class="mt-5">
+        <div class="mt-3">
             <span class="me-3 text-yellow fw-bold">
                 Number of Frets
             </span>
@@ -156,33 +211,27 @@ onMounted(async () => {
             </span>
         </div>
 
-        <MyFretboard
-            :fretAmount="fretAmount"
-            :fretIndicator="fretIndicator"
-            :currentCAGED="currentCAGED"
-            :currentKey="currentKey"
-            :currentTonality="currentTonality"
-            :E="E"
-            :A="A"
-            :D="D"
-            :G="G"
-            :B="B"
-            :e="e"
-        />
+        <div v-for="(fretboard, index) in fretboards" 
+            class="mt-4"
+            :class="{ 'selected-fretboard': (index == currentFretboard && fretboards.length > 1) }"
+            @click="selectFretboard(index)" 
+        >
+            <MyFretboard
+                :fretAmount="fretboard.fretAmount"
+                :fretIndicator="fretboard.fretIndicator"
+                :currentCAGED="currentCAGED"
+                :currentKey="fretboard.currentKey"
+                :currentTonality="currentTonality"
+                :E="fretboard.E"
+                :A="fretboard.A"
+                :D="fretboard.D"
+                :G="fretboard.G"
+                :B="fretboard.B"
+                :e="fretboard.e"
+            />
+        </div>
 
-        <MyFretboard
-            :fretAmount="fretAmount"
-            :fretIndicator="fretIndicator"
-            :currentCAGED="currentCAGED"
-            :currentKey="currentKey"
-            :currentTonality="currentTonality"
-            :E="E"
-            :A="A"
-            :D="D"
-            :G="G"
-            :B="B"
-            :e="e"
-        />
+        <h3 @click="addFretboard" class="text-yellow"> + </h3>
     </div>
 </template>
 
@@ -215,5 +264,11 @@ onMounted(async () => {
 
 .custom-radio span {
     cursor: pointer;
+}
+
+.selected-fretboard {
+    border: 3px solid $yellow;
+    border-radius: 9px;
+    padding: 1rem;
 }
 </style>

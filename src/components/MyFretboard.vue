@@ -34,7 +34,7 @@ const e = computed(() => props.e);
         <!-- FRETBOARD -->
         <div>
             <!-- Fret Indicator -->
-            <div class="d-flex mt-5 w-75">
+            <div class="d-flex w-75">
                 <div class="d-inline-block string-name"></div>
                 <div v-for="(_, index) in fretIndicator" :key="index" class="d-inline-block" :class="{'fret-indicator': index < fretAmount}">
                     <div v-if="index < fretAmount">
@@ -61,6 +61,7 @@ const e = computed(() => props.e);
                         :string-name="'e'"
                         :string-data="e"
                         :fret-amount="fretAmount"
+                        :current-key="currentKey"
                     />
                 </div>
             </div>
@@ -71,6 +72,7 @@ const e = computed(() => props.e);
                         :string-name="'B'"
                         :string-data="B"
                         :fret-amount="fretAmount"
+                        :current-key="currentKey"
                     />
                 </div>
             </div>
@@ -81,6 +83,7 @@ const e = computed(() => props.e);
                         :string-name="'G'"
                         :string-data="G"
                         :fret-amount="fretAmount"
+                        :current-key="currentKey"
                     />
                 </div>
             </div>
@@ -99,6 +102,7 @@ const e = computed(() => props.e);
                         :string-name="'D'"
                         :string-data="D"
                         :fret-amount="fretAmount"
+                        :current-key="currentKey"
                     />
                 </div>
             </div>
@@ -109,6 +113,7 @@ const e = computed(() => props.e);
                         :string-name="'A'"
                         :string-data="A"
                         :fret-amount="fretAmount"
+                        :current-key="currentKey"
                     />
                 </div>
             </div>
@@ -120,6 +125,7 @@ const e = computed(() => props.e);
                         :string-data="E"
                         :fret-amount="fretAmount"
                         :is-last-string="true"
+                        :current-key="currentKey"
                     />
                 </div>
             </div>
