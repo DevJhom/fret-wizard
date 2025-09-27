@@ -5,15 +5,15 @@ type GuitarStrings = {
   [key: string]: string[];
 };
 
-export const getCurrentKey = async () => {
+export const fetchCurrentKey = async () => {
     return {
         key: "C"
     };
 }
 
-export const updateCurrentKey = async (key: string) => {}
+export const saveCurrentKey = async (key: string) => {}
 
-export const getScale = async (tonality: Tonality, scale: string, key: string) => {
+export const fetchScale = async (tonality: Tonality, scale: string, key: string) => {
     if (scale == Pattern.Pentatonic) {
         return data.pentatonic_scale.C;
     }
@@ -33,6 +33,6 @@ export const getScale = async (tonality: Tonality, scale: string, key: string) =
     }
 }
 
-export const updateCurrentScale = async (scale: string) => {}
+export const saveCurrentScale = async (scale: string) => {}
 
-export const updateScale = async (scale: string, key: string, guitarStrings: GuitarStrings) => {}
+export const saveScale = async (scale: string, key: string, guitarStrings: GuitarStrings) => {}

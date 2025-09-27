@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { computed } from 'vue';
 import { CurrentCAGED } from '@/stores/usePatternStore';
+import { Accidental, Tonality } from '@data/constants';
 import { isCAGEDNameHere, GetCAGEDName } from '@data/CAGED';
-import { Tonality } from '@data/constants';
 import MyString from '@components/MyString.vue';
 
 const props = defineProps<{
@@ -11,6 +10,7 @@ const props = defineProps<{
     currentCAGED: CurrentCAGED, 
     currentKey: string,
     currentTonality: Tonality, 
+    currentAccidental: Accidental
     E: string[],
     A: string[],
     D: string[],
@@ -19,15 +19,6 @@ const props = defineProps<{
     e: string[],
 }>();
 
-const fretAmount = computed(() => props.fretAmount);
-const fretIndicator = computed(() => props.fretIndicator);
-
-const E = computed(() => props.E);
-const A = computed(() => props.A);
-const D = computed(() => props.D);
-const G = computed(() => props.G);
-const B = computed(() => props.B);
-const e = computed(() => props.e);
 </script>
 
 <template>
@@ -62,6 +53,8 @@ const e = computed(() => props.e);
                         :string-data="e"
                         :fret-amount="fretAmount"
                         :current-key="currentKey"
+                        :current-tonality="currentTonality"
+                        :current-accidental="currentAccidental"
                     />
                 </div>
             </div>
@@ -73,6 +66,8 @@ const e = computed(() => props.e);
                         :string-data="B"
                         :fret-amount="fretAmount"
                         :current-key="currentKey"
+                        :current-tonality="currentTonality"
+                        :current-accidental="currentAccidental"
                     />
                 </div>
             </div>
@@ -84,6 +79,8 @@ const e = computed(() => props.e);
                         :string-data="G"
                         :fret-amount="fretAmount"
                         :current-key="currentKey"
+                        :current-tonality="currentTonality"
+                        :current-accidental="currentAccidental"
                     />
                 </div>
             </div>
@@ -103,6 +100,8 @@ const e = computed(() => props.e);
                         :string-data="D"
                         :fret-amount="fretAmount"
                         :current-key="currentKey"
+                        :current-tonality="currentTonality"
+                        :current-accidental="currentAccidental"
                     />
                 </div>
             </div>
@@ -114,6 +113,8 @@ const e = computed(() => props.e);
                         :string-data="A"
                         :fret-amount="fretAmount"
                         :current-key="currentKey"
+                        :current-tonality="currentTonality"
+                        :current-accidental="currentAccidental"
                     />
                 </div>
             </div>
@@ -126,6 +127,8 @@ const e = computed(() => props.e);
                         :fret-amount="fretAmount"
                         :is-last-string="true"
                         :current-key="currentKey"
+                        :current-tonality="currentTonality"
+                        :current-accidental="currentAccidental"
                     />
                 </div>
             </div>
