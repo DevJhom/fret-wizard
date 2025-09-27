@@ -1,45 +1,44 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { PropType } from 'vue';
 import { storeToRefs } from 'pinia';
 import { usePatternStore } from '@/stores/usePatternStore';
 import { isCAGED } from '@data/CAGED';
+import { Accidental, Tonality } from '@data/constants';
 import { getRoots, getSeconds, getThirds, getFourths, getFifths, getSixths, getSevenths, getBlues } from '@data/intervals';
 import { getRootNoteName, getSecondNoteName, getThirdNoteName, getFourthNoteName, getFifthNoteName, getSixthNoteName, getSeventhNoteName, getBlueNoteName } from '@data/noteNames';
 
 const patternStore = usePatternStore();
-const { currentHighlightNotes, currentStrings, currentCAGED, currentAccidental, currentTonality } = storeToRefs(patternStore);
+const { currentHighlightNotes, currentStrings, currentCAGED } = storeToRefs(patternStore);
 
-const props = defineProps({
-  stringName: String,
-  stringData: {
-    type: Array as PropType<string[]>,
-    required: true 
-  },
-  fretAmount: Number,
-  isLastString: Boolean,
-  currentKey: String,
-});
+const props = defineProps<{
+    stringName: string,
+    stringData: string[],
+    fretAmount: number,
+    isLastString?: boolean,
+    currentKey: string,
+    currentTonality: Tonality,
+    currentAccidental: Accidental
+}>();
 
 // x is a placeholder for string e.g. eRoots, eSeconds, etc.
-const xRoots = computed(() => getRoots(currentTonality.value, props.currentKey, props.stringName));
-const xSeconds = computed(() => getSeconds(currentTonality.value, props.currentKey, props.stringName));
-const xThirds = computed(() => getThirds(currentTonality.value, props.currentKey, props.stringName));
-const xFourths = computed(() => getFourths(currentTonality.value, props.currentKey, props.stringName));
-const xFifths = computed(() => getFifths(currentTonality.value, props.currentKey, props.stringName));
-const xSixths = computed(() => getSixths(currentTonality.value, props.currentKey, props.stringName));
-const xSevenths = computed(() => getSevenths(currentTonality.value, props.currentKey, props.stringName));
-const xBlues = computed(() => getBlues(currentTonality.value, props.currentKey, props.stringName));
+const xRoots = computed(() => getRoots(props.currentTonality, props.currentKey, props.stringName));
+const xSeconds = computed(() => getSeconds(props.currentTonality, props.currentKey, props.stringName));
+const xThirds = computed(() => getThirds(props.currentTonality, props.currentKey, props.stringName));
+const xFourths = computed(() => getFourths(props.currentTonality, props.currentKey, props.stringName));
+const xFifths = computed(() => getFifths(props.currentTonality, props.currentKey, props.stringName));
+const xSixths = computed(() => getSixths(props.currentTonality, props.currentKey, props.stringName));
+const xSevenths = computed(() => getSevenths(props.currentTonality, props.currentKey, props.stringName));
+const xBlues = computed(() => getBlues(props.currentTonality, props.currentKey, props.stringName));
 
 // Note Names
-const rootNoteName = computed(() => getRootNoteName(currentTonality.value, props.currentKey, currentAccidental.value));
-const secondNoteName = computed(() => getSecondNoteName(currentTonality.value, props.currentKey, currentAccidental.value));
-const thirdNoteName = computed(() => getThirdNoteName(currentTonality.value, props.currentKey, currentAccidental.value));
-const fourthNoteName = computed(() => getFourthNoteName(currentTonality.value, props.currentKey, currentAccidental.value));
-const fifthNoteName = computed(() => getFifthNoteName(currentTonality.value, props.currentKey, currentAccidental.value));
-const sixthNoteName = computed(() => getSixthNoteName(currentTonality.value, props.currentKey, currentAccidental.value));
-const seventhNoteName = computed(() => getSeventhNoteName(currentTonality.value, props.currentKey, currentAccidental.value));
-const blueNoteName = computed(() => getBlueNoteName(currentTonality.value, props.currentKey, currentAccidental.value));
+const rootNoteName = computed(() => getRootNoteName(props.currentTonality, props.currentKey, props.currentAccidental));
+const secondNoteName = computed(() => getSecondNoteName(props.currentTonality, props.currentKey, props.currentAccidental));
+const thirdNoteName = computed(() => getThirdNoteName(props.currentTonality, props.currentKey, props.currentAccidental));
+const fourthNoteName = computed(() => getFourthNoteName(props.currentTonality, props.currentKey, props.currentAccidental));
+const fifthNoteName = computed(() => getFifthNoteName(props.currentTonality, props.currentKey, props.currentAccidental));
+const sixthNoteName = computed(() => getSixthNoteName(props.currentTonality, props.currentKey, props.currentAccidental));
+const seventhNoteName = computed(() => getSeventhNoteName(props.currentTonality, props.currentKey, props.currentAccidental));
+const blueNoteName = computed(() => getBlueNoteName(props.currentTonality, props.currentKey, props.currentAccidental));
 
 const isStringActive = computed(() => {
     return currentStrings.value[props.stringName];

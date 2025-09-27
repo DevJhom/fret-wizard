@@ -1,21 +1,21 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue';
-import { Pattern, Tonality, getTonalityText, MAJOR_KEY_TO_NUMBER, MINOR_KEY_TO_NUMBER } from '@data/constants';
-import { getCurrentKey, updateCurrentKey, getScale, updateCurrentScale, updateScale } from '@services/mock_service';
+import { Pattern, Tonality, getTonalityText, MAJOR_KEY_TO_NUMBER, MINOR_KEY_TO_NUMBER, Accidental } from '@data/constants';
+import { fetchCurrentKey, saveCurrentKey, fetchScale, saveCurrentScale, saveScale } from '@/services/mockService';
 import { usePatternStore, CurrentCAGED } from '@/stores/usePatternStore';
 import { storeToRefs } from 'pinia';
 import _ from "lodash";
 import MyFretboard from './MyFretboard.vue';
 
 const patternStore = usePatternStore();
-const { allKeys, allPatterns, currentKey, currentPattern, currentCAGED, currentTonality, currentHighlightNotes } = storeToRefs(patternStore);
+const { allKeys, allPatterns, currentKey, currentPattern, currentCAGED, currentTonality, currentHighlightNotes, currentAccidental } = storeToRefs(patternStore);
 
 interface FretBoard {
     fretAmount: number,
     fretIndicator: number[],
-    // currentCAGED: CurrentCAGED, 
     currentKey: string,
-    // currentTonality: Tonality, 
+    currentTonality: Tonality, 
+    currentAccidental: Accidental,
     E: string[],
     A: string[],
     D: string[],
@@ -30,14 +30,14 @@ const fretIndicator = new Array(24);
 const fretboards = ref<FretBoard[]>([]);
 const currentFretboard = ref(0);
 
-const fetchCurrentKey = async () => {
-    const data = await getCurrentKey();
+const getCurrentKey = async () => {
+    const data = await fetchCurrentKey();
     currentKey.value = data.key;
 }
 
-const fetchScale = async () => {
+const getScale = async () => {
     // Fetch the default key "C" and shift the data based on "currentKeyToNumber"
-    const data = await getScale(currentTonality.value, currentPattern.value, "C");
+    const data = await fetchScale(currentTonality.value, currentPattern.value, "C");
     const tempData = _.cloneDeep(data);
 
     let currentKeyToNumber = 0;
@@ -80,12 +80,14 @@ const fetchScale = async () => {
 }
 
 const addFretboard = async () => {
-    const data = await fetchScale();
+    const data = await getScale();
 
     const fretboard: FretBoard = {
         fretAmount: fretAmount.value,
         fretIndicator: fretIndicator,
         currentKey: currentKey.value,
+        currentTonality: currentTonality.value,
+        currentAccidental: currentAccidental.value,
         E: data.E,
         A: data.A,
         D: data.D,
@@ -99,12 +101,14 @@ const addFretboard = async () => {
 }
 
 const updateFretboard = async () => {
-    const data = await fetchScale();
+    const data = await getScale();
 
     const fretboard: FretBoard = {
         fretAmount: fretAmount.value,
         fretIndicator: fretIndicator,
         currentKey: currentKey.value,
+        currentTonality: currentTonality.value,
+        currentAccidental: currentAccidental.value,
         E: data.E,
         A: data.A,
         D: data.D,
@@ -113,21 +117,17 @@ const updateFretboard = async () => {
         e: data.e,
     }
 
-    fretboards.value[currentFretboard.value] = JSON.parse(JSON.stringify(fretboard));
-}
-
-const selectFretboard = (index: number) => {
-    currentFretboard.value = index;
+    fretboards.value[currentFretboard.value] = _.cloneDeep(fretboard);
 }
 
 const onChangeCurrentKey = () => {
     updateFretboard();
-    updateCurrentKey(currentKey.value);
+    saveCurrentKey(currentKey.value);
 }
 
 const onChangeCurrentPattern = () => {
     updateFretboard();
-    updateCurrentScale(currentPattern.value);
+    saveCurrentScale(currentPattern.value);
     patternStore.updateCurrentHighlightNotes();
 }
 
@@ -135,10 +135,23 @@ const onChangeFretAmount = () => {
     updateFretboard();
 }
 
+watch(currentTonality, () => {
+    updateFretboard();
+    patternStore.updateTonality();
+    patternStore.updateCurrentHighlightNotes();
+
+    if (currentPattern.value == Pattern.Triad) {
+        //fetchScale();
+    }
+})
+
+watch(currentAccidental, () => {
+    updateFretboard();
+})
+
 /*
 watch([E, A, D, G, B, e], (newValue) => {
-    console.log("new Value", newValue)
-    updateScale(currentPattern.value, currentKey.value, {
+    saveScale(currentPattern.value, currentKey.value, {
         // E: Object.assign([], newValue[0]), 
         // A: Object.assign([], newValue[1]), 
         // D: Object.assign([], newValue[2]), 
@@ -149,17 +162,12 @@ watch([E, A, D, G, B, e], (newValue) => {
 }, { deep: true })
 */
 
-watch(currentTonality, () => {
-    patternStore.updateTonality();
-    patternStore.updateCurrentHighlightNotes();
-
-    if (currentPattern.value == Pattern.Triad) {
-        //fetchScale();
-    }
-})
+const selectFretboard = (index: number) => {
+    currentFretboard.value = index;
+}
 
 onMounted(async () => {
-    await fetchCurrentKey();
+    await getCurrentKey();
     await addFretboard();
 })
 </script>
@@ -173,41 +181,39 @@ onMounted(async () => {
             @click="selectFretboard(index)" 
         >
             <div v-if="index == currentFretboard">
-                <!-- SELECTOR -->
-                <div>
-                    <!-- Key Selector -->
-                    <div class="d-flex justify-content-center align-items-center">
-                        <span class="me-2 text-yellow fw-bold">
-                            Key
-                        </span>
-                        <div v-for="(key, index) in allKeys" :key="key" class="d-inline-block custom-radio">
-                            <label class="d-flex flex-column">
-                                <input type="radio" name="keys" v-model="currentKey" :value="allKeys[index]" @change="onChangeCurrentKey()">
-                                    <span class="label"> {{ key }} </span>
-                                </input>
-                            </label>
-                        </div>
-                        <span class="me-2 text-yellow fw-bold">
-                            ({{ getTonalityText(currentTonality) }})
-                        </span>
+                <!-- Key Selector -->
+                <div class="d-flex justify-content-center align-items-center mb-3">
+                    <span class="me-2 text-yellow fw-bold">
+                        Key
+                    </span>
+                    <div v-for="(key, index) in allKeys" :key="key" class="d-inline-block custom-radio">
+                        <label class="d-flex flex-column">
+                            <input type="radio" name="keys" v-model="currentKey" :value="allKeys[index]" @change="onChangeCurrentKey()">
+                                <span class="label"> {{ key }} </span>
+                            </input>
+                        </label>
                     </div>
-                    <!-- Pattern Selector -->
-                    <div class="d-flex justify-content-center align-items-center mt-3">
-                        <span class="me-2 text-yellow fw-bold">
-                            Pattern
-                        </span>
-                        <div v-for="(scale, index) in allPatterns" :key="scale" class="d-inline-block custom-radio">
-                            <label class="d-flex flex-column">
-                                <input type="radio" name="scales" v-model="currentPattern" :value="allPatterns[index]" @change="onChangeCurrentPattern()">
-                                    <span class="label px-3">{{ scale }}</span>
-                                </input>
-                            </label>
-                        </div>
+                    <span class="me-2 text-yellow fw-bold">
+                        ({{ getTonalityText(fretboard.currentTonality) }})
+                    </span>
+                </div>
+
+                <!-- Pattern Selector -->
+                <div class="d-flex justify-content-center align-items-center mb-3">
+                    <span class="me-2 text-yellow fw-bold">
+                        Pattern
+                    </span>
+                    <div v-for="(scale, index) in allPatterns" :key="scale" class="d-inline-block custom-radio">
+                        <label class="d-flex flex-column">
+                            <input type="radio" name="scales" v-model="currentPattern" :value="allPatterns[index]" @change="onChangeCurrentPattern()">
+                                <span class="label px-3">{{ scale }}</span>
+                            </input>
+                        </label>
                     </div>
                 </div>
 
-                <!-- NUMBER OF FRET -->
-                <div class="mt-3">
+                <!-- Fret Amount Selector -->
+                <div class="mb-3">
                     <span class="me-3 text-yellow fw-bold">
                         Number of Frets
                     </span>
@@ -220,14 +226,15 @@ onMounted(async () => {
 
             <div class="d-flex">
                 <h5 class="d-flex align-items-center text-yellow mx-4">
-                    {{ fretboard.currentKey }} {{ getTonalityText(currentTonality) }}
+                    {{ fretboard.currentKey }} {{ getTonalityText(fretboard.currentTonality) }}
                 </h5>
                 <MyFretboard
                     :fretAmount="fretboard.fretAmount"
                     :fretIndicator="fretboard.fretIndicator"
                     :currentCAGED="currentCAGED"
                     :currentKey="fretboard.currentKey"
-                    :currentTonality="currentTonality"
+                    :currentTonality="fretboard.currentTonality"
+                    :currentAccidental="fretboard.currentAccidental"
                     :E="fretboard.E"
                     :A="fretboard.A"
                     :D="fretboard.D"
@@ -239,7 +246,7 @@ onMounted(async () => {
             </div>
         </div>
 
-        <h3 @click="addFretboard" class="text-yellow"> + </h3>
+        <h2 @click="addFretboard" class="text-yellow"> + </h2>
     </div>
 </template>
 
