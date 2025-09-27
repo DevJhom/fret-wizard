@@ -162,7 +162,7 @@ const toggleSidebar = () => {
     height: 100%;
     min-height: 100vh;
     padding: 1rem 1.5rem;
-    background-color: #3c3e41;
+    background-color: #2a2d2e;
     transition: 0.5s;
 }
 

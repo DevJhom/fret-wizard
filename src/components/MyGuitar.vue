@@ -131,6 +131,16 @@ const onChangeCurrentPattern = () => {
     patternStore.updateCurrentHighlightNotes();
 }
 
+const getTonalityText = (tonality: Tonality) => {
+    if (tonality == Tonality.MAJOR) {
+        return "Major";
+    }
+
+    if (tonality == Tonality.MINOR) {
+        return "Minor";
+    }
+}
+
 /*
 watch([E, A, D, G, B, e], (newValue) => {
     console.log("new Value", newValue)
@@ -177,12 +187,7 @@ onMounted(async () => {
                     </label>
                 </div>
                 <span class="me-2 text-yellow fw-bold">
-                    <template v-if="currentTonality == Tonality.MAJOR">
-                        (Major)
-                    </template>
-                    <template v-if="currentTonality == Tonality.MINOR">
-                        (Minor)
-                    </template>
+                    ({{ getTonalityText(currentTonality) }})
                 </span>
             </div>
             <!-- Pattern Selector -->
@@ -212,10 +217,13 @@ onMounted(async () => {
         </div>
 
         <div v-for="(fretboard, index) in fretboards" 
-            class="mt-4"
+            class="mt-4 d-flex"
             :class="{ 'selected-fretboard': (index == currentFretboard && fretboards.length > 1) }"
             @click="selectFretboard(index)" 
         >
+            <h5 class="d-flex align-items-center text-yellow mx-4">
+                {{ fretboard.currentKey }} {{ getTonalityText(currentTonality) }}
+            </h5>
             <MyFretboard
                 :fretAmount="fretboard.fretAmount"
                 :fretIndicator="fretboard.fretIndicator"
@@ -229,6 +237,8 @@ onMounted(async () => {
                 :B="fretboard.B"
                 :e="fretboard.e"
             />
+
+            <div class="d-flex align-items-center mx-4"> ✅ </div>
         </div>
 
         <h3 @click="addFretboard" class="text-yellow"> + </h3>
