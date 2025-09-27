@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue';
-import { Tonality, MAJOR_KEY_TO_NUMBER, Pattern, MINOR_KEY_TO_NUMBER } from '@data/constants';
+import { Pattern, Tonality, getTonalityText, MAJOR_KEY_TO_NUMBER, MINOR_KEY_TO_NUMBER } from '@data/constants';
 import { getCurrentKey, updateCurrentKey, getScale, updateCurrentScale, updateScale } from '@services/mock_service';
 import { usePatternStore, CurrentCAGED } from '@/stores/usePatternStore';
 import { storeToRefs } from 'pinia';
+import _ from "lodash";
 import MyFretboard from './MyFretboard.vue';
 
 const patternStore = usePatternStore();
@@ -37,7 +38,7 @@ const fetchCurrentKey = async () => {
 const fetchScale = async () => {
     // Fetch the default key "C" and shift the data based on "currentKeyToNumber"
     const data = await getScale(currentTonality.value, currentPattern.value, "C");
-    const tempData = JSON.parse(JSON.stringify(data))
+    const tempData = _.cloneDeep(data);
 
     let currentKeyToNumber = 0;
 
@@ -93,7 +94,7 @@ const addFretboard = async () => {
         e: data.e,
     }
 
-    fretboards.value.push(JSON.parse(JSON.stringify(fretboard)));
+    fretboards.value.push(_.cloneDeep(fretboard));
     currentFretboard.value = fretboards.value.length - 1;
 }
 
@@ -121,24 +122,17 @@ const selectFretboard = (index: number) => {
 
 const onChangeCurrentKey = () => {
     updateFretboard();
-    //fetchScale(); 
     updateCurrentKey(currentKey.value);
 }
 
 const onChangeCurrentPattern = () => {
-    //fetchScale(); 
+    updateFretboard();
     updateCurrentScale(currentPattern.value);
     patternStore.updateCurrentHighlightNotes();
 }
 
-const getTonalityText = (tonality: Tonality) => {
-    if (tonality == Tonality.MAJOR) {
-        return "Major";
-    }
-
-    if (tonality == Tonality.MINOR) {
-        return "Minor";
-    }
+const onChangeFretAmount = () => {
+    updateFretboard();
 }
 
 /*
@@ -172,73 +166,77 @@ onMounted(async () => {
 
 <template>
     <div class="my-guitar mt-4">
-        <!-- SELECTOR -->
-        <div>
-            <!-- Key Selector -->
-            <div class="d-flex justify-content-center align-items-center">
-                <span class="me-2 text-yellow fw-bold">
-                    Key
-                </span>
-                <div v-for="(key, index) in allKeys" :key="key" class="d-inline-block custom-radio">
-                    <label class="d-flex flex-column">
-                        <input type="radio" name="keys" v-model="currentKey" :value="allKeys[index]" @change="onChangeCurrentKey()">
-                            <span class="label"> {{ key }} </span>
-                        </input>
-                    </label>
-                </div>
-                <span class="me-2 text-yellow fw-bold">
-                    ({{ getTonalityText(currentTonality) }})
-                </span>
-            </div>
-            <!-- Pattern Selector -->
-            <div class="d-flex justify-content-center align-items-center mt-3">
-                <span class="me-2 text-yellow fw-bold">
-                    Pattern
-                </span>
-                <div v-for="(scale, index) in allPatterns" :key="scale" class="d-inline-block custom-radio">
-                    <label class="d-flex flex-column">
-                        <input type="radio" name="scales" v-model="currentPattern" :value="allPatterns[index]" @change="onChangeCurrentPattern()">
-                            <span class="label px-3">{{ scale }}</span>
-                        </input>
-                    </label>
-                </div>
-            </div>
-        </div>
-
-        <!-- NUMBER OF FRET -->
-        <div class="mt-3">
-            <span class="me-3 text-yellow fw-bold">
-                Number of Frets
-            </span>
-            <input type="range" min="12" max="24" step="1" v-model="fretAmount">
-            <span class="ms-3 text-yellow fw-bold">
-                {{ fretAmount }}
-            </span>
-        </div>
-
+        <!-- FRETBOARD -->
         <div v-for="(fretboard, index) in fretboards" 
-            class="mt-4 d-flex"
+            class="mt-4 d-flex flex-column"
             :class="{ 'selected-fretboard': (index == currentFretboard && fretboards.length > 1) }"
             @click="selectFretboard(index)" 
         >
-            <h5 class="d-flex align-items-center text-yellow mx-4">
-                {{ fretboard.currentKey }} {{ getTonalityText(currentTonality) }}
-            </h5>
-            <MyFretboard
-                :fretAmount="fretboard.fretAmount"
-                :fretIndicator="fretboard.fretIndicator"
-                :currentCAGED="currentCAGED"
-                :currentKey="fretboard.currentKey"
-                :currentTonality="currentTonality"
-                :E="fretboard.E"
-                :A="fretboard.A"
-                :D="fretboard.D"
-                :G="fretboard.G"
-                :B="fretboard.B"
-                :e="fretboard.e"
-            />
+            <div v-if="index == currentFretboard">
+                <!-- SELECTOR -->
+                <div>
+                    <!-- Key Selector -->
+                    <div class="d-flex justify-content-center align-items-center">
+                        <span class="me-2 text-yellow fw-bold">
+                            Key
+                        </span>
+                        <div v-for="(key, index) in allKeys" :key="key" class="d-inline-block custom-radio">
+                            <label class="d-flex flex-column">
+                                <input type="radio" name="keys" v-model="currentKey" :value="allKeys[index]" @change="onChangeCurrentKey()">
+                                    <span class="label"> {{ key }} </span>
+                                </input>
+                            </label>
+                        </div>
+                        <span class="me-2 text-yellow fw-bold">
+                            ({{ getTonalityText(currentTonality) }})
+                        </span>
+                    </div>
+                    <!-- Pattern Selector -->
+                    <div class="d-flex justify-content-center align-items-center mt-3">
+                        <span class="me-2 text-yellow fw-bold">
+                            Pattern
+                        </span>
+                        <div v-for="(scale, index) in allPatterns" :key="scale" class="d-inline-block custom-radio">
+                            <label class="d-flex flex-column">
+                                <input type="radio" name="scales" v-model="currentPattern" :value="allPatterns[index]" @change="onChangeCurrentPattern()">
+                                    <span class="label px-3">{{ scale }}</span>
+                                </input>
+                            </label>
+                        </div>
+                    </div>
+                </div>
 
-            <div class="d-flex align-items-center mx-4"> ✅ </div>
+                <!-- NUMBER OF FRET -->
+                <div class="mt-3">
+                    <span class="me-3 text-yellow fw-bold">
+                        Number of Frets
+                    </span>
+                    <input type="range" min="12" max="24" step="1" v-model="fretAmount" @change="onChangeFretAmount()">
+                    <span class="ms-3 text-yellow fw-bold">
+                        {{ fretAmount }}
+                    </span>
+                </div>
+            </div>
+
+            <div class="d-flex">
+                <h5 class="d-flex align-items-center text-yellow mx-4">
+                    {{ fretboard.currentKey }} {{ getTonalityText(currentTonality) }}
+                </h5>
+                <MyFretboard
+                    :fretAmount="fretboard.fretAmount"
+                    :fretIndicator="fretboard.fretIndicator"
+                    :currentCAGED="currentCAGED"
+                    :currentKey="fretboard.currentKey"
+                    :currentTonality="currentTonality"
+                    :E="fretboard.E"
+                    :A="fretboard.A"
+                    :D="fretboard.D"
+                    :G="fretboard.G"
+                    :B="fretboard.B"
+                    :e="fretboard.e"
+                />
+                <div class="d-flex align-items-center mx-5"> ✅ </div>
+            </div>
         </div>
 
         <h3 @click="addFretboard" class="text-yellow"> + </h3>

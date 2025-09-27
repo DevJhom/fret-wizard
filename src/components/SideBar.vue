@@ -159,7 +159,6 @@ const toggleSidebar = () => {
 <style scoped lang="scss">
 .side-bar {
     width: 15vw;
-    height: 100%;
     min-height: 100vh;
     padding: 1rem 1.5rem;
     background-color: #2a2d2e;

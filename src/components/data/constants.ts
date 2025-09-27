@@ -51,3 +51,13 @@ export const MINOR_KEY_TO_NUMBER: { [key: string]: number } = {
   "G": 10,
   "G#": 11, "A♭": 11, 
 };
+
+export const getTonalityText = (tonality: Tonality) => {
+    if (tonality == Tonality.MAJOR) {
+        return "Major";
+    }
+
+    if (tonality == Tonality.MINOR) {
+        return "Minor";
+    }
+}
