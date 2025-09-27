@@ -23,8 +23,8 @@ window.matchMedia("(orientation: landscape)").addEventListener("change", (event)
 
 <template>
   <RotateMessage v-if="!isLandscape"/>
-  <div v-else class="d-flex">
-    <SideBar/>
+  <div v-else class="layout">
+    <SideBar class="side-bar"/>
     <div class="d-flex flex-column">
       <span class="logo" @click="refreshPage()">
         FRETWIZARD
@@ -35,6 +35,11 @@ window.matchMedia("(orientation: landscape)").addEventListener("change", (event)
 </template>
 
 <style scoped lang="scss">
+.layout {
+  display: flex;
+  align-items: stretch;
+}
+
 .logo {
   width: 100%;
   text-align: start;
