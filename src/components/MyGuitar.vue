@@ -29,6 +29,7 @@ const fretIndicator = new Array(24);
 
 const fretboards = ref<Fretboard[]>([]);
 const currentFretboard = ref(0);
+const isEditing = ref(true);
 
 const getCurrentKey = async () => {
     const data = await fetchCurrentKey();
@@ -98,6 +99,7 @@ const addFretboard = async () => {
 
     fretboards.value.push(_.cloneDeep(fretboard));
     currentFretboard.value = fretboards.value.length - 1;
+    isEditing.value = true;
 }
 
 const updateFretboard = async () => {
@@ -167,7 +169,12 @@ const updateSideBar = () => {
 
 const selectFretboard = (index: number) => {
     currentFretboard.value = index;
+    isEditing.value = true;
     updateSideBar();
+}
+
+const finishEditing = () => {
+    isEditing.value = false;
 }
 
 onMounted(async () => {
@@ -180,11 +187,10 @@ onMounted(async () => {
     <div class="my-guitar mt-4">
         <!-- FRETBOARD -->
         <div v-for="(fretboard, index) in fretboards" 
-            class="mt-4 d-flex flex-column"
-            :class="{ 'selected-fretboard': (index == currentFretboard && fretboards.length > 1) }"
-            @click="selectFretboard(index)" 
+            class="mt-4 fretboard"
+            :class="{ 'selected-fretboard': (fretboards.length > 1 && index == currentFretboard && isEditing == true) }"
         >
-            <div v-if="index == currentFretboard">
+            <div v-if="index == currentFretboard && isEditing == true">
                 <!-- Key Selector -->
                 <div class="d-flex justify-content-center align-items-center mb-3">
                     <span class="me-2 text-yellow fw-bold">
@@ -246,8 +252,11 @@ onMounted(async () => {
                     :B="fretboard.B"
                     :e="fretboard.e"
                 />
-                <div class="d-flex align-items-center mx-5"> ✅ </div>
+                <div v-if="fretboards.length > 1 && isEditing == false" class="start-editing" @click="selectFretboard(index)"> ✏️ </div>
+                <div v-else class="mx-5"></div>
             </div>
+
+            <div v-if="fretboards.length > 1 && isEditing == true && index == currentFretboard" class="finish-editing" @click="finishEditing()"> ✅ </div>
         </div>
 
         <h2 @click="addFretboard" class="text-yellow"> + </h2>
@@ -263,6 +272,30 @@ onMounted(async () => {
     width: 85vw;
     height: 100%;
     padding-bottom: 10%;
+}
+
+.fretboard {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.selected-fretboard {
+    border: 3px solid $yellow;
+    border-radius: 9px;
+    padding: 1rem;
+}
+
+.start-editing {
+    display: flex;
+    align-items: center;
+    margin: 0 2rem;
+}
+
+.finish-editing {
+    position: absolute;
+    top: -14px;
+    right: -14px;
 }
 
 .custom-radio {
@@ -283,11 +316,5 @@ onMounted(async () => {
 
 .custom-radio span {
     cursor: pointer;
-}
-
-.selected-fretboard {
-    border: 3px solid $yellow;
-    border-radius: 9px;
-    padding: 1rem;
 }
 </style>
