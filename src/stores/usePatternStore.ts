@@ -106,10 +106,10 @@ export const usePatternStore = defineStore('pattern', {
     },
     updateTonality() {
       if (this.currentTonality == Tonality.MAJOR) {
-        this.currentKey = findRelativeMajor(this.currentKey, this.currentAccidental);
+        this.currentKey = findRelativeMajor(this.currentKey);
       }
       if (this.currentTonality == Tonality.MINOR) {
-        this.currentKey = findRelativeMinor(this.currentKey, this.currentAccidental);
+        this.currentKey = findRelativeMinor(this.currentKey);
       }
     }
   },

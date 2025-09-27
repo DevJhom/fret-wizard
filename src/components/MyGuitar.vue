@@ -10,7 +10,7 @@ import MyFretboard from './MyFretboard.vue';
 const patternStore = usePatternStore();
 const { allKeys, allPatterns, currentKey, currentPattern, currentCAGED, currentTonality, currentHighlightNotes, currentAccidental } = storeToRefs(patternStore);
 
-interface FretBoard {
+interface Fretboard {
     fretAmount: number,
     fretIndicator: number[],
     currentKey: string,
@@ -27,7 +27,7 @@ interface FretBoard {
 const fretAmount = ref(24);
 const fretIndicator = new Array(24);
 
-const fretboards = ref<FretBoard[]>([]);
+const fretboards = ref<Fretboard[]>([]);
 const currentFretboard = ref(0);
 
 const getCurrentKey = async () => {
@@ -82,7 +82,7 @@ const getScale = async () => {
 const addFretboard = async () => {
     const data = await getScale();
 
-    const fretboard: FretBoard = {
+    const fretboard: Fretboard = {
         fretAmount: fretAmount.value,
         fretIndicator: fretIndicator,
         currentKey: currentKey.value,
@@ -103,7 +103,7 @@ const addFretboard = async () => {
 const updateFretboard = async () => {
     const data = await getScale();
 
-    const fretboard: FretBoard = {
+    const fretboard: Fretboard = {
         fretAmount: fretAmount.value,
         fretIndicator: fretIndicator,
         currentKey: currentKey.value,
@@ -139,10 +139,6 @@ watch(currentTonality, () => {
     updateFretboard();
     patternStore.updateTonality();
     patternStore.updateCurrentHighlightNotes();
-
-    if (currentPattern.value == Pattern.Triad) {
-        //fetchScale();
-    }
 })
 
 watch(currentAccidental, () => {
@@ -162,8 +158,16 @@ watch([E, A, D, G, B, e], (newValue) => {
 }, { deep: true })
 */
 
+const updateSideBar = () => {
+    const selectedFretboard = _.cloneDeep(fretboards.value[currentFretboard.value]);
+
+    currentTonality.value = selectedFretboard.currentTonality;
+    currentAccidental.value = selectedFretboard.currentAccidental;
+}
+
 const selectFretboard = (index: number) => {
     currentFretboard.value = index;
+    updateSideBar();
 }
 
 onMounted(async () => {

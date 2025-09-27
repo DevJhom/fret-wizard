@@ -1,25 +1,27 @@
 import { Tonality, Accidental } from "@data/constants";
 import { majorSharpAllNotes, majorFlatAllNotes, minorSharpAllNotes, minorFlatAllNotes, MAJOR_KEY_TO_NUMBER, MINOR_KEY_TO_NUMBER } from '@/components/data/constants';
 
-export const findRelativeMajor = (currentKey: string, currentAccidental: Accidental) => {
-  if (currentAccidental == Accidental.SHARP) {
-    const index = minorSharpAllNotes.indexOf(currentKey);
-    return majorSharpAllNotes[index];
+export const findRelativeMajor = (currentKey: string) => {
+  const indexInSharp = minorSharpAllNotes.indexOf(currentKey);
+  if (indexInSharp > -1) {
+    return majorSharpAllNotes[indexInSharp];
   }
-  if (currentAccidental == Accidental.FLAT) {
-    const index = minorFlatAllNotes.indexOf(currentKey);
-    return majorFlatAllNotes[index];
+  
+  const indexInFlat = minorFlatAllNotes.indexOf(currentKey);
+  if (indexInFlat > -1) {
+    return majorFlatAllNotes[indexInFlat];
   }
 }
 
-export const findRelativeMinor = (currentKey: string, currentAccidental: Accidental) => {
-  if (currentAccidental == Accidental.SHARP) {
-    const index = majorSharpAllNotes.indexOf(currentKey);
-    return minorSharpAllNotes[index];
+export const findRelativeMinor = (currentKey: string) => {
+  const indexInSharp = majorSharpAllNotes.indexOf(currentKey);
+  if (indexInSharp > -1) {
+    return minorSharpAllNotes[indexInSharp];
   }
-  if (currentAccidental == Accidental.FLAT) {
-    const index = majorFlatAllNotes.indexOf(currentKey);
-    return minorFlatAllNotes[index];
+  
+  const indexInFlat = majorFlatAllNotes.indexOf(currentKey);
+  if (indexInFlat > -1) {
+    return minorFlatAllNotes[indexInFlat];
   }
 }
 
