@@ -187,6 +187,7 @@ const toggleSidebar = () => {
 .highlightNotes-filter .checkbox__checkmark {
     margin-top: 4px !important;
     background-color: $black;
+    cursor: pointer;
 }
 
 .fade-enter-active,
