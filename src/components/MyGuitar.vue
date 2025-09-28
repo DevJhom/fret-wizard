@@ -5,7 +5,9 @@ import { fetchCurrentKey, saveCurrentKey, fetchScale, saveCurrentScale, saveScal
 import { usePatternStore, CurrentCAGED } from '@/stores/usePatternStore';
 import { storeToRefs } from 'pinia';
 import _ from "lodash";
-import MyFretboard from './MyFretboard.vue';
+import MyFretboard from '@components/MyFretboard.vue';
+import Done from '@/assets/icons/Done.vue';
+import Edit from '@/assets/icons/Edit.vue';
 
 const patternStore = usePatternStore();
 const { allKeys, allPatterns, currentKey, currentPattern, currentCAGED, currentTonality, currentHighlightNotes, currentAccidental } = storeToRefs(patternStore);
@@ -252,11 +254,18 @@ onMounted(async () => {
                     :B="fretboard.B"
                     :e="fretboard.e"
                 />
-                <div v-if="fretboards.length > 1 && isEditing == false" class="start-editing" @click="selectFretboard(index)"> ✏️ </div>
+                <div v-if="fretboards.length > 1 && (isEditing == false || index != currentFretboard)" class="start-editing" @click="selectFretboard(index)"> 
+                    <Edit/>      
+                </div>
                 <div v-else class="mx-5"></div>
             </div>
 
-            <div v-if="fretboards.length > 1 && isEditing == true && index == currentFretboard" class="finish-editing" @click="finishEditing()"> ✅ </div>
+            <div v-if="fretboards.length > 1 && isEditing == true && index == currentFretboard" 
+                class="finish-editing" 
+                @click="finishEditing()"
+            > 
+                <Done/>
+            </div>
         </div>
 
         <h2 @click="addFretboard" class="text-yellow"> + </h2>
