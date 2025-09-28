@@ -9,4 +9,8 @@
     </svg>
 </template>
 
-<style scoped></style>
+<style scoped>
+ svg {
+    cursor: pointer;
+ }
+</style>
