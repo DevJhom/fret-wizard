@@ -1,14 +1,10 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { storeToRefs } from 'pinia';
-import { usePatternStore, CurrentStrings } from '@/stores/usePatternStore';
+import { CurrentStrings, CurrentCAGED } from '@/stores/usePatternStore';
 import { isCAGED } from '@data/CAGED';
 import { Accidental, Tonality } from '@data/constants';
 import { getRoots, getSeconds, getThirds, getFourths, getFifths, getSixths, getSevenths, getBlues } from '@data/intervals';
 import { getRootNoteName, getSecondNoteName, getThirdNoteName, getFourthNoteName, getFifthNoteName, getSixthNoteName, getSeventhNoteName, getBlueNoteName } from '@data/noteNames';
-
-const patternStore = usePatternStore();
-const { currentCAGED } = storeToRefs(patternStore);
 
 const props = defineProps<{
     stringName: string,
@@ -19,6 +15,7 @@ const props = defineProps<{
     currentTonality: Tonality,
     currentAccidental: Accidental,
     currentHighlightNotes: string[],
+    currentCAGED: CurrentCAGED,
     currentStrings: CurrentStrings
 }>();
 
@@ -48,7 +45,7 @@ const isStringActive = computed(() => {
 
 //THE CAGED System
 const currentHighlightCAGED = computed(() => {
-    return Object.keys(currentCAGED.value).filter(key => currentCAGED.value[key]);
+    return Object.keys(props.currentCAGED).filter(key => props.currentCAGED[key]);
 })
 
 </script>

@@ -2,7 +2,7 @@
 import { ref, watch, onMounted } from 'vue';
 import { Tonality, getTonalityText, Accidental, MAJOR_KEY_TO_NUMBER, MINOR_KEY_TO_NUMBER } from '@data/constants';
 import { fetchCurrentKey, saveCurrentKey, fetchScale, saveCurrentScale, saveScale } from '@/services/mockService';
-import { usePatternStore, CurrentStrings } from '@/stores/usePatternStore';
+import { usePatternStore, CurrentStrings, CurrentCAGED } from '@/stores/usePatternStore';
 import { storeToRefs } from 'pinia';
 import _ from "lodash";
 import MyFretboard from '@components/MyFretboard.vue';
@@ -10,7 +10,7 @@ import Done from '@/assets/icons/Done.vue';
 import Edit from '@/assets/icons/Edit.vue';
 
 const patternStore = usePatternStore();
-const { allKeys, allPatterns, currentKey, currentPattern, currentCAGED, currentTonality, currentAccidental, currentHighlightNotes, currentStrings } = storeToRefs(patternStore);
+const { allKeys, allPatterns, currentKey, currentPattern,  currentTonality, currentAccidental, currentHighlightNotes, currentCAGED, currentStrings } = storeToRefs(patternStore);
 
 interface Fretboard {
     fretAmount: number,
@@ -19,6 +19,7 @@ interface Fretboard {
     currentTonality: Tonality, 
     currentAccidental: Accidental,
     currentHighlightNotes: string[],
+    currentCAGED: CurrentCAGED,
     currentStrings: CurrentStrings,
     E: string[],
     A: string[],
@@ -94,6 +95,7 @@ const addFretboard = async () => {
         currentTonality: currentTonality.value,
         currentAccidental: currentAccidental.value,
         currentHighlightNotes: currentHighlightNotes.value,
+        currentCAGED: currentCAGED.value,
         currentStrings: currentStrings.value,
         E: data.E,
         A: data.A,
@@ -118,6 +120,7 @@ const updateFretboard = async () => {
         currentTonality: currentTonality.value,
         currentAccidental: currentAccidental.value,
         currentHighlightNotes: currentHighlightNotes.value,
+        currentCAGED: currentCAGED.value,
         currentStrings: currentStrings.value,
         E: data.E,
         A: data.A,
@@ -159,6 +162,10 @@ watch(currentHighlightNotes, () => {
     updateFretboard();
 })
 
+watch(currentCAGED, () => {
+    updateFretboard();
+}, { deep: true })
+
 watch(currentStrings, () => {
     updateFretboard();
 }, { deep: true})
@@ -182,6 +189,7 @@ const updateSideBar = () => {
     currentTonality.value = selectedFretboard.currentTonality;
     currentAccidental.value = selectedFretboard.currentAccidental;
     currentHighlightNotes.value = selectedFretboard.currentHighlightNotes;
+    currentCAGED.value = selectedFretboard.currentCAGED;
     currentStrings.value = selectedFretboard.currentStrings;
 }
 
@@ -259,11 +267,11 @@ onMounted(async () => {
                 <MyFretboard
                     :fretAmount="fretboard.fretAmount"
                     :fretIndicator="fretboard.fretIndicator"
-                    :currentCAGED="currentCAGED"
                     :currentKey="fretboard.currentKey"
                     :currentTonality="fretboard.currentTonality"
                     :currentAccidental="fretboard.currentAccidental"
                     :currentHighlightNotes="fretboard.currentHighlightNotes"
+                    :currentCAGED="fretboard.currentCAGED"
                     :currentStrings="fretboard.currentStrings"
                     :E="fretboard.E"
                     :A="fretboard.A"
