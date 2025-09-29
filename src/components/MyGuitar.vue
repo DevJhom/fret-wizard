@@ -18,6 +18,7 @@ interface Fretboard {
     currentKey: string,
     currentTonality: Tonality, 
     currentAccidental: Accidental,
+    currentHighlightNotes: string[],
     E: string[],
     A: string[],
     D: string[],
@@ -91,6 +92,7 @@ const addFretboard = async () => {
         currentKey: currentKey.value,
         currentTonality: currentTonality.value,
         currentAccidental: currentAccidental.value,
+        currentHighlightNotes: currentHighlightNotes.value,
         E: data.E,
         A: data.A,
         D: data.D,
@@ -113,6 +115,7 @@ const updateFretboard = async () => {
         currentKey: currentKey.value,
         currentTonality: currentTonality.value,
         currentAccidental: currentAccidental.value,
+        currentHighlightNotes: currentHighlightNotes.value,
         E: data.E,
         A: data.A,
         D: data.D,
@@ -149,6 +152,10 @@ watch(currentAccidental, () => {
     updateFretboard();
 })
 
+watch(currentHighlightNotes, () => {
+    updateFretboard();
+})
+
 /*
 watch([E, A, D, G, B, e], (newValue) => {
     saveScale(currentPattern.value, currentKey.value, {
@@ -167,6 +174,7 @@ const updateSideBar = () => {
 
     currentTonality.value = selectedFretboard.currentTonality;
     currentAccidental.value = selectedFretboard.currentAccidental;
+    currentHighlightNotes.value = selectedFretboard.currentHighlightNotes;
 }
 
 const selectFretboard = (index: number) => {
@@ -247,6 +255,7 @@ onMounted(async () => {
                     :currentKey="fretboard.currentKey"
                     :currentTonality="fretboard.currentTonality"
                     :currentAccidental="fretboard.currentAccidental"
+                    :currentHighlightNotes="fretboard.currentHighlightNotes"
                     :E="fretboard.E"
                     :A="fretboard.A"
                     :D="fretboard.D"
