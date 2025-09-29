@@ -10,7 +10,8 @@ const props = defineProps<{
     currentCAGED: CurrentCAGED, 
     currentKey: string,
     currentTonality: Tonality, 
-    currentAccidental: Accidental
+    currentAccidental: Accidental,
+    currentHighlightNotes: string[],
     E: string[],
     A: string[],
     D: string[],
@@ -55,6 +56,7 @@ const props = defineProps<{
                         :current-key="currentKey"
                         :current-tonality="currentTonality"
                         :current-accidental="currentAccidental"
+                        :current-highlight-notes="currentHighlightNotes"
                     />
                 </div>
             </div>
@@ -68,6 +70,7 @@ const props = defineProps<{
                         :current-key="currentKey"
                         :current-tonality="currentTonality"
                         :current-accidental="currentAccidental"
+                        :current-highlight-notes="currentHighlightNotes"
                     />
                 </div>
             </div>
@@ -81,6 +84,7 @@ const props = defineProps<{
                         :current-key="currentKey"
                         :current-tonality="currentTonality"
                         :current-accidental="currentAccidental"
+                        :current-highlight-notes="currentHighlightNotes"
                     />
                 </div>
             </div>
@@ -102,6 +106,7 @@ const props = defineProps<{
                         :current-key="currentKey"
                         :current-tonality="currentTonality"
                         :current-accidental="currentAccidental"
+                        :current-highlight-notes="currentHighlightNotes"
                     />
                 </div>
             </div>
@@ -115,6 +120,7 @@ const props = defineProps<{
                         :current-key="currentKey"
                         :current-tonality="currentTonality"
                         :current-accidental="currentAccidental"
+                        :current-highlight-notes="currentHighlightNotes"
                     />
                 </div>
             </div>
@@ -129,6 +135,7 @@ const props = defineProps<{
                         :current-key="currentKey"
                         :current-tonality="currentTonality"
                         :current-accidental="currentAccidental"
+                        :current-highlight-notes="currentHighlightNotes"
                     />
                 </div>
             </div>
