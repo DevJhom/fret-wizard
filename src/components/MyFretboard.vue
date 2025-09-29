@@ -58,6 +58,7 @@ const props = defineProps<{
                         :current-tonality="currentTonality"
                         :current-accidental="currentAccidental"
                         :current-highlight-notes="currentHighlightNotes"
+                        :currentCAGED="currentCAGED"
                         :current-strings="currentStrings"
                     />
                 </div>
@@ -73,6 +74,7 @@ const props = defineProps<{
                         :current-tonality="currentTonality"
                         :current-accidental="currentAccidental"
                         :current-highlight-notes="currentHighlightNotes"
+                        :currentCAGED="currentCAGED"
                         :current-strings="currentStrings"
                     />
                 </div>
@@ -88,6 +90,7 @@ const props = defineProps<{
                         :current-tonality="currentTonality"
                         :current-accidental="currentAccidental"
                         :current-highlight-notes="currentHighlightNotes"
+                        :currentCAGED="currentCAGED"
                         :current-strings="currentStrings"
                     />
                 </div>
@@ -111,6 +114,7 @@ const props = defineProps<{
                         :current-tonality="currentTonality"
                         :current-accidental="currentAccidental"
                         :current-highlight-notes="currentHighlightNotes"
+                        :currentCAGED="currentCAGED"
                         :current-strings="currentStrings"
                     />
                 </div>
@@ -126,6 +130,7 @@ const props = defineProps<{
                         :current-tonality="currentTonality"
                         :current-accidental="currentAccidental"
                         :current-highlight-notes="currentHighlightNotes"
+                        :currentCAGED="currentCAGED"
                         :current-strings="currentStrings"
                     />
                 </div>
@@ -142,6 +147,7 @@ const props = defineProps<{
                         :current-tonality="currentTonality"
                         :current-accidental="currentAccidental"
                         :current-highlight-notes="currentHighlightNotes"
+                        :currentCAGED="currentCAGED"
                         :current-strings="currentStrings"
                     />
                 </div>
