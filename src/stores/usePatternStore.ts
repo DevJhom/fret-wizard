@@ -27,8 +27,8 @@ interface State {
   currentHighlightNotes: string[];
   currentStrings: CurrentStrings;
   currentCAGED: CurrentCAGED;
-  currentAccidental: Accidental.SHARP | Accidental.FLAT;
-  currentTonality: Tonality.MAJOR | Tonality.MINOR;
+  currentAccidental: Accidental;
+  currentTonality: Tonality;
 }
 
 export const usePatternStore = defineStore('pattern', {
