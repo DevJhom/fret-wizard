@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue';
-import { Pattern, Tonality, getTonalityText, MAJOR_KEY_TO_NUMBER, MINOR_KEY_TO_NUMBER, Accidental } from '@data/constants';
+import { Tonality, getTonalityText, Accidental, MAJOR_KEY_TO_NUMBER, MINOR_KEY_TO_NUMBER } from '@data/constants';
 import { fetchCurrentKey, saveCurrentKey, fetchScale, saveCurrentScale, saveScale } from '@/services/mockService';
-import { usePatternStore, CurrentCAGED } from '@/stores/usePatternStore';
+import { usePatternStore, CurrentStrings } from '@/stores/usePatternStore';
 import { storeToRefs } from 'pinia';
 import _ from "lodash";
 import MyFretboard from '@components/MyFretboard.vue';
@@ -10,7 +10,7 @@ import Done from '@/assets/icons/Done.vue';
 import Edit from '@/assets/icons/Edit.vue';
 
 const patternStore = usePatternStore();
-const { allKeys, allPatterns, currentKey, currentPattern, currentCAGED, currentTonality, currentHighlightNotes, currentAccidental } = storeToRefs(patternStore);
+const { allKeys, allPatterns, currentKey, currentPattern, currentCAGED, currentTonality, currentAccidental, currentHighlightNotes, currentStrings } = storeToRefs(patternStore);
 
 interface Fretboard {
     fretAmount: number,
@@ -19,6 +19,7 @@ interface Fretboard {
     currentTonality: Tonality, 
     currentAccidental: Accidental,
     currentHighlightNotes: string[],
+    currentStrings: CurrentStrings,
     E: string[],
     A: string[],
     D: string[],
@@ -93,6 +94,7 @@ const addFretboard = async () => {
         currentTonality: currentTonality.value,
         currentAccidental: currentAccidental.value,
         currentHighlightNotes: currentHighlightNotes.value,
+        currentStrings: currentStrings.value,
         E: data.E,
         A: data.A,
         D: data.D,
@@ -116,6 +118,7 @@ const updateFretboard = async () => {
         currentTonality: currentTonality.value,
         currentAccidental: currentAccidental.value,
         currentHighlightNotes: currentHighlightNotes.value,
+        currentStrings: currentStrings.value,
         E: data.E,
         A: data.A,
         D: data.D,
@@ -156,6 +159,10 @@ watch(currentHighlightNotes, () => {
     updateFretboard();
 })
 
+watch(currentStrings, () => {
+    updateFretboard();
+}, { deep: true})
+
 /*
 watch([E, A, D, G, B, e], (newValue) => {
     saveScale(currentPattern.value, currentKey.value, {
@@ -175,6 +182,7 @@ const updateSideBar = () => {
     currentTonality.value = selectedFretboard.currentTonality;
     currentAccidental.value = selectedFretboard.currentAccidental;
     currentHighlightNotes.value = selectedFretboard.currentHighlightNotes;
+    currentStrings.value = selectedFretboard.currentStrings;
 }
 
 const selectFretboard = (index: number) => {
@@ -256,6 +264,7 @@ onMounted(async () => {
                     :currentTonality="fretboard.currentTonality"
                     :currentAccidental="fretboard.currentAccidental"
                     :currentHighlightNotes="fretboard.currentHighlightNotes"
+                    :currentStrings="fretboard.currentStrings"
                     :E="fretboard.E"
                     :A="fretboard.A"
                     :D="fretboard.D"
