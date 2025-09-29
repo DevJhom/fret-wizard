@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CurrentCAGED } from '@/stores/usePatternStore';
+import { CurrentCAGED, CurrentStrings } from '@/stores/usePatternStore';
 import { Accidental, Tonality } from '@data/constants';
 import { isCAGEDNameHere, GetCAGEDName } from '@data/CAGED';
 import MyString from '@components/MyString.vue';
@@ -7,10 +7,12 @@ import MyString from '@components/MyString.vue';
 const props = defineProps<{
     fretAmount: number,
     fretIndicator: number[],
-    currentCAGED: CurrentCAGED, 
     currentKey: string,
     currentTonality: Tonality, 
-    currentAccidental: Accidental
+    currentAccidental: Accidental,
+    currentHighlightNotes: string[],
+    currentCAGED: CurrentCAGED, 
+    currentStrings: CurrentStrings,
     E: string[],
     A: string[],
     D: string[],
@@ -55,6 +57,9 @@ const props = defineProps<{
                         :current-key="currentKey"
                         :current-tonality="currentTonality"
                         :current-accidental="currentAccidental"
+                        :current-highlight-notes="currentHighlightNotes"
+                        :currentCAGED="currentCAGED"
+                        :current-strings="currentStrings"
                     />
                 </div>
             </div>
@@ -68,6 +73,9 @@ const props = defineProps<{
                         :current-key="currentKey"
                         :current-tonality="currentTonality"
                         :current-accidental="currentAccidental"
+                        :current-highlight-notes="currentHighlightNotes"
+                        :currentCAGED="currentCAGED"
+                        :current-strings="currentStrings"
                     />
                 </div>
             </div>
@@ -81,6 +89,9 @@ const props = defineProps<{
                         :current-key="currentKey"
                         :current-tonality="currentTonality"
                         :current-accidental="currentAccidental"
+                        :current-highlight-notes="currentHighlightNotes"
+                        :currentCAGED="currentCAGED"
+                        :current-strings="currentStrings"
                     />
                 </div>
             </div>
@@ -102,6 +113,9 @@ const props = defineProps<{
                         :current-key="currentKey"
                         :current-tonality="currentTonality"
                         :current-accidental="currentAccidental"
+                        :current-highlight-notes="currentHighlightNotes"
+                        :currentCAGED="currentCAGED"
+                        :current-strings="currentStrings"
                     />
                 </div>
             </div>
@@ -115,6 +129,9 @@ const props = defineProps<{
                         :current-key="currentKey"
                         :current-tonality="currentTonality"
                         :current-accidental="currentAccidental"
+                        :current-highlight-notes="currentHighlightNotes"
+                        :currentCAGED="currentCAGED"
+                        :current-strings="currentStrings"
                     />
                 </div>
             </div>
@@ -129,6 +146,9 @@ const props = defineProps<{
                         :current-key="currentKey"
                         :current-tonality="currentTonality"
                         :current-accidental="currentAccidental"
+                        :current-highlight-notes="currentHighlightNotes"
+                        :currentCAGED="currentCAGED"
+                        :current-strings="currentStrings"
                     />
                 </div>
             </div>
