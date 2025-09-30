@@ -8,6 +8,7 @@ import _ from "lodash";
 import MyFretboard from '@components/MyFretboard.vue';
 import Done from '@/assets/icons/Done.vue';
 import Edit from '@/assets/icons/Edit.vue';
+import Trash from '@/assets/icons/Trash.vue';
 
 const patternStore = usePatternStore();
 const { allKeys, allPatterns, currentKey, currentPattern,  currentTonality, currentAccidental, currentHighlightNotes, currentCAGED, currentStrings } = storeToRefs(patternStore);
@@ -203,6 +204,15 @@ const finishEditing = () => {
     isEditing.value = false;
 }
 
+const deleteFretboard = (index: number) => {
+    fretboards.value.splice(index, 1);
+
+    if (fretboards.value.length == 1) {
+        currentFretboard.value = 0;
+        isEditing.value = true;
+    }
+}
+
 onMounted(async () => {
     await getCurrentKey();
     await addFretboard();
@@ -280,10 +290,13 @@ onMounted(async () => {
                     :B="fretboard.B"
                     :e="fretboard.e"
                 />
-                <div v-if="fretboards.length > 1 && (isEditing == false || index != currentFretboard)" class="start-editing" @click="selectFretboard(index)"> 
+                <div v-if="fretboards.length > 1 && (isEditing == false || index != currentFretboard)" class="action-icon edit-icon" @click="selectFretboard(index)"> 
                     <Edit/>      
                 </div>
                 <div v-else class="mx-5"></div>
+                <div v-if="fretboards.length > 1 && (isEditing == false || index != currentFretboard)" class="action-icon trash-icon" @click="deleteFretboard(index)"> 
+                    <Trash/>
+                </div>
             </div>
 
             <div v-if="fretboards.length > 1 && isEditing == true && index == currentFretboard" 
@@ -321,10 +334,17 @@ onMounted(async () => {
     padding: 1rem;
 }
 
-.start-editing {
+.action-icon {
     display: flex;
     align-items: center;
-    margin: 0 2rem;
+}
+
+.edit-icon {
+    margin: 0 0.5rem 0 2rem;
+}
+
+.trash-icon {
+    margin: 0 2rem 0 0.5rem;
 }
 
 .finish-editing {
