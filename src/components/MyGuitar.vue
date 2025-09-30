@@ -210,6 +210,7 @@ const deleteFretboard = (index: number) => {
     if (fretboards.value.length == 1) {
         currentFretboard.value = 0;
         isEditing.value = true;
+        updateSideBar();
     }
 }
 
