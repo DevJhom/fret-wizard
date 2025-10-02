@@ -22,6 +22,7 @@ export interface CurrentCAGED {
 
 interface State {
   allPatterns: string[];
+  hasSidebarUpdated: boolean;
   currentKey: string;
   currentPattern: string;
   currentHighlightNotes: string[];
@@ -34,6 +35,7 @@ interface State {
 export const usePatternStore = defineStore('pattern', {
   state: (): State => ({
     allPatterns: [Pattern.Pentatonic, Pattern.Blue, Pattern.Diatonic, Pattern.Triad],
+    hasSidebarUpdated: false,
     currentKey: "C",
     currentAccidental: Accidental.SHARP,
     currentTonality: Tonality.MAJOR,
@@ -111,6 +113,9 @@ export const usePatternStore = defineStore('pattern', {
       if (this.currentTonality == Tonality.MINOR) {
         this.currentKey = findRelativeMinor(this.currentKey);
       }
+    },
+    toggleSidebarStatus() {
+      this.hasSidebarUpdated = !this.hasSidebarUpdated
     }
   },
 });
