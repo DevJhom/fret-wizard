@@ -6,8 +6,8 @@ import MyString from '@components/MyString.vue';
 
 const props = defineProps<{
     fretAmount: number,
-    fretIndicator: number[],
     currentKey: string,
+    currentPattern: string,
     currentTonality: Tonality, 
     currentAccidental: Accidental,
     currentHighlightNotes: string[],
@@ -20,6 +20,8 @@ const props = defineProps<{
     B: string[],
     e: string[],
 }>();
+
+const fretIndicator = new Array(24);
 
 </script>
 
