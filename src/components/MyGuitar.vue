@@ -15,8 +15,8 @@ const { allKeys, allPatterns, currentKey, currentPattern,  currentTonality, curr
 
 interface Fretboard {
     fretAmount: number,
-    fretIndicator: number[],
     currentKey: string,
+    currentPattern: string,
     currentTonality: Tonality, 
     currentAccidental: Accidental,
     currentHighlightNotes: string[],
@@ -31,8 +31,6 @@ interface Fretboard {
 }
 
 const fretAmount = ref(24);
-const fretIndicator = new Array(24);
-
 const fretboards = ref<Fretboard[]>([]);
 const currentFretboard = ref(0);
 const isEditing = ref(true);
@@ -91,8 +89,8 @@ const addFretboard = async () => {
 
     const fretboard: Fretboard = {
         fretAmount: fretAmount.value,
-        fretIndicator: fretIndicator,
         currentKey: currentKey.value,
+        currentPattern: currentPattern.value,
         currentTonality: currentTonality.value,
         currentAccidental: currentAccidental.value,
         currentHighlightNotes: currentHighlightNotes.value,
@@ -116,8 +114,8 @@ const updateFretboard = async () => {
 
     const fretboard: Fretboard = {
         fretAmount: fretAmount.value,
-        fretIndicator: fretIndicator,
         currentKey: currentKey.value,
+        currentPattern: currentPattern.value,
         currentTonality: currentTonality.value,
         currentAccidental: currentAccidental.value,
         currentHighlightNotes: currentHighlightNotes.value,
@@ -149,6 +147,7 @@ const onChangeFretAmount = () => {
     updateFretboard();
 }
 
+/*
 watch(currentTonality, () => {
     updateFretboard();
     patternStore.updateTonality();
@@ -171,6 +170,8 @@ watch(currentStrings, () => {
     updateFretboard();
 }, { deep: true})
 
+*/
+
 /*
 watch([E, A, D, G, B, e], (newValue) => {
     saveScale(currentPattern.value, currentKey.value, {
@@ -184,8 +185,12 @@ watch([E, A, D, G, B, e], (newValue) => {
 }, { deep: true })
 */
 
-const updateSideBar = () => {
+const updateCustomizers = () => {
     const selectedFretboard = _.cloneDeep(fretboards.value[currentFretboard.value]);
+
+    fretAmount.value = selectedFretboard.fretAmount;
+    currentKey.value = selectedFretboard.currentKey;
+    currentPattern.value = selectedFretboard.currentPattern;
 
     currentTonality.value = selectedFretboard.currentTonality;
     currentAccidental.value = selectedFretboard.currentAccidental;
@@ -197,7 +202,7 @@ const updateSideBar = () => {
 const selectFretboard = (index: number) => {
     currentFretboard.value = index;
     isEditing.value = true;
-    updateSideBar();
+    updateCustomizers();
 }
 
 const finishEditing = () => {
@@ -210,7 +215,7 @@ const deleteFretboard = (index: number) => {
     if (fretboards.value.length == 1) {
         currentFretboard.value = 0;
         isEditing.value = true;
-        updateSideBar();
+        updateCustomizers();
     }
 }
 
@@ -277,7 +282,7 @@ onMounted(async () => {
                 </h5>
                 <MyFretboard
                     :fretAmount="fretboard.fretAmount"
-                    :fretIndicator="fretboard.fretIndicator"
+                    :currentPattern="fretboard.currentPattern"
                     :currentKey="fretboard.currentKey"
                     :currentTonality="fretboard.currentTonality"
                     :currentAccidental="fretboard.currentAccidental"
