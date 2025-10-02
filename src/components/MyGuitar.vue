@@ -11,7 +11,7 @@ import Edit from '@/assets/icons/Edit.vue';
 import Trash from '@/assets/icons/Trash.vue';
 
 const patternStore = usePatternStore();
-const { allKeys, allPatterns, currentKey, currentPattern,  currentTonality, currentAccidental, currentHighlightNotes, currentCAGED, currentStrings } = storeToRefs(patternStore);
+const { allKeys, allPatterns, currentKey, currentPattern,  currentTonality, currentAccidental, currentHighlightNotes, currentCAGED, currentStrings, hasSidebarUpdated } = storeToRefs(patternStore);
 
 interface Fretboard {
     fretAmount: number,
@@ -147,43 +147,14 @@ const onChangeFretAmount = () => {
     updateFretboard();
 }
 
-/*
-watch(currentTonality, () => {
-    updateFretboard();
-    patternStore.updateTonality();
-    patternStore.updateCurrentHighlightNotes();
-})
-
-watch(currentAccidental, () => {
+watch(hasSidebarUpdated, () => {
     updateFretboard();
 })
 
-watch(currentHighlightNotes, () => {
-    updateFretboard();
-})
-
-watch(currentCAGED, () => {
-    updateFretboard();
-}, { deep: true })
-
-watch(currentStrings, () => {
-    updateFretboard();
-}, { deep: true})
-
-*/
-
-/*
-watch([E, A, D, G, B, e], (newValue) => {
-    saveScale(currentPattern.value, currentKey.value, {
-        // E: Object.assign([], newValue[0]), 
-        // A: Object.assign([], newValue[1]), 
-        // D: Object.assign([], newValue[2]), 
-        // G: Object.assign([], newValue[3]),
-        // B: Object.assign([], newValue[4]),
-        // e: Object.assign([], newValue[5])
-    })
-}, { deep: true })
-*/
+// watch(currentTonality, () => {
+//     patternStore.updateTonality();
+//     patternStore.updateCurrentHighlightNotes();
+// })
 
 const updateCustomizers = () => {
     const selectedFretboard = _.cloneDeep(fretboards.value[currentFretboard.value]);
