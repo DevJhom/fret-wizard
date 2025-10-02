@@ -2,11 +2,6 @@
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 500;
-
-  color-scheme: light dark;
-  color: #d8d1c7;
-  background-color: #191a1b;
-
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -17,8 +12,6 @@ html, body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  color: #d8d1c7;
-  background-color: #191a1b;
 }
 
 h1 {
@@ -74,15 +67,14 @@ button:focus-visible {
   text-align: center;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+.dark-theme {
+  color: #d8d1c7;
+  background-color: #191a1b;
+  --sidebar-background-color: #2a2d2e;
+}
+
+.light-theme {
+  color: #111111;
+  background-color: #fafafa;
+  --sidebar-background-color: #f2f6fc;
 }

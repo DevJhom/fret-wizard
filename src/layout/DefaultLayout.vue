@@ -4,13 +4,23 @@ import MyGuitar from '@components/MyGuitar.vue';
 import SideBar from '@components/SideBar.vue';
 import RotateMessage from '@/components/RotateMessage.vue';
 
+enum Theme {
+  dark = "dark-theme",
+  light = "light-theme"
+}
+
+const theme = ref(Theme.dark);
 const isLandscape = ref(true);
+
+isLandscape.value = window.matchMedia("(orientation: landscape)").matches;
+
+const switchTheme = () => {
+  theme.value = (theme.value == Theme.dark ? Theme.light : Theme.dark);
+}
 
 const refreshPage = () => {
  window.location.reload();
 };
-
-isLandscape.value = window.matchMedia("(orientation: landscape)").matches;
 
 window.matchMedia("(orientation: landscape)").addEventListener("change", (event) => {
   if (event.matches) {
@@ -22,14 +32,19 @@ window.matchMedia("(orientation: landscape)").addEventListener("change", (event)
 </script>
 
 <template>
-  <RotateMessage v-if="!isLandscape"/>
-  <div v-else class="layout">
-    <SideBar class="side-bar"/>
-    <div class="d-flex flex-column">
-      <span class="logo" @click="refreshPage()">
-        FRETWIZARD
-      </span>
-      <MyGuitar/>
+  <div :class="theme">
+    <RotateMessage v-if="!isLandscape"/>
+    <div v-else class="layout">
+      <SideBar/>
+      <div class="content">
+        <span class="logo" @click="refreshPage()">
+          FRETWIZARD
+        </span>
+        <div class="switch-theme" @click="switchTheme()">
+          🌙☀️
+        </div>
+        <MyGuitar/>
+      </div>
     </div>
   </div>
 </template>
@@ -40,6 +55,11 @@ window.matchMedia("(orientation: landscape)").addEventListener("change", (event)
   align-items: stretch;
 }
 
+.content {
+  display: flex;
+  flex-direction: column;
+}
+
 .logo {
   width: 100%;
   text-align: start;
@@ -48,5 +68,11 @@ window.matchMedia("(orientation: landscape)").addEventListener("change", (event)
   font-weight: bold;
   color: $yellow;
   cursor: pointer;
+}
+
+.switch-theme {
+  position: absolute;
+  top: 1rem;
+  right: 2rem;
 }
 </style>
