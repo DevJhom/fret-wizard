@@ -5,7 +5,7 @@ import { storeToRefs } from 'pinia';
 import { Tonality, Accidental } from '@data/constants';
 
 const patternStore = usePatternStore();
-const { currentHighlightNotes, currentCAGED, currentStrings, currentAccidental, currentTonality } = storeToRefs(patternStore);
+const { currentTonality, currentAccidental, currentHighlightNotes, currentCAGED, currentStrings } = storeToRefs(patternStore);
 
 const isCollapsed = ref(true);
 
@@ -24,13 +24,13 @@ const toggleSidebar = () => {
                 <!-- Tonality -->
                 <div class="d-flex mt-5 switch-radio">
                     <label>
-                        <input type="radio" name="tonality" :value="Tonality.MAJOR" v-model="currentTonality">
+                        <input type="radio" name="tonality" :value="Tonality.MAJOR" v-model="currentTonality" @change="patternStore.toggleSidebarStatus">
                             <div class="label"> Major </div>
                         </input>
                     </label>
 
                     <label>
-                        <input type="radio" name="tonality" :value="Tonality.MINOR" v-model="currentTonality"> 
+                        <input type="radio" name="tonality" :value="Tonality.MINOR" v-model="currentTonality" @change="patternStore.toggleSidebarStatus"> 
                             <div class="label"> Minor </div>
                         </input>
                     </label>
@@ -39,13 +39,13 @@ const toggleSidebar = () => {
                 <!-- Accidental -->
                 <div class="d-flex mt-3 switch-radio">
                     <label>
-                        <input type="radio" name="accidental" :value="Accidental.SHARP" v-model="currentAccidental" @change="patternStore.updateToEqualAccidental()">
+                        <input type="radio" name="accidental" :value="Accidental.SHARP" v-model="currentAccidental" @change="patternStore.toggleSidebarStatus(); patternStore.updateToEqualAccidental()">
                             <div class="label text-nowrap"> Sharp ♯ </div>
                         </input>
                     </label>
 
                     <label>
-                        <input type="radio" name="accidental" :value="Accidental.FLAT" v-model="currentAccidental" @change="patternStore.updateToEqualAccidental()"> 
+                        <input type="radio" name="accidental" :value="Accidental.FLAT" v-model="currentAccidental" @change="patternStore.toggleSidebarStatus(); patternStore.updateToEqualAccidental()"> 
                             <div class="label text-nowrap"> Flat ♭ </div>
                         </input>
                     </label>
@@ -59,7 +59,7 @@ const toggleSidebar = () => {
                 </div>
                 <div class="highlightNotes-filter notes d-flex flex-column text-end">
                     <label v-for="(highlightNote, index) in patternStore.highlightNotes" :key="index" class="d-flex notes">
-                        <input type="checkbox" :value="highlightNote" v-model="currentHighlightNotes"/>
+                        <input type="checkbox" :value="highlightNote" v-model="currentHighlightNotes" @change="patternStore.toggleSidebarStatus()"/>
                         <div class="checkbox__checkmark"
                             :class="{
                                 'root-note': highlightNote == 'roots' && currentHighlightNotes.includes('roots'),
@@ -86,27 +86,27 @@ const toggleSidebar = () => {
                 </div>
                 <div class="highlightNotes-filter notes d-flex flex-column text-end">
                     <label class="d-flex notes">
-                        <input type="checkbox" :value="currentCAGED.CShape" v-model="currentCAGED.CShape"/>
+                        <input type="checkbox" :value="currentCAGED.CShape" v-model="currentCAGED.CShape" @change="patternStore.toggleSidebarStatus()"/>
                         <div class="checkbox__checkmark" :class="{'yellow': currentCAGED.CShape}"></div>
                         <span class="ms-3">C</span>
                     </label>
                     <label class="d-flex notes">
-                        <input type="checkbox" :value="currentCAGED.AShape" v-model="currentCAGED.AShape"/>
+                        <input type="checkbox" :value="currentCAGED.AShape" v-model="currentCAGED.AShape" @change="patternStore.toggleSidebarStatus()"/>
                         <div class="checkbox__checkmark" :class="{'yellow': currentCAGED.AShape}"></div>
                         <span class="ms-3">A</span>
                     </label>
                     <label class="d-flex notes">
-                        <input type="checkbox" :value="currentCAGED.GShape" v-model="currentCAGED.GShape"/>
+                        <input type="checkbox" :value="currentCAGED.GShape" v-model="currentCAGED.GShape" @change="patternStore.toggleSidebarStatus()"/>
                         <div class="checkbox__checkmark" :class="{'yellow': currentCAGED.GShape}"></div>
                         <span class="ms-3">G</span>
                     </label>
                     <label class="d-flex notes">
-                        <input type="checkbox" :value="currentCAGED.EShape" v-model="currentCAGED.EShape"/>
+                        <input type="checkbox" :value="currentCAGED.EShape" v-model="currentCAGED.EShape" @change="patternStore.toggleSidebarStatus()"/>
                         <div class="checkbox__checkmark" :class="{'yellow': currentCAGED.EShape}"></div>
                         <span class="ms-3">E</span>
                     </label>            
                     <label class="d-flex notes">
-                        <input type="checkbox" :value="currentCAGED.DShape" v-model="currentCAGED.DShape"/>
+                        <input type="checkbox" :value="currentCAGED.DShape" v-model="currentCAGED.DShape" @change="patternStore.toggleSidebarStatus()"/>
                         <div class="checkbox__checkmark" :class="{'yellow': currentCAGED.DShape}"></div>
                         <span class="ms-3">D</span>
                     </label>            
@@ -120,32 +120,32 @@ const toggleSidebar = () => {
                 </div>
                 <div class="highlightNotes-filter notes d-flex flex-column text-end">
                     <label class="d-flex notes">
-                        <input type="checkbox" :value="currentStrings.e" v-model="currentStrings.e"/>
+                        <input type="checkbox" :value="currentStrings.e" v-model="currentStrings.e" @change="patternStore.toggleSidebarStatus()"/>
                         <div class="checkbox__checkmark" :class="{'yellow': currentStrings.e}"></div>
                         <span class="ms-3">e</span>
                     </label>
                     <label class="d-flex notes">
-                        <input type="checkbox" :value="currentStrings.B" v-model="currentStrings.B"/>
+                        <input type="checkbox" :value="currentStrings.B" v-model="currentStrings.B" @change="patternStore.toggleSidebarStatus()"/>
                         <div class="checkbox__checkmark" :class="{'yellow': currentStrings.B}"></div>
                         <span class="ms-3">B</span>
                     </label>
                     <label class="d-flex notes">
-                        <input type="checkbox" :value="currentStrings.G" v-model="currentStrings.G"/>
+                        <input type="checkbox" :value="currentStrings.G" v-model="currentStrings.G" @change="patternStore.toggleSidebarStatus()"/>
                         <div class="checkbox__checkmark" :class="{'yellow': currentStrings.G}"></div>
                         <span class="ms-3">G</span>
                     </label>
                     <label class="d-flex notes">
-                        <input type="checkbox" :value="currentStrings.D" v-model="currentStrings.D"/>
+                        <input type="checkbox" :value="currentStrings.D" v-model="currentStrings.D" @change="patternStore.toggleSidebarStatus()"/>
                         <div class="checkbox__checkmark" :class="{'yellow': currentStrings.D}"></div>
                         <span class="ms-3">D</span>
                     </label>            
                     <label class="d-flex notes">
-                        <input type="checkbox" :value="currentStrings.A" v-model="currentStrings.A"/>
+                        <input type="checkbox" :value="currentStrings.A" v-model="currentStrings.A" @change="patternStore.toggleSidebarStatus()"/>
                         <div class="checkbox__checkmark" :class="{'yellow': currentStrings.A}"></div>
                         <span class="ms-3">A</span>
                     </label>            
                     <label class="d-flex notes">
-                        <input type="checkbox" :value="currentStrings.E" v-model="currentStrings.E"/>
+                        <input type="checkbox" :value="currentStrings.E" v-model="currentStrings.E" @change="patternStore.toggleSidebarStatus()"/>
                         <div class="checkbox__checkmark" :class="{'yellow': currentStrings.E}"></div>
                         <span class="ms-3">E</span>
                     </label>
