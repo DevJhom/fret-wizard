@@ -23,6 +23,7 @@ export interface CurrentCAGED {
 interface State {
   allPatterns: string[];
   hasSidebarUpdated: boolean;
+  hasTonalityUpdate: boolean;
   currentKey: string;
   currentPattern: string;
   currentHighlightNotes: string[];
@@ -36,6 +37,7 @@ export const usePatternStore = defineStore('pattern', {
   state: (): State => ({
     allPatterns: [Pattern.Pentatonic, Pattern.Blue, Pattern.Diatonic, Pattern.Triad],
     hasSidebarUpdated: false,
+    hasTonalityUpdate: false,
     currentKey: "C",
     currentAccidental: Accidental.SHARP,
     currentTonality: Tonality.MAJOR,
@@ -94,6 +96,8 @@ export const usePatternStore = defineStore('pattern', {
       this.currentPattern = pattern;
     },
     updateCurrentHighlightNotes() {
+      // This functions unhighlights some notes that are not present in the scale.
+      // For example, when switching from a major scale to a minor scale, some notes that are present in the major scale but not in the minor scale will be unhighlighted.
       this.currentHighlightNotes = this.currentHighlightNotes.filter(note => this.highlightNotes.includes(note));
     },
     updateToEqualAccidental() {
@@ -107,6 +111,8 @@ export const usePatternStore = defineStore('pattern', {
       }
     },
     updateTonality() {
+      // This function updates currentKey to its relative Major/Minor.
+      // For example, C -> Am.
       if (this.currentTonality == Tonality.MAJOR) {
         this.currentKey = findRelativeMajor(this.currentKey);
       }
@@ -116,6 +122,9 @@ export const usePatternStore = defineStore('pattern', {
     },
     toggleSidebarStatus() {
       this.hasSidebarUpdated = !this.hasSidebarUpdated
+    },
+    toggleTonalityStatus() {
+      this.hasTonalityUpdate = !this.hasTonalityUpdate
     }
   },
 });
