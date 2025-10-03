@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import MyGuitar from '@components/MyGuitar.vue';
+import MainPage from '@/components/MainPage.vue';
 import SideBar from '@components/SideBar.vue';
 import RotateMessage from '@/components/RotateMessage.vue';
 import Moon from '@/assets/icons/Moon.vue';
@@ -51,7 +51,7 @@ window.matchMedia("(orientation: landscape)").addEventListener("change", (event)
             </input>
           </label>
         </div>
-        <MyGuitar/>
+        <MainPage/>
       </div>
     </div>
   </div>
