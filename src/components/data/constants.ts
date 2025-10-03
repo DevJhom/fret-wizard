@@ -1,11 +1,16 @@
+export enum Theme {
+  dark = "dark-theme",
+  light = "light-theme"
+}
+
 export enum Accidental {
-    SHARP = "sharp",
-    FLAT = "flat"
+  SHARP = "sharp",
+  FLAT = "flat"
 }
 
 export enum Tonality {
-    MAJOR = "major",
-    MINOR = "minor"
+  MAJOR = "major",
+  MINOR = "minor"
 }
 
 export enum Pattern {
@@ -53,11 +58,11 @@ export const MINOR_KEY_TO_NUMBER: { [key: string]: number } = {
 };
 
 export const getTonalityText = (tonality: Tonality) => {
-    if (tonality == Tonality.MAJOR) {
-        return "Major";
-    }
+  if (tonality == Tonality.MAJOR) {
+    return "Major";
+  }
 
-    if (tonality == Tonality.MINOR) {
-        return "Minor";
-    }
+  if (tonality == Tonality.MINOR) {
+    return "Minor";
+  }
 }

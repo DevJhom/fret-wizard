@@ -1,8 +1,14 @@
+import { Theme } from '@data/constants';
 import { Pattern, Tonality, Accidental } from '@data/constants';
 
-export const fetchCurrentTheme = async () => {}
+export const fetchCurrentTheme = async () => {
+  const theme = localStorage.getItem("theme") as Theme;
+  return theme;
+}
 
-export const saveCurrentTheme = async () => {}
+export const saveCurrentTheme = async (theme: Theme) => {
+  localStorage.setItem("theme", theme);
+}
 
 export const fetchCurrentFretboard = async () => {
   return {
