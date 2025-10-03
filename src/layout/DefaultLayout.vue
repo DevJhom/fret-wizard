@@ -3,6 +3,8 @@ import { ref } from 'vue';
 import MyGuitar from '@components/MyGuitar.vue';
 import SideBar from '@components/SideBar.vue';
 import RotateMessage from '@/components/RotateMessage.vue';
+import Moon from '@/assets/icons/Moon.vue';
+import Sun from '@/assets/icons/Sun.vue';
 
 enum Theme {
   dark = "dark-theme",
@@ -13,10 +15,6 @@ const theme = ref(Theme.dark);
 const isLandscape = ref(true);
 
 isLandscape.value = window.matchMedia("(orientation: landscape)").matches;
-
-const switchTheme = () => {
-  theme.value = (theme.value == Theme.dark ? Theme.light : Theme.dark);
-}
 
 const refreshPage = () => {
  window.location.reload();
@@ -40,8 +38,18 @@ window.matchMedia("(orientation: landscape)").addEventListener("change", (event)
         <span class="logo" @click="refreshPage()">
           FRETWIZARD
         </span>
-        <div class="switch-theme" @click="switchTheme()">
-          🌙☀️
+        <div class="switch-theme switch-radio">
+          <label>
+            <input type="radio" name="theme" :value="Theme.dark" v-model="theme">
+              <div class="label px-1"><Moon class="theme-icon"/></div>
+            </input>
+          </label>
+
+          <label>
+            <input type="radio" name="theme" :value="Theme.light" v-model="theme"> 
+              <div class="label px-1"><Sun class="theme-icon"/></div>
+            </input>
+          </label>
         </div>
         <MyGuitar/>
       </div>
@@ -71,8 +79,13 @@ window.matchMedia("(orientation: landscape)").addEventListener("change", (event)
 }
 
 .switch-theme {
+  display: flex;
   position: absolute;
   top: 1rem;
   right: 2rem;
+}
+
+.theme-icon {
+  padding-bottom: 3px;
 }
 </style>
