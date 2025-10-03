@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue';
-import { Tonality, getTonalityText, Accidental, MAJOR_KEY_TO_NUMBER, MINOR_KEY_TO_NUMBER } from '@data/constants';
-import { fetchCurrentKey, saveCurrentKey, fetchScale, saveCurrentScale, saveScale } from '@/services/mockService';
+import { Pattern, Tonality, getTonalityText, Accidental, MAJOR_KEY_TO_NUMBER, MINOR_KEY_TO_NUMBER } from '@data/constants';
+import { fetchCurrentFretboard } from '@/services/customizerService';
+import { fetchScalePattern } from '@/services/patternService';
 import { usePatternStore, CurrentStrings, CurrentCAGED } from '@/stores/usePatternStore';
 import { storeToRefs } from 'pinia';
 import _ from "lodash";
@@ -11,12 +12,12 @@ import Edit from '@/assets/icons/Edit.vue';
 import Trash from '@/assets/icons/Trash.vue';
 
 const patternStore = usePatternStore();
-const { allKeys, allPatterns, currentKey, currentPattern,  currentTonality, currentAccidental, currentHighlightNotes, currentCAGED, currentStrings, hasSidebarUpdated, hasTonalityUpdate } = storeToRefs(patternStore);
+const { allKeys, allPatterns, fretAmount, currentKey, currentPattern, currentTonality, currentAccidental, currentHighlightNotes, currentCAGED, currentStrings, hasSidebarUpdated, hasTonalityUpdate } = storeToRefs(patternStore);
 
 interface Fretboard {
     fretAmount: number,
     currentKey: string,
-    currentPattern: string,
+    currentPattern: Pattern,
     currentTonality: Tonality, 
     currentAccidental: Accidental,
     currentHighlightNotes: string[],
@@ -30,19 +31,23 @@ interface Fretboard {
     e: string[]
 }
 
-const fretAmount = ref(24);
 const fretboards = ref<Fretboard[]>([]);
 const currentFretboard = ref(0);
 const isEditing = ref(true);
 
-const getCurrentKey = async () => {
-    const data = await fetchCurrentKey();
-    currentKey.value = data.key;
+const getCurrentFretboard = async () => {
+    const data = await fetchCurrentFretboard();
+    
+    fretAmount.value = data.fretAmount;
+    currentKey.value = data.currentKey;
+    currentPattern.value = data.currentPattern;
+    currentTonality.value = data.currentTonality;
+    currentAccidental.value = data.currentAccidental;
 }
 
 const getScale = async () => {
     // Fetch the default key "C" and shift the data based on "currentKeyToNumber"
-    const data = await fetchScale(currentTonality.value, currentPattern.value, "C");
+    const data = await fetchScalePattern(currentTonality.value, currentPattern.value, "C");
     const tempData = _.cloneDeep(data);
 
     let currentKeyToNumber = 0;
@@ -134,12 +139,10 @@ const updateFretboard = async () => {
 
 const onChangeCurrentKey = () => {
     updateFretboard();
-    saveCurrentKey(currentKey.value);
 }
 
 const onChangeCurrentPattern = () => {
     updateFretboard();
-    saveCurrentScale(currentPattern.value);
     patternStore.updateCurrentHighlightNotes();
 }
 
@@ -191,7 +194,7 @@ const deleteFretboard = (index: number) => {
 }
 
 onMounted(async () => {
-    await getCurrentKey();
+    await getCurrentFretboard();
     await addFretboard();
 })
 </script>

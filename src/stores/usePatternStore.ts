@@ -24,13 +24,14 @@ interface State {
   allPatterns: string[];
   hasSidebarUpdated: boolean;
   hasTonalityUpdate: boolean;
+  fretAmount: number;
   currentKey: string;
-  currentPattern: string;
+  currentTonality: Tonality;
+  currentAccidental: Accidental;
+  currentPattern: Pattern;
   currentHighlightNotes: string[];
   currentStrings: CurrentStrings;
   currentCAGED: CurrentCAGED;
-  currentAccidental: Accidental;
-  currentTonality: Tonality;
 }
 
 export const usePatternStore = defineStore('pattern', {
@@ -38,9 +39,10 @@ export const usePatternStore = defineStore('pattern', {
     allPatterns: [Pattern.Pentatonic, Pattern.Blue, Pattern.Diatonic, Pattern.Triad],
     hasSidebarUpdated: false,
     hasTonalityUpdate: false,
+    fretAmount: 24,
     currentKey: "C",
-    currentAccidental: Accidental.SHARP,
     currentTonality: Tonality.MAJOR,
+    currentAccidental: Accidental.SHARP,
     currentPattern: Pattern.Pentatonic,
     currentHighlightNotes: ["roots"],
     currentStrings: {
