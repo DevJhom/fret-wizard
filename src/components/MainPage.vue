@@ -11,7 +11,7 @@ import Edit from '@/assets/icons/Edit.vue';
 import Trash from '@/assets/icons/Trash.vue';
 
 const patternStore = usePatternStore();
-const { allKeys, allPatterns, currentKey, currentPattern,  currentTonality, currentAccidental, currentHighlightNotes, currentCAGED, currentStrings, hasSidebarUpdated } = storeToRefs(patternStore);
+const { allKeys, allPatterns, currentKey, currentPattern,  currentTonality, currentAccidental, currentHighlightNotes, currentCAGED, currentStrings, hasSidebarUpdated, hasTonalityUpdate } = storeToRefs(patternStore);
 
 interface Fretboard {
     fretAmount: number,
@@ -151,10 +151,10 @@ watch(hasSidebarUpdated, () => {
     updateFretboard();
 })
 
-// watch(currentTonality, () => {
-//     patternStore.updateTonality();
-//     patternStore.updateCurrentHighlightNotes();
-// })
+watch(hasTonalityUpdate, () => {
+    // patternStore.updateTonality();
+    patternStore.updateCurrentHighlightNotes();
+})
 
 const updateCustomizers = () => {
     const selectedFretboard = _.cloneDeep(fretboards.value[currentFretboard.value]);
