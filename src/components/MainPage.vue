@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue';
-import { Tonality, getTonalityText, MAJOR_KEY_TO_NUMBER, MINOR_KEY_TO_NUMBER } from '@data/constants';
+import { Tonality, getTonalityText, majorKeyToNumber, minorKeyToNumber } from '@data/constants';
 import { fetchScalePattern } from '@/services/patternService';
 import { fetchCurrentFretboard, saveCurrentFretboard } from '@/services/customizerService';
 import { usePatternStore, CurrentFretboard } from '@/stores/usePatternStore';
@@ -63,10 +63,10 @@ const getScale = async () => {
     let currentKeyToNumber = 0;
 
     if (currentTonality.value == Tonality.MAJOR) {
-        currentKeyToNumber = MAJOR_KEY_TO_NUMBER[currentKey.value];
+        currentKeyToNumber = majorKeyToNumber[currentKey.value];
     }
     if (currentTonality.value == Tonality.MINOR) {
-        currentKeyToNumber = MINOR_KEY_TO_NUMBER[currentKey.value];
+        currentKeyToNumber = minorKeyToNumber[currentKey.value];
     }
 
     for (let i = 0; i < currentKeyToNumber; i++) {
