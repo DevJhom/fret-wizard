@@ -71,10 +71,14 @@ button:focus-visible {
   color: #d8d1c7;
   background-color: #191a1b;
   --sidebar-background-color: #2a2d2e;
+  --note-background-color: #242525;
+  --switch-input-background-color: #242525;
 }
 
 .light-theme {
   color: #111111;
   background-color: #fafafa;
   --sidebar-background-color: #f2f6fc;
+  --note-background-color: #393937;
+  --switch-input-background-color: #cccccc;
 }
