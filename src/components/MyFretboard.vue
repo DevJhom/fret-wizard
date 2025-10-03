@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { CurrentCAGED, CurrentStrings } from '@/stores/usePatternStore';
-import { Accidental, Tonality } from '@data/constants';
+import { Pattern, Tonality, Accidental } from '@data/constants';
 import { isCAGEDNameHere, GetCAGEDName } from '@data/CAGED';
 import MyString from '@components/MyString.vue';
 
 const props = defineProps<{
     fretAmount: number,
     currentKey: string,
-    currentPattern: string,
+    currentPattern: Pattern,
     currentTonality: Tonality, 
     currentAccidental: Accidental,
     currentHighlightNotes: string[],
