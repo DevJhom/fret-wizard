@@ -27,7 +27,7 @@ export const majorFlatAllNotes = ["C", "D♭", "D", "E♭", "E", "F", "G♭", "G
 export const minorSharpAllNotes = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"];
 export const minorFlatAllNotes = ["A", "B♭", "B", "C", "D♭", "D", "E♭", "E", "F", "G♭", "G", "A♭"];
 
-export const MAJOR_KEY_TO_NUMBER: { [key: string]: number } = {
+export const majorKeyToNumber: { [key: string]: number } = {
   "C": 0,
   "C#": 1, "D♭": 1,
   "D": 2,
@@ -42,7 +42,7 @@ export const MAJOR_KEY_TO_NUMBER: { [key: string]: number } = {
   "B": 11,
 };
 
-export const MINOR_KEY_TO_NUMBER: { [key: string]: number } = {
+export const minorKeyToNumber: { [key: string]: number } = {
   "A": 0,
   "A#": 1, "B♭": 1, 
   "B": 2,

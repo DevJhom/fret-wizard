@@ -1,5 +1,5 @@
 import { CurrentCAGED } from '@/stores/usePatternStore';
-import { MAJOR_KEY_TO_NUMBER, MINOR_KEY_TO_NUMBER } from '@data/constants';
+import { majorKeyToNumber, minorKeyToNumber } from '@data/constants';
 import { Tonality } from '@data/constants';
 
 // position = fret number - 1
@@ -48,9 +48,9 @@ export const CAGED = {
 
 export const isCAGED = (index: number, stringName: string, currentKey: string, tonality: Tonality, highlightCAGED?: string[]): boolean => {
     if (tonality == Tonality.MAJOR)
-        index = index - MAJOR_KEY_TO_NUMBER[currentKey];
+        index = index - majorKeyToNumber[currentKey];
     if (tonality == Tonality.MINOR)
-        index = index - MINOR_KEY_TO_NUMBER[currentKey];
+        index = index - minorKeyToNumber[currentKey];
 
     if (highlightCAGED) {
         if (highlightCAGED.includes("CShape") && CAGED.CShape?.[stringName].includes(index)) 
@@ -95,9 +95,9 @@ export const CAGEDNamePosition = {
 
 export const isCAGEDNameHere = (index: number, currentCAGED: CurrentCAGED, currentKey: string, tonality: Tonality) => {
     if (tonality == Tonality.MAJOR)
-        index = index - MAJOR_KEY_TO_NUMBER[currentKey];
+        index = index - majorKeyToNumber[currentKey];
     if (tonality == Tonality.MINOR)
-        index = index - MAJOR_KEY_TO_NUMBER[currentKey] - 3;
+        index = index - majorKeyToNumber[currentKey] - 3;
 
     if (currentCAGED.CShape && CAGEDNamePosition.CShape.position.includes(index))
         return true;
@@ -117,9 +117,9 @@ export const isCAGEDNameHere = (index: number, currentCAGED: CurrentCAGED, curre
 
 export const GetCAGEDName = (index: number, currentCAGED: CurrentCAGED, currentKey: string, tonality: Tonality) => {
     if (tonality == Tonality.MAJOR)
-        index = index - MAJOR_KEY_TO_NUMBER[currentKey];
+        index = index - majorKeyToNumber[currentKey];
     if (tonality == Tonality.MINOR)
-        index = index - MAJOR_KEY_TO_NUMBER[currentKey] - 3;
+        index = index - majorKeyToNumber[currentKey] - 3;
 
     if (currentCAGED.CShape && CAGEDNamePosition.CShape.position.includes(index))
         return CAGEDNamePosition.CShape.name;
