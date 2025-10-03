@@ -10,7 +10,7 @@
 </template>
 
 <style scoped>
- svg {
+svg {
     cursor: pointer;
- }
+}
 </style>
