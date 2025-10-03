@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue';
-import { Pattern, Tonality, getTonalityText, Accidental, MAJOR_KEY_TO_NUMBER, MINOR_KEY_TO_NUMBER } from '@data/constants';
-import { fetchCurrentFretboard } from '@/services/customizerService';
+import { Tonality, getTonalityText, MAJOR_KEY_TO_NUMBER, MINOR_KEY_TO_NUMBER } from '@data/constants';
 import { fetchScalePattern } from '@/services/patternService';
-import { usePatternStore, CurrentStrings, CurrentCAGED } from '@/stores/usePatternStore';
+import { fetchCurrentFretboard, saveCurrentFretboard } from '@/services/customizerService';
+import { usePatternStore, CurrentFretboard } from '@/stores/usePatternStore';
 import { storeToRefs } from 'pinia';
 import _ from "lodash";
 import MyFretboard from '@components/MyFretboard.vue';
@@ -14,21 +14,13 @@ import Trash from '@/assets/icons/Trash.vue';
 const patternStore = usePatternStore();
 const { allKeys, allPatterns, fretAmount, currentKey, currentPattern, currentTonality, currentAccidental, currentHighlightNotes, currentCAGED, currentStrings, hasSidebarUpdated, hasTonalityUpdate } = storeToRefs(patternStore);
 
-interface Fretboard {
-    fretAmount: number,
-    currentKey: string,
-    currentPattern: Pattern,
-    currentTonality: Tonality, 
-    currentAccidental: Accidental,
-    currentHighlightNotes: string[],
-    currentCAGED: CurrentCAGED,
-    currentStrings: CurrentStrings,
-    E: string[],
-    A: string[],
-    D: string[],
-    G: string[],
-    B: string[],
-    e: string[]
+interface Fretboard extends CurrentFretboard {
+    E: string[];
+    A: string[];
+    D: string[];
+    G: string[];
+    B: string[];
+    e: string[];
 }
 
 const fretboards = ref<Fretboard[]>([]);
@@ -43,6 +35,24 @@ const getCurrentFretboard = async () => {
     currentPattern.value = data.currentPattern;
     currentTonality.value = data.currentTonality;
     currentAccidental.value = data.currentAccidental;
+    currentHighlightNotes.value = data.currentHighlightNotes;
+    currentCAGED.value = data.currentCAGED;
+    currentStrings.value = data.currentStrings;
+}
+
+const handleSaveCurrentFretboard = async (fretboard: Fretboard) => {
+    const currentFretboard: CurrentFretboard = {
+        fretAmount: fretboard.fretAmount,
+        currentKey: fretboard.currentKey,
+        currentPattern: fretboard.currentPattern,
+        currentTonality: fretboard.currentTonality,
+        currentAccidental: fretboard.currentAccidental,
+        currentHighlightNotes: fretboard.currentHighlightNotes, 
+        currentCAGED: fretboard.currentCAGED,
+        currentStrings: fretboard.currentStrings
+    }
+
+    saveCurrentFretboard(currentFretboard);
 }
 
 const getScale = async () => {
@@ -135,6 +145,7 @@ const updateFretboard = async () => {
     }
 
     fretboards.value[currentFretboard.value] = _.cloneDeep(fretboard);
+    handleSaveCurrentFretboard(fretboard);
 }
 
 const onChangeCurrentKey = () => {

@@ -1,31 +1,39 @@
 import { Theme } from '@data/constants';
-import { Pattern, Tonality, Accidental } from '@data/constants';
+import { CurrentFretboard, defaultData } from '@/stores/usePatternStore';
 
-export const fetchCurrentTheme = async () => {
-  const theme = localStorage.getItem("theme") as Theme;
+const themeStorageKey = "theme";
+const fretboardStorageKey = "currentFretboard";
+
+export const fetchCurrentTheme = () => {
+  const theme = localStorage.getItem(themeStorageKey) as Theme;
   return theme;
 }
 
-export const saveCurrentTheme = async (theme: Theme) => {
-  localStorage.setItem("theme", theme);
+export const saveCurrentTheme = (theme: Theme) => {
+  localStorage.setItem(themeStorageKey, theme);
 }
 
-export const fetchCurrentFretboard = async () => {
-  return {
-    fretAmount: 24,
-    currentKey: "C",
-    currentPattern: Pattern.Pentatonic,
-    currentTonality: Tonality.MAJOR, 
-    currentAccidental: Accidental.SHARP
-  }  
+export const fetchCurrentFretboard = () => {
+  try {
+    const fretboard = localStorage.getItem(fretboardStorageKey);
 
-  // return {
-  //   fretAmount: 20,
-  //   currentKey: "A",
-  //   currentPattern: Pattern.Diatonic,
-  //   currentTonality: Tonality.MINOR, 
-  //   currentAccidental: Accidental.FLAT
-  // }  
+    if (fretboard) {
+      return JSON.parse(fretboard) as CurrentFretboard;
+    }
+    else {
+      return defaultData;
+    }
+  }
+  catch (error) {
+    console.log("fetchCurrentFretboard: ", error);
+  }
 }
 
-export const saveCurrentFretboard = async () => {}
+export const saveCurrentFretboard = (fretboard: CurrentFretboard) => {
+  try {
+    localStorage.setItem(fretboardStorageKey, JSON.stringify(fretboard));
+  }
+  catch (error) {
+    console.log("saveCurrentFretboard: ", error);
+  }
+}

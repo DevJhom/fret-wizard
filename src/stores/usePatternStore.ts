@@ -20,46 +20,53 @@ export interface CurrentCAGED {
   DShape: boolean;
 }
 
-interface State {
+export interface CurrentFretboard {
+  fretAmount: number;
+  currentKey: string;
+  currentPattern: Pattern;
+  currentTonality: Tonality;
+  currentAccidental: Accidental;
+  currentHighlightNotes: string[];
+  currentCAGED: CurrentCAGED;
+  currentStrings: CurrentStrings;
+}
+
+interface State extends CurrentFretboard {
   allPatterns: string[];
   hasSidebarUpdated: boolean;
   hasTonalityUpdate: boolean;
-  fretAmount: number;
-  currentKey: string;
-  currentTonality: Tonality;
-  currentAccidental: Accidental;
-  currentPattern: Pattern;
-  currentHighlightNotes: string[];
-  currentStrings: CurrentStrings;
-  currentCAGED: CurrentCAGED;
 }
+
+export const defaultData: CurrentFretboard = {
+  fretAmount: 24,
+  currentKey: "C",
+  currentPattern: Pattern.Pentatonic,
+  currentTonality: Tonality.MAJOR, 
+  currentAccidental: Accidental.SHARP,
+  currentHighlightNotes: ["roots"],
+  currentStrings: {
+    E: true,
+    A: true,
+    D: true,
+    G: true,
+    B: true,
+    e: true
+  },
+  currentCAGED: {
+    CShape: true,
+    AShape: true,
+    GShape: true,
+    EShape: true,
+    DShape: true
+  }
+}  
 
 export const usePatternStore = defineStore('pattern', {
   state: (): State => ({
     allPatterns: [Pattern.Pentatonic, Pattern.Blue, Pattern.Diatonic, Pattern.Triad],
     hasSidebarUpdated: false,
     hasTonalityUpdate: false,
-    fretAmount: 24,
-    currentKey: "C",
-    currentTonality: Tonality.MAJOR,
-    currentAccidental: Accidental.SHARP,
-    currentPattern: Pattern.Pentatonic,
-    currentHighlightNotes: ["roots"],
-    currentStrings: {
-      E: true,
-      A: true,
-      D: true,
-      G: true,
-      B: true,
-      e: true
-    },
-    currentCAGED: {
-      CShape: true,
-      AShape: true,
-      GShape: true,
-      EShape: true,
-      DShape: true
-    }
+    ...defaultData
   }),
   getters: {
     allKeys: (state: State) => {
