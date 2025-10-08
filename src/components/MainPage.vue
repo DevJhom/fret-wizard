@@ -254,7 +254,7 @@ onMounted(async () => {
                     <span class="me-3 text-yellow fw-bold">
                         Number of Frets
                     </span>
-                    <input type="range" min="12" max="24" step="1" v-model="fretAmount" @change="onChangeFretAmount()">
+                    <input type="range" min="12" max="24" step="1" v-model.number="fretAmount" @change="onChangeFretAmount()">
                     <span class="ms-3 text-yellow fw-bold">
                         {{ fretAmount }}
                     </span>
