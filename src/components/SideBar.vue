@@ -151,6 +151,12 @@ const toggleSidebar = () => {
                     </label>
                 </div>
                 
+                <!-- Reset to Default -->
+                <div class="mt-5" @click="patternStore.resetToDefault()">
+                    <small class="reset-settings">
+                        Reset Settings
+                    </small>
+                </div>
             </div>
         </Transition>
     </div>
@@ -188,6 +194,18 @@ const toggleSidebar = () => {
     margin-top: 4px !important;
     background-color: $black;
     cursor: pointer;
+}
+
+.reset-settings {
+    background-color: $gray-1;
+    color: $black;
+    border-radius: 9px;
+    padding: 0.25rem 1rem;
+    cursor: pointer;
+}
+
+.reset-settings:hover {
+    background-color: $yellow;
 }
 
 .fade-enter-active,

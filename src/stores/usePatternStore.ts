@@ -134,6 +134,19 @@ export const usePatternStore = defineStore('pattern', {
     },
     toggleTonalityStatus() {
       this.hasTonalityUpdate = !this.hasTonalityUpdate
+    },
+    resetToDefault() {
+      this.fretAmount = defaultData.fretAmount;
+      this.currentKey = defaultData.currentKey;
+      this.currentPattern = defaultData.currentPattern;
+      this.currentTonality = defaultData.currentTonality;
+      this.currentAccidental = defaultData.currentAccidental;
+      this.currentHighlightNotes = defaultData.currentHighlightNotes;
+      this.currentCAGED = defaultData.currentCAGED;
+      this.currentStrings = defaultData.currentStrings;
+
+      this.toggleSidebarStatus();
+      this.toggleTonalityStatus();
     }
   },
 });
