@@ -24,7 +24,7 @@ interface Fretboard extends CurrentFretboard {
 }
 
 const fretboards = ref<Fretboard[]>([]);
-const currentFretboard = ref(0);
+const currentFretboardIndex = ref(0);
 const isEditing = ref(true);
 
 const getCurrentFretboard = async () => {
@@ -120,7 +120,7 @@ const addFretboard = async () => {
     }
 
     fretboards.value.push(_.cloneDeep(fretboard));
-    currentFretboard.value = fretboards.value.length - 1;
+    currentFretboardIndex.value = fretboards.value.length - 1;
     isEditing.value = true;
 }
 
@@ -144,7 +144,7 @@ const updateFretboard = async () => {
         e: data.e,
     }
 
-    fretboards.value[currentFretboard.value] = _.cloneDeep(fretboard);
+    fretboards.value[currentFretboardIndex.value] = _.cloneDeep(fretboard);
     handleSaveCurrentFretboard(fretboard);
 }
 
@@ -171,7 +171,7 @@ watch(hasTonalityUpdate, () => {
 })
 
 const updateCustomizers = () => {
-    const selectedFretboard = _.cloneDeep(fretboards.value[currentFretboard.value]);
+    const selectedFretboard = _.cloneDeep(fretboards.value[currentFretboardIndex.value]);
 
     fretAmount.value = selectedFretboard.fretAmount;
     currentKey.value = selectedFretboard.currentKey;
@@ -185,7 +185,7 @@ const updateCustomizers = () => {
 }
 
 const selectFretboard = (index: number) => {
-    currentFretboard.value = index;
+    currentFretboardIndex.value = index;
     isEditing.value = true;
     updateCustomizers();
 }
@@ -198,7 +198,7 @@ const deleteFretboard = (index: number) => {
     fretboards.value.splice(index, 1);
 
     if (fretboards.value.length == 1) {
-        currentFretboard.value = 0;
+        currentFretboardIndex.value = 0;
         isEditing.value = true;
         updateCustomizers();
     }
@@ -215,9 +215,9 @@ onMounted(async () => {
         <!-- FRETBOARD -->
         <div v-for="(fretboard, index) in fretboards" 
             class="mt-4 fretboard"
-            :class="{ 'selected-fretboard': (fretboards.length > 1 && index == currentFretboard && isEditing == true) }"
+            :class="{ 'selected-fretboard': (fretboards.length > 1 && index == currentFretboardIndex && isEditing == true) }"
         >
-            <div v-if="index == currentFretboard && isEditing == true">
+            <div v-if="index == currentFretboardIndex && isEditing == true">
                 <!-- Key Selector -->
                 <div class="d-flex justify-content-center align-items-center mb-3">
                     <span class="me-2 text-yellow fw-bold">
@@ -281,16 +281,16 @@ onMounted(async () => {
                     :B="fretboard.B"
                     :e="fretboard.e"
                 />
-                <div v-if="fretboards.length > 1 && (isEditing == false || index != currentFretboard)" class="action-icon edit-icon" @click="selectFretboard(index)"> 
+                <div v-if="fretboards.length > 1 && (isEditing == false || index != currentFretboardIndex)" class="action-icon edit-icon" @click="selectFretboard(index)"> 
                     <Edit/>      
                 </div>
                 <div v-else class="mx-5"></div>
-                <div v-if="fretboards.length > 1 && (isEditing == false || index != currentFretboard)" class="action-icon trash-icon" @click="deleteFretboard(index)"> 
+                <div v-if="fretboards.length > 1 && (isEditing == false || index != currentFretboardIndex)" class="action-icon trash-icon" @click="deleteFretboard(index)"> 
                     <Trash/>
                 </div>
             </div>
 
-            <div v-if="fretboards.length > 1 && isEditing == true && index == currentFretboard" 
+            <div v-if="fretboards.length > 1 && isEditing == true && index == currentFretboardIndex" 
                 class="finish-editing" 
                 @click="finishEditing()"
             > 
