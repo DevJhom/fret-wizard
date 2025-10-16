@@ -161,12 +161,28 @@ const onChangeFretAmount = () => {
     updateFretboard();
 }
 
+const scrollToLastEdit = () => {
+    const id = "fretboard-" + currentFretboardIndex.value;
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({
+        block: "center",
+        behavior: "smooth"
+      });
+    }
+}
+
 watch(hasSidebarUpdated, () => {
     updateFretboard();
+
+    if (!isEditing.value)
+        isEditing.value = true;
+
+    scrollToLastEdit();
 })
 
 watch(hasTonalityUpdate, () => {
-    // patternStore.updateTonality();
+    // patternStore.updateTonality(); // changes currentKey to its relative major/minor
     patternStore.updateCurrentHighlightNotes();
 })
 
@@ -216,6 +232,7 @@ onMounted(async () => {
         <div v-for="(fretboard, index) in fretboards" 
             class="mt-4 fretboard"
             :class="{ 'selected-fretboard': (fretboards.length > 1 && index == currentFretboardIndex && isEditing == true) }"
+            :id="`fretboard-${index}`"
         >
             <div v-if="index == currentFretboardIndex && isEditing == true">
                 <!-- Key Selector -->
