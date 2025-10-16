@@ -197,7 +197,7 @@ const toggleSidebar = () => {
 }
 
 .reset-settings {
-    background-color: $gray-1;
+    background-color: var(--reset-settings-background-color);
     color: $black;
     border-radius: 9px;
     padding: 0.25rem 1rem;
