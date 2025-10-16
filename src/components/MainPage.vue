@@ -2,8 +2,8 @@
 import { ref, watch, onMounted } from 'vue';
 import { Tonality, getTonalityText, majorKeyToNumber, minorKeyToNumber } from '@data/constants';
 import { fetchScalePattern } from '@/services/patternService';
-import { fetchCurrentFretboard, saveCurrentFretboard } from '@/services/customizerService';
-import { usePatternStore, CurrentFretboard } from '@/stores/usePatternStore';
+import { fetchCurrentFretboard, saveCurrentFretboard, saveFretboards } from '@/services/customizerService';
+import { usePatternStore, FretboardData } from '@/stores/usePatternStore';
 import { storeToRefs } from 'pinia';
 import _ from "lodash";
 import MyFretboard from '@components/MyFretboard.vue';
@@ -14,7 +14,7 @@ import Trash from '@/assets/icons/Trash.vue';
 const patternStore = usePatternStore();
 const { allKeys, allPatterns, fretAmount, currentKey, currentPattern, currentTonality, currentAccidental, currentHighlightNotes, currentCAGED, currentStrings, hasSidebarUpdated, hasTonalityUpdate } = storeToRefs(patternStore);
 
-interface Fretboard extends CurrentFretboard {
+interface FretboardRenderer extends FretboardData {
     E: string[];
     A: string[];
     D: string[];
@@ -23,9 +23,9 @@ interface Fretboard extends CurrentFretboard {
     e: string[];
 }
 
-const fretboards = ref<Fretboard[]>([]);
-const currentFretboardIndex = ref(0);
-const isEditing = ref(true);
+const fretboards = ref<FretboardRenderer[]>([]);
+const currentFretboardIndex = ref<number>(0);
+const isEditing = ref<boolean>(true);
 
 const getCurrentFretboard = async () => {
     const data = await fetchCurrentFretboard();
@@ -40,8 +40,8 @@ const getCurrentFretboard = async () => {
     currentStrings.value = data.currentStrings;
 }
 
-const handleSaveCurrentFretboard = async (fretboard: Fretboard) => {
-    const currentFretboard: CurrentFretboard = {
+const fretboardRendererToData = (fretboard: FretboardRenderer): FretboardData => {
+    return {
         fretAmount: fretboard.fretAmount,
         currentKey: fretboard.currentKey,
         currentPattern: fretboard.currentPattern,
@@ -51,8 +51,16 @@ const handleSaveCurrentFretboard = async (fretboard: Fretboard) => {
         currentCAGED: fretboard.currentCAGED,
         currentStrings: fretboard.currentStrings
     }
+}
 
+const handleSaveCurrentFretboard = (fretboard: FretboardRenderer) => {
+    const currentFretboard = fretboardRendererToData(fretboard);
     saveCurrentFretboard(currentFretboard);
+}
+
+const handleSaveFretboards = (fretboards: FretboardRenderer[]) => {
+    const fretboardList = fretboards.map(fretboardRendererToData);
+    saveFretboards(fretboardList);
 }
 
 const getScale = async () => {
@@ -102,7 +110,7 @@ const getScale = async () => {
 const addFretboard = async () => {
     const data = await getScale();
 
-    const fretboard: Fretboard = {
+    const fretboard: FretboardRenderer = {
         fretAmount: fretAmount.value,
         currentKey: currentKey.value,
         currentPattern: currentPattern.value,
@@ -122,12 +130,13 @@ const addFretboard = async () => {
     fretboards.value.push(_.cloneDeep(fretboard));
     currentFretboardIndex.value = fretboards.value.length - 1;
     isEditing.value = true;
+    handleSaveFretboards(fretboards.value);
 }
 
 const updateFretboard = async () => {
     const data = await getScale();
 
-    const fretboard: Fretboard = {
+    const fretboard: FretboardRenderer = {
         fretAmount: fretAmount.value,
         currentKey: currentKey.value,
         currentPattern: currentPattern.value,
@@ -146,6 +155,7 @@ const updateFretboard = async () => {
 
     fretboards.value[currentFretboardIndex.value] = _.cloneDeep(fretboard);
     handleSaveCurrentFretboard(fretboard);
+    handleSaveFretboards(fretboards.value);
 }
 
 const onChangeCurrentKey = () => {
