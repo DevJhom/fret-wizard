@@ -20,7 +20,7 @@ export interface CurrentCAGED {
   DShape: boolean;
 }
 
-export interface CurrentFretboard {
+export interface FretboardData {
   fretAmount: number;
   currentKey: string;
   currentPattern: Pattern;
@@ -31,13 +31,13 @@ export interface CurrentFretboard {
   currentStrings: CurrentStrings;
 }
 
-interface State extends CurrentFretboard {
+interface State extends FretboardData {
   allPatterns: string[];
   hasSidebarUpdated: boolean;
   hasTonalityUpdate: boolean;
 }
 
-export const defaultData: CurrentFretboard = {
+export const defaultData: FretboardData = {
   fretAmount: 24,
   currentKey: "C",
   currentPattern: Pattern.Pentatonic,
