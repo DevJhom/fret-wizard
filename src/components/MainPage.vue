@@ -47,7 +47,7 @@ const renderFretboard = async () => {
         await addFretboardList(fretboardList);
     }
     else {
-        await addFretboard();
+        await addCurrentFretboard();
     }
 }
 
@@ -95,6 +95,33 @@ const getScale = async (tonality: Tonality, pattern: Pattern, key: string) => {
     }
 }
 
+const constructFretboardData = (fretboard?: FretboardRenderer): FretboardData => {
+    if (fretboard) {
+        return {
+            fretAmount: fretboard.fretAmount,
+            currentKey: fretboard.currentKey,
+            currentPattern: fretboard.currentPattern,
+            currentTonality: fretboard.currentTonality,
+            currentAccidental: fretboard.currentAccidental,
+            currentHighlightNotes: fretboard.currentHighlightNotes, 
+            currentCAGED: fretboard.currentCAGED,
+            currentStrings: fretboard.currentStrings
+        }
+    }
+    else {
+        return {
+            fretAmount: fretAmount.value,
+            currentKey: currentKey.value,
+            currentPattern: currentPattern.value,
+            currentTonality: currentTonality.value,
+            currentAccidental: currentAccidental.value,
+            currentHighlightNotes: currentHighlightNotes.value,
+            currentCAGED: currentCAGED.value,
+            currentStrings: currentStrings.value,
+        }
+    }
+}
+
 const addFretboardList = async (fretboardList: FretboardData[]) => {
     for (const fretboard of fretboardList) {
         const data = await getScale(fretboard.currentTonality, fretboard.currentPattern, fretboard.currentKey);
@@ -113,18 +140,11 @@ const addFretboardList = async (fretboardList: FretboardData[]) => {
     isEditing.value = false;
 }
 
-const addFretboard = async () => {
+const addCurrentFretboard = async () => {
     const data = await getScale(currentTonality.value, currentPattern.value, currentKey.value);
 
     const fretboard: FretboardRenderer = {
-        fretAmount: fretAmount.value,
-        currentKey: currentKey.value,
-        currentPattern: currentPattern.value,
-        currentTonality: currentTonality.value,
-        currentAccidental: currentAccidental.value,
-        currentHighlightNotes: currentHighlightNotes.value,
-        currentCAGED: currentCAGED.value,
-        currentStrings: currentStrings.value,
+        ...constructFretboardData(),
         E: data.E,
         A: data.A,
         D: data.D,
@@ -139,18 +159,11 @@ const addFretboard = async () => {
     handleSaveFretboards(fretboards.value);
 }
 
-const updateFretboard = async () => {
+const updateCurrentFretboard = async () => {
     const data = await getScale(currentTonality.value, currentPattern.value, currentKey.value);
 
     const fretboard: FretboardRenderer = {
-        fretAmount: fretAmount.value,
-        currentKey: currentKey.value,
-        currentPattern: currentPattern.value,
-        currentTonality: currentTonality.value,
-        currentAccidental: currentAccidental.value,
-        currentHighlightNotes: currentHighlightNotes.value,
-        currentCAGED: currentCAGED.value,
-        currentStrings: currentStrings.value,
+        ...constructFretboardData(),
         E: data.E,
         A: data.A,
         D: data.D,
@@ -160,44 +173,31 @@ const updateFretboard = async () => {
     }
 
     fretboards.value[currentFretboardIndex.value] = _.cloneDeep(fretboard);
-    handleSaveCurrentFretboard(fretboard);
+    handleSaveCurrentFretboard();
     handleSaveFretboards(fretboards.value);
 }
 
-const fretboardRendererToData = (fretboard: FretboardRenderer): FretboardData => {
-    return {
-        fretAmount: fretboard.fretAmount,
-        currentKey: fretboard.currentKey,
-        currentPattern: fretboard.currentPattern,
-        currentTonality: fretboard.currentTonality,
-        currentAccidental: fretboard.currentAccidental,
-        currentHighlightNotes: fretboard.currentHighlightNotes, 
-        currentCAGED: fretboard.currentCAGED,
-        currentStrings: fretboard.currentStrings
-    }
-}
-
-const handleSaveCurrentFretboard = (fretboard: FretboardRenderer) => {
-    const currentFretboard = fretboardRendererToData(fretboard);
+const handleSaveCurrentFretboard = () => {
+    const currentFretboard = constructFretboardData();
     saveCurrentFretboard(currentFretboard);
 }
 
 const handleSaveFretboards = (fretboards: FretboardRenderer[]) => {
-    const fretboardList = fretboards.map(fretboardRendererToData);
+    const fretboardList = fretboards.map(constructFretboardData);
     saveFretboards(fretboardList);
 }
 
 const onChangeCurrentKey = () => {
-    updateFretboard();
+    updateCurrentFretboard();
 }
 
 const onChangeCurrentPattern = () => {
-    updateFretboard();
+    updateCurrentFretboard();
     patternStore.updateCurrentHighlightNotes();
 }
 
 const onChangeFretAmount = () => {
-    updateFretboard();
+    updateCurrentFretboard();
 }
 
 const scrollToLastEdit = () => {
@@ -210,20 +210,6 @@ const scrollToLastEdit = () => {
       });
     }
 }
-
-watch(hasSidebarUpdated, () => {
-    updateFretboard();
-
-    if (!isEditing.value)
-        isEditing.value = true;
-
-    scrollToLastEdit();
-})
-
-watch(hasTonalityUpdate, () => {
-    // patternStore.updateTonality(); // changes currentKey to its relative major/minor
-    patternStore.updateCurrentHighlightNotes();
-})
 
 const updateCustomizers = () => {
     const selectedFretboard = _.cloneDeep(fretboards.value[currentFretboardIndex.value]);
@@ -256,10 +242,25 @@ const deleteFretboard = (index: number) => {
         currentFretboardIndex.value = 0;
         isEditing.value = true;
         updateCustomizers();
+        handleSaveCurrentFretboard();
     } 
 
     handleSaveFretboards(fretboards.value);
 }
+
+watch(hasSidebarUpdated, () => {
+    updateCurrentFretboard();
+
+    if (!isEditing.value)
+        isEditing.value = true;
+
+    scrollToLastEdit();
+})
+
+watch(hasTonalityUpdate, () => {
+    // patternStore.updateTonality(); // changes currentKey to its relative major/minor
+    patternStore.updateCurrentHighlightNotes();
+})
 
 onMounted(async () => {
     await getCurrentFretboard();
@@ -356,7 +357,7 @@ onMounted(async () => {
             </div>
         </div>
 
-        <h2 @click="addFretboard" class="text-yellow"> + </h2>
+        <h2 @click="addCurrentFretboard" class="text-yellow"> + </h2>
     </div>
 </template>
 
