@@ -34,7 +34,8 @@ export interface FretboardData {
 interface State extends FretboardData {
   allPatterns: string[];
   hasSidebarUpdated: boolean;
-  hasTonalityUpdate: boolean;
+  hasTonalityUpdated: boolean;
+  hasReset: boolean;
 }
 
 export const defaultData: FretboardData = {
@@ -65,7 +66,8 @@ export const usePatternStore = defineStore('pattern', {
   state: (): State => ({
     allPatterns: [Pattern.Pentatonic, Pattern.Blue, Pattern.Diatonic, Pattern.Triad],
     hasSidebarUpdated: false,
-    hasTonalityUpdate: false,
+    hasTonalityUpdated: false,
+    hasReset: false,
     ...defaultData
   }),
   getters: {
@@ -135,6 +137,9 @@ export const usePatternStore = defineStore('pattern', {
     toggleTonalityStatus() {
       this.hasTonalityUpdate = !this.hasTonalityUpdate
     },
+    toggleResetStatus() {
+      this.hasReset = !this.hasReset
+    },
     resetToDefault() {
       this.fretAmount = defaultData.fretAmount;
       this.currentKey = defaultData.currentKey;
@@ -145,8 +150,7 @@ export const usePatternStore = defineStore('pattern', {
       this.currentCAGED = defaultData.currentCAGED;
       this.currentStrings = defaultData.currentStrings;
 
-      this.toggleSidebarStatus();
-      this.toggleTonalityStatus();
+      this.toggleResetStatus();
     }
   },
 });

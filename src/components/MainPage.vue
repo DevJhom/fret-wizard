@@ -12,7 +12,7 @@ import Edit from '@/assets/icons/Edit.vue';
 import Trash from '@/assets/icons/Trash.vue';
 
 const patternStore = usePatternStore();
-const { allKeys, allPatterns, fretAmount, currentKey, currentPattern, currentTonality, currentAccidental, currentHighlightNotes, currentCAGED, currentStrings, hasSidebarUpdated, hasTonalityUpdate } = storeToRefs(patternStore);
+const { allKeys, allPatterns, fretAmount, currentKey, currentPattern, currentTonality, currentAccidental, currentHighlightNotes, currentCAGED, currentStrings, hasSidebarUpdated, hasTonalityUpdated, hasReset } = storeToRefs(patternStore);
 
 interface FretboardRenderer extends FretboardData {
     E: string[];
@@ -257,9 +257,15 @@ watch(hasSidebarUpdated, () => {
     scrollToLastEdit();
 })
 
-watch(hasTonalityUpdate, () => {
+watch(hasTonalityUpdated, () => {
     // patternStore.updateTonality(); // changes currentKey to its relative major/minor
     patternStore.updateCurrentHighlightNotes();
+})
+
+watch(hasReset, () => {
+    fretboards.value = [];
+    addCurrentFretboard();
+    updateCurrentFretboard();
 })
 
 onMounted(async () => {
