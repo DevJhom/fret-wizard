@@ -43,14 +43,6 @@ const fretIndicator = new Array(24);
             <!-- Strings -->
             <div class="d-flex text-nowrap w-75">
                 <div class="d-inline-block string-name">e</div>
-                <!-- Open Positions (To be implemented later) -->
-                <!-- <div class="d-inline-block">
-                    <label class="notes small">
-                        <input type="checkbox" v-model="E[2]"/>
-                            <div class="checkbox__checkmark">
-                        </div>
-                    </label>
-                </div> -->
                 <div class="fret-start string-e">
                     <MyString
                         :string-name="'e'"
@@ -180,6 +172,7 @@ const fretIndicator = new Array(24);
     min-width: 30px;
     max-width: 30px;
     margin-top: -13px;
+    margin-right: 12px;
 }
 
 .fret-start {
