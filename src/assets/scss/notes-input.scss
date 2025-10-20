@@ -27,6 +27,16 @@
     // transition: transform 0.5s ease;
 }
 
+.notes.open-note .checkbox__checkmark {
+    height: 12px;
+    width: 12px;
+}
+
+.notes.open-note .checkbox__checkmark::after {
+    height: 12px;
+    width: 12px;
+}
+
 .notes .note-names {
     position: absolute;
     top: 0px;
