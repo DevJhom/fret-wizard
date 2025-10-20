@@ -254,7 +254,7 @@ watch(hasSidebarUpdated, () => {
     if (!isEditing.value)
         isEditing.value = true;
 
-    scrollToLastEdit();
+    //scrollToLastEdit();
 })
 
 watch(hasTonalityUpdated, () => {
