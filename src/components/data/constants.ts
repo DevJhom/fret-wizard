@@ -18,6 +18,7 @@ export enum Pattern {
   Blue = "Blue Scale",
   Diatonic = "Diatonic Scale",
   Triad = "Triad",
+  Seventh = "Seventh Chord",
   Chromatic = "Chromatic Scale"
 }
 

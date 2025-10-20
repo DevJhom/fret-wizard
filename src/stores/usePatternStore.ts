@@ -64,7 +64,7 @@ export const defaultData: FretboardData = {
 
 export const usePatternStore = defineStore('pattern', {
   state: (): State => ({
-    allPatterns: [Pattern.Pentatonic, Pattern.Blue, Pattern.Diatonic, Pattern.Triad],
+    allPatterns: [Pattern.Pentatonic, Pattern.Blue, Pattern.Diatonic, Pattern.Triad, Pattern.Seventh],
     hasSidebarUpdated: false,
     hasTonalityUpdated: false,
     hasReset: false,
@@ -81,22 +81,30 @@ export const usePatternStore = defineStore('pattern', {
     },
     highlightNotes: (state: State) => {
       switch (state.currentPattern) {
+
         case Pattern.Pentatonic:
           if (state.currentTonality == Tonality.MAJOR)
             return ["roots", "seconds", "thirds", "fifths", "sixths"];
           if (state.currentTonality == Tonality.MINOR)
             return ["roots", "thirds", "fourths", "fifths", "sevenths"];
           break;
+
         case Pattern.Blue:
           if (state.currentTonality == Tonality.MAJOR)
             return ["roots", "seconds", "thirds", "fifths", "sixths", "blues"];
           if (state.currentTonality == Tonality.MINOR)
             return ["roots", "thirds", "fourths", "fifths", "sevenths", "blues"];
           break;
+
         case Pattern.Diatonic:
           return ["roots", "seconds", "thirds", "fourths", "fifths", "sixths", "sevenths"];
+
         case Pattern.Triad:
           return ["roots", "thirds", "fifths"];
+
+        case Pattern.Seventh:
+          return ["roots", "thirds", "fifths", "sevenths"];
+
         default:
           return ["roots", "thirds", "fifths"];
       }
