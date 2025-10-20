@@ -48,9 +48,27 @@ const currentHighlightCAGED = computed(() => {
     return Object.keys(props.currentCAGED).filter(key => props.currentCAGED[key]);
 })
 
+const openIndex = 11; //equivalent note to the open position
 </script>
 
 <template>
+    <div class="d-inline-block open-position">
+        <label class="notes open-note">
+            <input type="checkbox" v-model="stringData[openIndex]"/>
+            <div class="checkbox__checkmark"
+                :class="{
+                            'root-note': props.currentHighlightNotes.includes('roots') ? xRoots?.includes(openIndex + 1) && isStringActive && isCAGED(openIndex, stringName, props.currentKey, props.currentTonality, currentHighlightCAGED): '', 
+                            'second': props.currentHighlightNotes.includes('seconds') ? xSeconds?.includes(openIndex + 1) && isStringActive && isCAGED(openIndex, stringName, props.currentKey, props.currentTonality, currentHighlightCAGED): '',
+                            'third': props.currentHighlightNotes.includes('thirds') ? xThirds?.includes(openIndex + 1) && isStringActive && isCAGED(openIndex, stringName, props.currentKey, props.currentTonality, currentHighlightCAGED): '',
+                            'fourth': props.currentHighlightNotes.includes('fourths') ? xFourths?.includes(openIndex + 1) && isStringActive && isCAGED(openIndex, stringName, props.currentKey, props.currentTonality, currentHighlightCAGED): '',
+                            'fifth': props.currentHighlightNotes.includes('fifths') ? xFifths?.includes(openIndex + 1) && isStringActive && isCAGED(openIndex, stringName, props.currentKey, props.currentTonality, currentHighlightCAGED): '',
+                            'sixth': props.currentHighlightNotes.includes('sixths') ? xSixths?.includes(openIndex + 1) && isStringActive && isCAGED(openIndex, stringName, props.currentKey, props.currentTonality, currentHighlightCAGED): '',
+                            'seventh': props.currentHighlightNotes.includes('sevenths') ? xSevenths?.includes(openIndex + 1) && isStringActive && isCAGED(openIndex, stringName, props.currentKey, props.currentTonality, currentHighlightCAGED): '',
+                            'blue': props.currentHighlightNotes.includes('blues') ? xBlues?.includes(openIndex + 1) && isStringActive && isCAGED(openIndex, stringName, props.currentKey, props.currentTonality, currentHighlightCAGED): '',
+                        }">
+            </div>
+        </label>
+    </div>
     <div v-for="(_, index) in stringData" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}" :style="{ 'border-right': isLastString ? 'none' : '' }">
         <label v-if="index < fretAmount" class="notes">
             <input type="checkbox" v-model="stringData[index]"/>
@@ -80,6 +98,11 @@ const currentHighlightCAGED = computed(() => {
 
 
 <style scoped lang="scss">
+.open-position {
+    position: absolute;
+    margin-left: -15px;
+}
+
 .fret {
     min-width: 2rem;
     max-width: 50px;
