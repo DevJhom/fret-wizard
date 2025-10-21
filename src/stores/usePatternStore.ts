@@ -38,7 +38,7 @@ interface State extends FretboardData {
   hasReset: boolean;
 }
 
-const { roots, minorSeconds, seconds, minorThirds, thirds, fourths, tritone, fifths, minorSixths, sixths, minorSevenths, sevenths, blues } = Degree;
+const { roots, minorSeconds, seconds, minorThirds, thirds, fourths, tritones, fifths, minorSixths, sixths, minorSevenths, sevenths, blues } = Degree;
 
 export const defaultData: FretboardData = {
   fretAmount: 24,
@@ -102,7 +102,7 @@ export const usePatternStore = defineStore('pattern', {
           return [roots, seconds, thirds, fourths, fifths, sixths, sevenths];
 
         case Pattern.Chromatic:
-          return [ roots, minorSeconds, seconds, minorThirds, thirds, fourths, tritone, fifths, minorSixths, sixths, minorSevenths, sevenths];
+          return [ roots, minorSeconds, seconds, minorThirds, thirds, fourths, tritones, fifths, minorSixths, sixths, minorSevenths, sevenths];
 
         case Pattern.Triad:
           return [roots, thirds, fifths];

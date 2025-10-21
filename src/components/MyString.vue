@@ -3,8 +3,8 @@ import { computed } from 'vue';
 import { CurrentStrings, CurrentCAGED } from '@/stores/usePatternStore';
 import { isCAGED } from '@data/CAGED';
 import { Accidental, Tonality, Degree } from '@data/constants';
-import { getRoots, getMinorSeconds, getSeconds, getThirds, getFourths, getFifths, getSixths, getSevenths, getBlues } from '@data/intervals';
-import { getRootNoteName, getMinorSecondNoteName, getSecondNoteName, getThirdNoteName, getFourthNoteName, getFifthNoteName, getSixthNoteName, getSeventhNoteName, getBlueNoteName } from '@data/noteNames';
+import { getRoots, getMinorSeconds, getSeconds, getMinorThirds, getThirds, getFourths, getTritones, getFifths, getSixths, getSevenths, getBlues } from '@data/intervals';
+import { getRootNoteName, getMinorSecondNoteName, getSecondNoteName, getMinorThirdNoteName, getThirdNoteName, getFourthNoteName, getTritoneNoteName, getFifthNoteName, getSixthNoteName, getSeventhNoteName, getBlueNoteName } from '@data/noteNames';
 
 const props = defineProps<{
     stringName: string,
@@ -19,14 +19,16 @@ const props = defineProps<{
     currentStrings: CurrentStrings
 }>();
 
-const { roots, minorSeconds, seconds, minorThirds, thirds, fourths, tritone, fifths, minorSixths, sixths, minorSevenths, sevenths, blues } = Degree;
+const { roots, minorSeconds, seconds, minorThirds, thirds, fourths, tritones, fifths, minorSixths, sixths, minorSevenths, sevenths, blues } = Degree;
 
 // x is a placeholder for string e.g. eRoots, eSeconds, etc.
 const xRoots = computed(() => getRoots(props.currentTonality, props.currentKey, props.stringName));
 const xMinorSeconds = computed(() => getMinorSeconds(props.currentTonality, props.currentKey, props.stringName));
 const xSeconds = computed(() => getSeconds(props.currentTonality, props.currentKey, props.stringName));
+const xMinorThirds = computed(() => getMinorThirds(props.currentTonality, props.currentKey, props.stringName));
 const xThirds = computed(() => getThirds(props.currentTonality, props.currentKey, props.stringName));
 const xFourths = computed(() => getFourths(props.currentTonality, props.currentKey, props.stringName));
+const xTritones = computed(() => getTritones(props.currentTonality, props.currentKey, props.stringName));
 const xFifths = computed(() => getFifths(props.currentTonality, props.currentKey, props.stringName));
 const xSixths = computed(() => getSixths(props.currentTonality, props.currentKey, props.stringName));
 const xSevenths = computed(() => getSevenths(props.currentTonality, props.currentKey, props.stringName));
@@ -36,8 +38,10 @@ const xBlues = computed(() => getBlues(props.currentTonality, props.currentKey, 
 const rootNoteName = computed(() => getRootNoteName(props.currentTonality, props.currentKey, props.currentAccidental));
 const minorSecondNoteName = computed(() => getMinorSecondNoteName(props.currentTonality, props.currentKey, props.currentAccidental));
 const secondNoteName = computed(() => getSecondNoteName(props.currentTonality, props.currentKey, props.currentAccidental));
+const minorThirdNoteName = computed(() => getMinorThirdNoteName(props.currentTonality, props.currentKey, props.currentAccidental));
 const thirdNoteName = computed(() => getThirdNoteName(props.currentTonality, props.currentKey, props.currentAccidental));
 const fourthNoteName = computed(() => getFourthNoteName(props.currentTonality, props.currentKey, props.currentAccidental));
+const tritoneNoteName = computed(() => getTritoneNoteName(props.currentTonality, props.currentKey, props.currentAccidental));
 const fifthNoteName = computed(() => getFifthNoteName(props.currentTonality, props.currentKey, props.currentAccidental));
 const sixthNoteName = computed(() => getSixthNoteName(props.currentTonality, props.currentKey, props.currentAccidental));
 const seventhNoteName = computed(() => getSeventhNoteName(props.currentTonality, props.currentKey, props.currentAccidental));
@@ -64,8 +68,10 @@ const openIndex = 11; //equivalent note to the open position
                             'root-note': props.currentHighlightNotes.includes(roots) ? xRoots?.includes(openIndex + 1) && isStringActive && isCAGED(openIndex, stringName, props.currentKey, props.currentTonality, currentHighlightCAGED): '', 
                             'minor-second': props.currentHighlightNotes.includes(minorSeconds) ? xMinorSeconds?.includes(openIndex + 1) && isStringActive && isCAGED(openIndex, stringName, props.currentKey, props.currentTonality, currentHighlightCAGED): '',
                             'second': props.currentHighlightNotes.includes(seconds) ? xSeconds?.includes(openIndex + 1) && isStringActive && isCAGED(openIndex, stringName, props.currentKey, props.currentTonality, currentHighlightCAGED): '',
+                            'minor-third': props.currentHighlightNotes.includes(minorThirds) ? xMinorThirds?.includes(openIndex + 1) && isStringActive && isCAGED(openIndex, stringName, props.currentKey, props.currentTonality, currentHighlightCAGED): '',
                             'third': props.currentHighlightNotes.includes(thirds) ? xThirds?.includes(openIndex + 1) && isStringActive && isCAGED(openIndex, stringName, props.currentKey, props.currentTonality, currentHighlightCAGED): '',
                             'fourth': props.currentHighlightNotes.includes(fourths) ? xFourths?.includes(openIndex + 1) && isStringActive && isCAGED(openIndex, stringName, props.currentKey, props.currentTonality, currentHighlightCAGED): '',
+                            'tritone': props.currentHighlightNotes.includes(tritones) ? xTritones?.includes(openIndex + 1) && isStringActive && isCAGED(openIndex, stringName, props.currentKey, props.currentTonality, currentHighlightCAGED): '',
                             'fifth': props.currentHighlightNotes.includes(fifths) ? xFifths?.includes(openIndex + 1) && isStringActive && isCAGED(openIndex, stringName, props.currentKey, props.currentTonality, currentHighlightCAGED): '',
                             'sixth': props.currentHighlightNotes.includes(sixths) ? xSixths?.includes(openIndex + 1) && isStringActive && isCAGED(openIndex, stringName, props.currentKey, props.currentTonality, currentHighlightCAGED): '',
                             'seventh': props.currentHighlightNotes.includes(sevenths) ? xSevenths?.includes(openIndex + 1) && isStringActive && isCAGED(openIndex, stringName, props.currentKey, props.currentTonality, currentHighlightCAGED): '',
@@ -82,8 +88,10 @@ const openIndex = 11; //equivalent note to the open position
                     'root-note': props.currentHighlightNotes.includes(roots) ? xRoots?.includes(index + 1) && isStringActive && isCAGED(index, stringName, props.currentKey, props.currentTonality, currentHighlightCAGED): '', 
                     'minor-second': props.currentHighlightNotes.includes(minorSeconds) ? xMinorSeconds?.includes(index + 1) && isStringActive && true: '',
                     'second': props.currentHighlightNotes.includes(seconds) ? xSeconds?.includes(index + 1) && isStringActive && isCAGED(index, stringName, props.currentKey, props.currentTonality, currentHighlightCAGED): '',
+                    'minor-third': props.currentHighlightNotes.includes(minorThirds) ? xMinorThirds?.includes(index + 1) && isStringActive && true: '',
                     'third': props.currentHighlightNotes.includes(thirds) ? xThirds?.includes(index + 1) && isStringActive && isCAGED(index, stringName, props.currentKey, props.currentTonality, currentHighlightCAGED): '',
                     'fourth': props.currentHighlightNotes.includes(fourths) ? xFourths?.includes(index + 1) && isStringActive && isCAGED(index, stringName, props.currentKey, props.currentTonality, currentHighlightCAGED): '',
+                    'tritone': props.currentHighlightNotes.includes(tritones) ? xTritones?.includes(index + 1) && isStringActive && true: '',
                     'fifth': props.currentHighlightNotes.includes(fifths) ? xFifths?.includes(index + 1) && isStringActive && isCAGED(index, stringName, props.currentKey, props.currentTonality, currentHighlightCAGED): '',
                     'sixth': props.currentHighlightNotes.includes(sixths) ? xSixths?.includes(index + 1) && isStringActive && isCAGED(index, stringName, props.currentKey, props.currentTonality, currentHighlightCAGED): '',
                     'seventh': props.currentHighlightNotes.includes(sevenths) ? xSevenths?.includes(index + 1) && isStringActive && isCAGED(index, stringName, props.currentKey, props.currentTonality, currentHighlightCAGED): '',
@@ -92,8 +100,10 @@ const openIndex = 11; //equivalent note to the open position
                 <span v-if="props.currentHighlightNotes.includes(roots) && xRoots?.includes(index + 1) && isStringActive && isCAGED(index, stringName, props.currentKey, props.currentTonality, currentHighlightCAGED)" class="note-names">{{ rootNoteName }}</span>
                 <span v-if="props.currentHighlightNotes.includes(minorSeconds) && xMinorSeconds?.includes(index + 1) && isStringActive && true" class="note-names">{{ minorSecondNoteName }}</span>
                 <span v-if="props.currentHighlightNotes.includes(seconds) && xSeconds?.includes(index + 1) && isStringActive && isCAGED(index, stringName, props.currentKey, props.currentTonality, currentHighlightCAGED)" class="note-names">{{ secondNoteName }}</span>
+                <span v-if="props.currentHighlightNotes.includes(minorThirds) && xMinorThirds?.includes(index + 1) && isStringActive && true" class="note-names">{{ minorThirdNoteName }}</span>
                 <span v-if="props.currentHighlightNotes.includes(thirds) && xThirds?.includes(index + 1) && isStringActive && isCAGED(index, stringName, props.currentKey, props.currentTonality, currentHighlightCAGED)" class="note-names">{{ thirdNoteName }}</span>
                 <span v-if="props.currentHighlightNotes.includes(fourths) && xFourths?.includes(index + 1) && isStringActive && isCAGED(index, stringName, props.currentKey, props.currentTonality, currentHighlightCAGED)" class="note-names">{{ fourthNoteName }}</span>
+                <span v-if="props.currentHighlightNotes.includes(tritones) && xTritones?.includes(index + 1) && isStringActive && true" class="note-names">{{ tritoneNoteName }}</span>
                 <span v-if="props.currentHighlightNotes.includes(fifths) && xFifths?.includes(index + 1) && isStringActive && isCAGED(index, stringName, props.currentKey, props.currentTonality, currentHighlightCAGED)" class="note-names">{{ fifthNoteName }}</span>
                 <span v-if="props.currentHighlightNotes.includes(sixths) && xSixths?.includes(index + 1) && isStringActive && isCAGED(index, stringName, props.currentKey, props.currentTonality, currentHighlightCAGED)" class="note-names">{{ sixthNoteName }}</span>
                 <span v-if="props.currentHighlightNotes.includes(sevenths) && xSevenths?.includes(index + 1) && isStringActive && isCAGED(index, stringName, props.currentKey, props.currentTonality, currentHighlightCAGED)" class="note-names">{{ seventhNoteName }}</span>

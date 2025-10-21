@@ -62,6 +62,11 @@
     background-color: $red-orange !important;
 }
 
+.notes .minor-third,
+.notes .minor-third:after {
+    background-color: $dissonant-2 !important;
+}
+
 .notes .third, 
 .notes .third:after {
     background-color: $orange !important;
@@ -70,6 +75,11 @@
 .notes .fourth, 
 .notes .fourth:after {
     background-color: $orange-yellow !important;
+}
+
+.notes .tritone, 
+.notes .tritone:after {
+    background-color: $dissonant-5 !important;
 }
 
 .notes .fifth,
