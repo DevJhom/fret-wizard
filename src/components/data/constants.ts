@@ -37,6 +37,21 @@ export enum Degree {
   sevenths = "sevenths"
 }
 
+export const degreeToNumber: { [key: string]: number} = {
+  "roots": 0,
+  "minor seconds": 1,
+  "seconds": 2,
+  "minor thirds": 3, 
+  "thirds": 4,
+  "fourths": 5,
+  "tritones": 6,
+  "fifths": 7,
+  "minor sixths": 8,
+  "sixths": 9,
+  "minor sevenths": 10,
+  "sevenths": 11
+}
+
 export const majorSharpAllNotes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 export const majorFlatAllNotes = ["C", "D♭", "D", "E♭", "E", "F", "G♭", "G", "A♭", "A", "B♭", "B"];
 
