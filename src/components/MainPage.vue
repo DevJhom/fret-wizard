@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue';
-import { Pattern, Tonality, getTonalityText, majorKeyToNumber, minorKeyToNumber } from '@data/constants';
+import { Pattern, Tonality, majorKeyToNumber, minorKeyToNumber } from '@data/constants';
 import { fetchScalePattern } from '@/services/patternService';
 import { fetchCurrentFretboard, fetchFretboards, saveCurrentFretboard, saveFretboards } from '@/services/customizerService';
 import { usePatternStore, FretboardData } from '@/stores/usePatternStore';
@@ -296,7 +296,7 @@ onMounted(async () => {
                         </label>
                     </div>
                     <span class="me-2 text-yellow fw-bold">
-                        ({{ getTonalityText(fretboard.currentTonality) }})
+                        ({{ fretboard.currentTonality }})
                     </span>
                 </div>
 
@@ -328,7 +328,7 @@ onMounted(async () => {
 
             <div class="d-flex">
                 <h5 class="d-flex align-items-center text-yellow mx-4">
-                    {{ fretboard.currentKey }} {{ getTonalityText(fretboard.currentTonality) }}
+                    {{ fretboard.currentKey }} {{ fretboard.currentTonality }}
                 </h5>
                 <MyFretboard
                     :fretAmount="fretboard.fretAmount"

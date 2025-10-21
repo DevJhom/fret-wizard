@@ -9,8 +9,8 @@ export enum Accidental {
 }
 
 export enum Tonality {
-  MAJOR = "major",
-  MINOR = "minor"
+  MAJOR = "Major",
+  MINOR = "Minor"
 }
 
 export enum Pattern {
@@ -20,6 +20,22 @@ export enum Pattern {
   Triad = "Triad",
   Seventh = "Seventh Chord",
   Chromatic = "Chromatic Scale"
+}
+
+export enum Degree {
+  roots = "roots",
+  minorSeconds = "minor seconds",
+  seconds = "seconds",
+  minorThirds = "minor thirds", 
+  thirds = "thirds", 
+  fourths = "fourths", 
+  tritone = "tritone",
+  fifths = "fifths", 
+  minorSixths = "minor sixths",
+  sixths = "sixths",
+  minorSevenths = "minor sevenths",
+  sevenths = "sevenths",
+  blues = "blues"
 }
 
 export const majorSharpAllNotes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
@@ -57,13 +73,3 @@ export const minorKeyToNumber: { [key: string]: number } = {
   "G": 10,
   "G#": 11, "A♭": 11, 
 };
-
-export const getTonalityText = (tonality: Tonality) => {
-  if (tonality == Tonality.MAJOR) {
-    return "Major";
-  }
-
-  if (tonality == Tonality.MINOR) {
-    return "Minor";
-  }
-}
