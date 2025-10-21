@@ -2,10 +2,12 @@
 import { ref } from 'vue';
 import { usePatternStore } from '@/stores/usePatternStore';
 import { storeToRefs } from 'pinia';
-import { Tonality, Accidental } from '@data/constants';
+import { Tonality, Accidental, Degree } from '@data/constants';
 
 const patternStore = usePatternStore();
 const { currentTonality, currentAccidental, currentHighlightNotes, currentCAGED, currentStrings } = storeToRefs(patternStore);
+
+const { roots, minorSeconds, seconds, minorThirds, thirds, fourths, tritone, fifths, minorSixths, sixths, minorSevenths, sevenths, blues } = Degree;
 
 const isCollapsed = ref(true);
 
@@ -62,14 +64,15 @@ const toggleSidebar = () => {
                         <input type="checkbox" :value="highlightNote" v-model="currentHighlightNotes" @change="patternStore.toggleSidebarStatus()"/>
                         <div class="checkbox__checkmark"
                             :class="{
-                                'root-note': highlightNote == 'roots' && currentHighlightNotes.includes('roots'),
-                                'second': highlightNote == 'seconds' && currentHighlightNotes.includes('seconds'),
-                                'third': highlightNote == 'thirds' && currentHighlightNotes.includes('thirds'),
-                                'fourth': highlightNote == 'fourths' && currentHighlightNotes.includes('fourths'),
-                                'fifth': highlightNote == 'fifths' && currentHighlightNotes.includes('fifths'),
-                                'sixth': highlightNote == 'sixths' && currentHighlightNotes.includes('sixths'),
-                                'seventh': highlightNote == 'sevenths' && currentHighlightNotes.includes('sevenths'),
-                                'blue': highlightNote == 'blues' && currentHighlightNotes.includes('blues'),
+                                'root-note': highlightNote == roots && currentHighlightNotes.includes(roots),
+                                'minor-second': highlightNote == minorSeconds && currentHighlightNotes.includes(minorSeconds),
+                                'second': highlightNote == seconds && currentHighlightNotes.includes(seconds),
+                                'third': highlightNote == thirds && currentHighlightNotes.includes(thirds),
+                                'fourth': highlightNote == fourths && currentHighlightNotes.includes(fourths),
+                                'fifth': highlightNote == fifths && currentHighlightNotes.includes(fifths),
+                                'sixth': highlightNote == sixths && currentHighlightNotes.includes(sixths),
+                                'seventh': highlightNote == sevenths && currentHighlightNotes.includes(sevenths),
+                                'blue': highlightNote == blues && currentHighlightNotes.includes(blues),
                             }">
                         </div>
                         <span class="ms-3">

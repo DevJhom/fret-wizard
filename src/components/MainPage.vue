@@ -258,7 +258,7 @@ watch(hasSidebarUpdated, () => {
 })
 
 watch(hasTonalityUpdated, () => {
-    // patternStore.updateTonality(); // changes currentKey to its relative major/minor
+    patternStore.updateTonality(); // changes currentKey to its relative major/minor
     patternStore.updateCurrentHighlightNotes();
 })
 
