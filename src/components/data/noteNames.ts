@@ -45,6 +45,12 @@ export const getRootNoteName = (tonality: Tonality, currentKey: string, currentA
   }
 };
 
+export const getMinorSecondNoteName = (tonality: Tonality, currentKey: string, currentAccidental: Accidental) => {
+  const shift = majorKeyToNumber[currentKey];
+  const allNoteNames = (currentAccidental == Accidental.SHARP ? majorSharpAllNotes : majorFlatAllNotes);
+  return allNoteNames[(2 + shift) % 12];
+};
+
 export const getSecondNoteName = (tonality: Tonality, currentKey: string, currentAccidental: Accidental) => {
   if (tonality == Tonality.MAJOR) {
     const shift = majorKeyToNumber[currentKey];

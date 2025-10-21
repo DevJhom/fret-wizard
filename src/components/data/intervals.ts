@@ -25,6 +25,15 @@ const roots: Intervals = {
     E: [-4,8,20]
 }
 
+const minorSeconds: Intervals = {
+    e: [-3, 9, 21], 
+    B: [-10, 2, 14], 
+    G: [-6, 6, 18], 
+    D: [-1, 11, 23], 
+    A: [-8, 4, 16],
+    E: [-3, 9, 21]
+}
+
 const seconds: Intervals = {
     e: [-2,10,22],
     B: [-9,3,15],
@@ -125,6 +134,11 @@ export const getRoots = (tonality: Tonality, currentKey: string, stringName: str
     const shift = minorKeyToNumber[currentKey];
     return minorKeyRoots[stringName].map(note => (note + shift));
   }
+};
+
+export const getMinorSeconds = (tonality: Tonality, currentKey: string, stringName: string) => {
+  const shift = majorKeyToNumber[currentKey];
+  return minorSeconds[stringName].map(note => (note + shift));
 };
 
 export const getSeconds = (tonality: Tonality, currentKey: string, stringName: string) => {

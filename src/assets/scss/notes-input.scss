@@ -52,6 +52,11 @@
     background-color: $red !important;
 }
 
+.notes .minor-second,
+.notes .minor-second:after {
+    background-color: $dissonant-1 !important;
+}
+
 .notes .second,
 .notes .second:after {
     background-color: $red-orange !important;
