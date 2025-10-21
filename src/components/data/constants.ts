@@ -34,8 +34,7 @@ export enum Degree {
   minorSixths = "minor sixths",
   sixths = "sixths",
   minorSevenths = "minor sevenths",
-  sevenths = "sevenths",
-  blues = "blues"
+  sevenths = "sevenths"
 }
 
 export const majorSharpAllNotes = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];

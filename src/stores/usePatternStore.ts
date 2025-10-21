@@ -38,7 +38,7 @@ interface State extends FretboardData {
   hasReset: boolean;
 }
 
-const { roots, minorSeconds, seconds, minorThirds, thirds, fourths, tritones, fifths, minorSixths, sixths, minorSevenths, sevenths, blues } = Degree;
+const { roots, minorSeconds, seconds, minorThirds, thirds, fourths, tritones, fifths, minorSixths, sixths, minorSevenths, sevenths } = Degree;
 
 export const defaultData: FretboardData = {
   fretAmount: 24,
@@ -88,14 +88,14 @@ export const usePatternStore = defineStore('pattern', {
           if (state.currentTonality == Tonality.MAJOR)
             return [roots, seconds, thirds, fifths, sixths];
           if (state.currentTonality == Tonality.MINOR)
-            return [roots, thirds, fourths, fifths, sevenths];
+            return [roots, minorThirds, fourths, fifths, minorSevenths];
           break;
 
         case Pattern.Blue:
           if (state.currentTonality == Tonality.MAJOR)
-            return [roots, seconds, thirds, fifths, sixths, blues];
+            return [roots, seconds, minorThirds, thirds, fifths, sixths];
           if (state.currentTonality == Tonality.MINOR)
-            return [roots, thirds, fourths, fifths, sevenths, blues];
+            return [roots, minorThirds, fourths, tritones, fifths, sevenths];
           break;
 
         case Pattern.Diatonic:
@@ -105,13 +105,21 @@ export const usePatternStore = defineStore('pattern', {
           return [ roots, minorSeconds, seconds, minorThirds, thirds, fourths, tritones, fifths, minorSixths, sixths, minorSevenths, sevenths];
 
         case Pattern.Triad:
-          return [roots, thirds, fifths];
+          if (state.currentTonality == Tonality.MAJOR)
+            return [roots, thirds, fifths];
+          if (state.currentTonality == Tonality.MINOR)
+            return [roots, minorThirds, fifths];
+        break;
 
         case Pattern.Seventh:
-          return [roots, thirds, fifths, sevenths];
+          if (state.currentTonality == Tonality.MAJOR)
+            return [roots, thirds, fifths, sevenths];
+          if (state.currentTonality == Tonality.MINOR)
+            return [roots, minorThirds, fifths, minorSevenths];
+        break;
 
         default:
-          return [roots, thirds, fifths];
+          return [roots, seconds, thirds, fifths, sixths];
       }
     },
   },
@@ -122,7 +130,7 @@ export const usePatternStore = defineStore('pattern', {
     updateCurrentHighlightNotes() {
       // This functions unhighlights some notes that are not present in the scale.
       // For example, when switching from a major scale to a minor scale, some notes that are present in the major scale but not in the minor scale will be unhighlighted.
-      this.currentHighlightNotes = this.currentHighlightNotes.filter(note => this.highlightNotes.includes(note));
+      this.currentHighlightNotes = this.currentHighlightNotes.filter(note => this.highlightNotes.some(t => t === note));
     },
     updateToEqualAccidental() {
       if (this.currentAccidental == Accidental.SHARP) {
@@ -148,7 +156,7 @@ export const usePatternStore = defineStore('pattern', {
       this.hasSidebarUpdated = !this.hasSidebarUpdated
     },
     toggleTonalityStatus() {
-      this.hasTonalityUpdate = !this.hasTonalityUpdate
+      this.hasTonalityUpdated = !this.hasTonalityUpdated
     },
     toggleResetStatus() {
       this.hasReset = !this.hasReset

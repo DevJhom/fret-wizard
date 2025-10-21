@@ -114,15 +114,6 @@ const sevenths: Intervals = {
   E: [-5, 7, 19, 31],
 };
 
-const blues: Intervals = {
-  e: [-1, 11, 23],
-  B: [-8, 4, 16],
-  G: [-4, 8, 20],
-  D: [-11, 1, 13],
-  A: [-6, 6, 18],
-  E: [-1, 11, 23],
-};
-
 /*
 Intervals for "A" Minor Key
 1. roots
@@ -248,17 +239,5 @@ export const getSevenths = (tonality: Tonality, currentKey: string, stringName: 
   if (tonality == Tonality.MINOR) {
     const shift = minorKeyToNumber[currentKey];
     return minorKeySevenths[stringName].map(note => (note + shift));
-  }
-};
-
-export const getBlues = (tonality: Tonality, currentKey: string, stringName: string) => {
-  if (tonality == Tonality.MAJOR) {
-    const shift = majorKeyToNumber[currentKey];
-    return blues[stringName].map(note => (note + shift));
-  }
-
-  if (tonality == Tonality.MINOR) {
-    const shift = minorKeyToNumber[currentKey];
-    return blues[stringName].map(note => (note + shift));
   }
 };
