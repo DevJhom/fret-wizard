@@ -87,9 +87,19 @@
     background-color: $yellow !important;
 }
 
+.notes .minor-sixth,
+.notes .minor-sixth:after {
+    background-color: $dissonant-3 !important;
+}
+
 .notes .sixth, 
 .notes .sixth:after {
     background-color: $yellow-green !important;
+}
+
+.notes .minor-seventh,
+.notes .minor-seventh:after {
+    background-color: $dissonant-4 !important;
 }
 
 .notes .seventh, 

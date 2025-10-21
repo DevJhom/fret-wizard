@@ -72,7 +72,9 @@ const toggleSidebar = () => {
                                 'tritone': highlightNote == tritones && currentHighlightNotes.includes(tritones),
                                 'fourth': highlightNote == fourths && currentHighlightNotes.includes(fourths),
                                 'fifth': highlightNote == fifths && currentHighlightNotes.includes(fifths),
+                                'minor-sixth': highlightNote == minorSixths && currentHighlightNotes.includes(minorSixths),
                                 'sixth': highlightNote == sixths && currentHighlightNotes.includes(sixths),
+                                'minor-seventh': highlightNote == minorSevenths && currentHighlightNotes.includes(minorSevenths),
                                 'seventh': highlightNote == sevenths && currentHighlightNotes.includes(sevenths),
                                 'blue': highlightNote == blues && currentHighlightNotes.includes(blues),
                             }">
