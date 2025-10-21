@@ -99,7 +99,11 @@ export const usePatternStore = defineStore('pattern', {
           break;
 
         case Pattern.Diatonic:
-          return [roots, seconds, thirds, fourths, fifths, sixths, sevenths];
+          if (state.currentTonality == Tonality.MAJOR)
+            return [roots, seconds, thirds, fourths, fifths, sixths, sevenths];
+          if (state.currentTonality == Tonality.MINOR)
+            return [roots, seconds, minorThirds, fourths, fifths, minorSixths, minorSevenths];
+          break;
 
         case Pattern.Chromatic:
           return [ roots, minorSeconds, seconds, minorThirds, thirds, fourths, tritones, fifths, minorSixths, sixths, minorSevenths, sevenths];
