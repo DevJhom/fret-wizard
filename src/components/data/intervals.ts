@@ -88,6 +88,15 @@ const fifths: Intervals = {
     E: [-9,3,15]
 }
 
+const minorSixths: Intervals = {
+    e: [-8, 4, 16], 
+    B: [-3, 9, 21], 
+    G: [1, 13, 25], 
+    D: [-6, 6, 18], 
+    A: [-1, 11, 23],
+    E: [-8, 4, 16]
+}
+
 const sixths: Intervals = {
     e: [-7,5,17,29],  
     B: [-2,10,22], 
@@ -95,6 +104,15 @@ const sixths: Intervals = {
     D: [-5,7,19],
     A: [0,12,24],  
     E: [-7,5,17,29]
+}
+
+const minorSevenths: Intervals = {
+    e: [-6, 6, 18, 30], 
+    B: [-1, 11, 23], 
+    G: [-9, 3, 15, 27], 
+    D: [-4, 8, 20], 
+    A: [1, 13, 25], 
+    E: [-6, 6, 18, 30]
 }
 
 const sevenths: Intervals = {
@@ -217,6 +235,11 @@ export const getFifths = (tonality: Tonality, currentKey: string, stringName: st
   }
 };
 
+export const getMinorSixths = (tonality: Tonality, currentKey: string, stringName: string) => {
+  const shift = majorKeyToNumber[currentKey];
+  return minorSixths[stringName].map(note => (note + shift));
+};
+
 export const getSixths = (tonality: Tonality, currentKey: string, stringName: string) => {
   if (tonality == Tonality.MAJOR) {
     const shift = majorKeyToNumber[currentKey];
@@ -227,6 +250,11 @@ export const getSixths = (tonality: Tonality, currentKey: string, stringName: st
     const shift = minorKeyToNumber[currentKey];
     return minorKeySixths[stringName].map(note => (note + shift));
   }
+};
+
+export const getMinorSevenths = (tonality: Tonality, currentKey: string, stringName: string) => {
+  const shift = majorKeyToNumber[currentKey];
+  return minorSevenths[stringName].map(note => (note + shift));
 };
 
 export const getSevenths = (tonality: Tonality, currentKey: string, stringName: string) => {
