@@ -7,7 +7,7 @@ import { Tonality, Accidental, Degree } from '@data/constants';
 const patternStore = usePatternStore();
 const { currentTonality, currentAccidental, currentHighlightNotes, currentCAGED, currentStrings } = storeToRefs(patternStore);
 
-const { roots, minorSeconds, seconds, minorThirds, thirds, fourths, tritone, fifths, minorSixths, sixths, minorSevenths, sevenths, blues } = Degree;
+const { roots, minorSeconds, seconds, minorThirds, thirds, fourths, tritones, fifths, minorSixths, sixths, minorSevenths, sevenths, blues } = Degree;
 
 const isCollapsed = ref(true);
 
@@ -67,7 +67,9 @@ const toggleSidebar = () => {
                                 'root-note': highlightNote == roots && currentHighlightNotes.includes(roots),
                                 'minor-second': highlightNote == minorSeconds && currentHighlightNotes.includes(minorSeconds),
                                 'second': highlightNote == seconds && currentHighlightNotes.includes(seconds),
+                                'minor-third': highlightNote == minorThirds && currentHighlightNotes.includes(minorThirds),
                                 'third': highlightNote == thirds && currentHighlightNotes.includes(thirds),
+                                'tritone': highlightNote == tritones && currentHighlightNotes.includes(tritones),
                                 'fourth': highlightNote == fourths && currentHighlightNotes.includes(fourths),
                                 'fifth': highlightNote == fifths && currentHighlightNotes.includes(fifths),
                                 'sixth': highlightNote == sixths && currentHighlightNotes.includes(sixths),

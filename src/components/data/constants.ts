@@ -29,7 +29,7 @@ export enum Degree {
   minorThirds = "minor thirds", 
   thirds = "thirds", 
   fourths = "fourths", 
-  tritone = "tritone",
+  tritones = "tritones",
   fifths = "fifths", 
   minorSixths = "minor sixths",
   sixths = "sixths",

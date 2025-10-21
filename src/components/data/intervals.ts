@@ -43,6 +43,15 @@ const seconds: Intervals = {
     E: [-2,10,22]
 }
 
+const minorThirds: Intervals = {
+    e: [-1, 11, 23], 
+    B: [-8, 4, 16], 
+    G: [-4, 8, 20], 
+    D: [1, 13, 25], 
+    A: [-6, 6, 18],
+    E: [-1, 11, 23]
+}
+
 const thirds: Intervals = {
     e: [0,12,24],
     B: [-7,5,17],
@@ -59,6 +68,15 @@ const fourths: Intervals = {
     D: [-9,3,15,27],  
     A: [-4,8,20],  
     E: [1,13,25]  
+}
+
+const tritones: Intervals = {
+    e: [2, 14, 26], 
+    B: [-17, -5, 7, 19], 
+    G: [-1, 11, 23], 
+    D: [-8, 4, 16, 28], 
+    A: [-3, 9, 21],
+    E: [2, 14, 26]
 }
 
 const fifths: Intervals = {
@@ -153,6 +171,11 @@ export const getSeconds = (tonality: Tonality, currentKey: string, stringName: s
   }
 };
 
+export const getMinorThirds = (tonality: Tonality, currentKey: string, stringName: string) => {
+  const shift = majorKeyToNumber[currentKey];
+  return minorThirds[stringName].map(note => (note + shift));
+};
+
 export const getThirds = (tonality: Tonality, currentKey: string, stringName: string) => {
   if (tonality == Tonality.MAJOR) {
     const shift = majorKeyToNumber[currentKey];
@@ -175,6 +198,11 @@ export const getFourths = (tonality: Tonality, currentKey: string, stringName: s
     const shift = minorKeyToNumber[currentKey];
     return minorKeyFourths[stringName].map(note => (note + shift));
   }
+};
+
+export const getTritones = (tonality: Tonality, currentKey: string, stringName: string) => {
+  const shift = majorKeyToNumber[currentKey];
+  return tritones[stringName].map(note => (note + shift));
 };
 
 export const getFifths = (tonality: Tonality, currentKey: string, stringName: string) => {
