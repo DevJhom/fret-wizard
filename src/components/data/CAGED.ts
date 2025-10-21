@@ -2,47 +2,53 @@ import { CurrentCAGED } from '@/stores/usePatternStore';
 import { majorKeyToNumber, minorKeyToNumber } from '@data/constants';
 import { Tonality } from '@data/constants';
 
+const CShapePositions = [-1,0,1,2, 11,12,13,14];
+const AShapePositions = [-11,-10,-9,-8, 1,2,3,4, 13,14,15,16];
+const GShapePositions = [-8,-7,-6,-5, 4,5,6,7, 16,17,18,19];
+const EShapePositions = [-6,-5,-4,-3, 6,7,8,9, 18,19,20,21];
+const DShapePositions = [-4,-3,-2,-1, 8,9,10,11, 20,21,22,23];
+
 // position = fret number - 1
 export const CAGED = {
     CShape: {
-        e: [-2,-1,0,2, 10,11,12,14],
-        B: [-1,0,2,3, 11,12,14,15],
-        G: [-1,1, 11,13],
-        D: [-1,0,1,2, 11,12,13,14],
-        A: [-1,1,2, 11,13,14],
-        E: [-2,-1,0,2, 10,11,12,14],
+        e: CShapePositions,
+        B: CShapePositions,
+        G: CShapePositions,
+        D: CShapePositions,
+        A: CShapePositions,
+        E: CShapePositions,
     },
     AShape: {
-        e: [-10,-8, 2,4, 14,16],
-        B: [-10,-9,-8,-7, 2,3,4,5, 14,15,16,17],
-        G: [-11,-9,-8, 1,3,4, 13,15,16],
-        D: [-11,-10,-8, 0,1,2,4, 12,13,14,16],
-        A: [-11,-10,-8, 1,2,4,5, 13,14,16,17],
-        E: [-10,-8, 2,4, 14,16],
+        e: AShapePositions,
+        B: AShapePositions,
+        G: AShapePositions,
+        D: AShapePositions,
+        A: AShapePositions,
+        E: AShapePositions,
     },
     GShape: {
-        e: [-8,-6,-5, 4,6,7, 16,18,19],
-        B: [-9,-8,-7,-5, 3,4,5,7, 15,16,17,19],
-        G: [-9,-8,-6,-5, 3,4,6,7, 15,16,18,19],
-        D: [-8,-6, 4,6, 16,18],
-        A: [-8,-7,-6,-5, 4,5,6,7, 16,17,18,19],
-        E: [-8,-6,-5, 4,6,7, 16,18,19],
+        e: GShapePositions,
+        B: GShapePositions,
+        G: GShapePositions,
+        D: GShapePositions,
+        A: GShapePositions,
+        E: GShapePositions,
     },
     EShape: {
-        e: [-6,-5,-3,-2, 6,7,9,10, 18,19,21,22],
-        B: [-5,-3, 7,9, 19,21],
-        G: [-6,-5,-4,-3, 6,7,8,9, 18,19,20,21],
-        D: [-6,-4,-3, 6,8,9, 18,20,21],
-        A: [-7,-6,-5,-3, 5,6,7,9, 17,18,19,21],
-        E: [-6,-5,-3,-2, 6,7,9,10, 18,19,21,22],
+        e: EShapePositions,
+        B: EShapePositions,
+        G: EShapePositions,
+        D: EShapePositions,
+        A: EShapePositions,
+        E: EShapePositions,
     },
     DShape: {
-        e: [-3,-2,-1,0, 9,10,11,12, 21,22,23,24,],
-        B: [-3,-1,0, 9,11,12, 21,23],
-        G: [-5,-4,-3,-1, 7,8,9,11, 19,20,21,23],
-        D: [-4,-3,-1,0, 8,9,11,12, 20,21,23],
-        A: [-3,-1, 9,11, 21,23],
-        E: [-3,-2,-1,0, 9,10,11,12, 21,22,23,24],
+        e: DShapePositions,
+        B: DShapePositions,
+        G: DShapePositions,
+        D: DShapePositions,
+        A: DShapePositions,
+        E: DShapePositions,
     }
 }
 
