@@ -1,5 +1,5 @@
 import { Tonality } from '@data/constants';
-import { majorKeyToNumber, minorKeyToNumber } from "@data/constants";
+import { majorKeyToNumber } from "@data/constants";
 
 interface Intervals {
   [key: string]: number[];
@@ -61,12 +61,12 @@ const fourths: Intervals = {
 };
 
 const tritones: Intervals = {
-  e: [2, 14, 26],
+  e: [-10, 2, 14, 26],
   B: [-17, -5, 7, 19],
   G: [-1, 11, 23],
   D: [-8, 4, 16, 28],
   A: [-3, 9, 21],
-  E: [2, 14, 26],
+  E: [-10, 2, 14, 26],
 };
 
 const fifths: Intervals = {
@@ -114,35 +114,9 @@ const sevenths: Intervals = {
   E: [-5, 7, 19, 31],
 };
 
-/*
-Intervals for "A" Minor Key
-1. roots
-2. major seconds
-3. minor thirds 
-4. perfect fourths
-5. perfect fifths
-6. minor sixths 
-7. minor sevenths 
-- "Relative Minor" concept
-*/
-
-const minorKeyRoots = sixths;
-const minorKeySeconds = sevenths;
-const minorKeyThirds = roots;
-const minorKeyFourths = seconds;
-const minorKeyFifths = thirds; 
-const minorKeySixths = fourths;
-const minorKeySevenths = fifths;
-
 export const getRoots = (tonality: Tonality, currentKey: string, stringName: string) => {
-  if (tonality == Tonality.MAJOR) {
-    const shift = majorKeyToNumber[currentKey];
-    return roots[stringName].map(note => (note + shift));
-  }
-  if (tonality == Tonality.MINOR) {
-    const shift = minorKeyToNumber[currentKey];
-    return minorKeyRoots[stringName].map(note => (note + shift));
-  }
+  const shift = majorKeyToNumber[currentKey];
+  return roots[stringName].map(note => (note + shift));
 };
 
 export const getMinorSeconds = (tonality: Tonality, currentKey: string, stringName: string) => {
@@ -151,15 +125,8 @@ export const getMinorSeconds = (tonality: Tonality, currentKey: string, stringNa
 };
 
 export const getSeconds = (tonality: Tonality, currentKey: string, stringName: string) => {
-  if (tonality == Tonality.MAJOR) {
-    const shift = majorKeyToNumber[currentKey];
-    return seconds[stringName].map(note => (note + shift));
-  }
-
-  if (tonality == Tonality.MINOR) {
-    const shift = minorKeyToNumber[currentKey];
-    return minorKeySeconds[stringName].map(note => (note + shift));
-  }
+  const shift = majorKeyToNumber[currentKey];
+  return seconds[stringName].map(note => (note + shift));
 };
 
 export const getMinorThirds = (tonality: Tonality, currentKey: string, stringName: string) => {
@@ -168,27 +135,13 @@ export const getMinorThirds = (tonality: Tonality, currentKey: string, stringNam
 };
 
 export const getThirds = (tonality: Tonality, currentKey: string, stringName: string) => {
-  if (tonality == Tonality.MAJOR) {
-    const shift = majorKeyToNumber[currentKey];
-    return thirds[stringName].map(note => (note + shift));
-  }
-
-  if (tonality == Tonality.MINOR) {
-    const shift = minorKeyToNumber[currentKey];
-    return minorKeyThirds[stringName].map(note => (note + shift));
-  }
+  const shift = majorKeyToNumber[currentKey];
+  return thirds[stringName].map(note => (note + shift));
 };
 
 export const getFourths = (tonality: Tonality, currentKey: string, stringName: string) => {
-  if (tonality == Tonality.MAJOR) {
-    const shift = majorKeyToNumber[currentKey];
-    return fourths[stringName].map(note => (note + shift));
-  }
-
-  if (tonality == Tonality.MINOR) {
-    const shift = minorKeyToNumber[currentKey];
-    return minorKeyFourths[stringName].map(note => (note + shift));
-  }
+  const shift = majorKeyToNumber[currentKey];
+  return fourths[stringName].map(note => (note + shift));
 };
 
 export const getTritones = (tonality: Tonality, currentKey: string, stringName: string) => {
@@ -197,15 +150,8 @@ export const getTritones = (tonality: Tonality, currentKey: string, stringName: 
 };
 
 export const getFifths = (tonality: Tonality, currentKey: string, stringName: string) => {
-  if (tonality == Tonality.MAJOR) {
-    const shift = majorKeyToNumber[currentKey];
-    return fifths[stringName].map(note => (note + shift));
-  }
-
-  if (tonality == Tonality.MINOR) {
-    const shift = minorKeyToNumber[currentKey];
-    return minorKeyFifths[stringName].map(note => (note + shift));
-  }
+  const shift = majorKeyToNumber[currentKey];
+  return fifths[stringName].map(note => (note + shift));
 };
 
 export const getMinorSixths = (tonality: Tonality, currentKey: string, stringName: string) => {
@@ -214,15 +160,8 @@ export const getMinorSixths = (tonality: Tonality, currentKey: string, stringNam
 };
 
 export const getSixths = (tonality: Tonality, currentKey: string, stringName: string) => {
-  if (tonality == Tonality.MAJOR) {
-    const shift = majorKeyToNumber[currentKey];
-    return sixths[stringName].map(note => (note + shift));
-  }
-
-  if (tonality == Tonality.MINOR) {
-    const shift = minorKeyToNumber[currentKey];
-    return minorKeySixths[stringName].map(note => (note + shift));
-  }
+  const shift = majorKeyToNumber[currentKey];
+  return sixths[stringName].map(note => (note + shift));
 };
 
 export const getMinorSevenths = (tonality: Tonality, currentKey: string, stringName: string) => {
@@ -231,13 +170,6 @@ export const getMinorSevenths = (tonality: Tonality, currentKey: string, stringN
 };
 
 export const getSevenths = (tonality: Tonality, currentKey: string, stringName: string) => {
-  if (tonality == Tonality.MAJOR) {
-    const shift = majorKeyToNumber[currentKey];
-    return sevenths[stringName].map(note => (note + shift));
-  }
-
-  if (tonality == Tonality.MINOR) {
-    const shift = minorKeyToNumber[currentKey];
-    return minorKeySevenths[stringName].map(note => (note + shift));
-  }
+  const shift = majorKeyToNumber[currentKey];
+  return sevenths[stringName].map(note => (note + shift));
 };
