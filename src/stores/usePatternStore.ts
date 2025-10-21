@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { Tonality, Accidental, Pattern } from '@data/constants';
+import { Tonality, Accidental, Pattern, Degree } from '@data/constants';
 import { majorSharpAllNotes, majorFlatAllNotes, minorSharpAllNotes, minorFlatAllNotes } from '@/components/data/constants';
 import { findRelativeMajor, findRelativeMinor } from '@/components/data/noteNames';
 
@@ -38,13 +38,15 @@ interface State extends FretboardData {
   hasReset: boolean;
 }
 
+const { roots, minorSeconds, seconds, minorThirds, thirds, fourths, tritone, fifths, minorSixths, sixths, minorSevenths, sevenths, blues } = Degree;
+
 export const defaultData: FretboardData = {
   fretAmount: 24,
   currentKey: "C",
   currentPattern: Pattern.Pentatonic,
   currentTonality: Tonality.MAJOR, 
   currentAccidental: Accidental.SHARP,
-  currentHighlightNotes: ["roots"],
+  currentHighlightNotes: [roots],
   currentStrings: {
     E: true,
     A: true,
@@ -64,7 +66,7 @@ export const defaultData: FretboardData = {
 
 export const usePatternStore = defineStore('pattern', {
   state: (): State => ({
-    allPatterns: [Pattern.Pentatonic, Pattern.Blue, Pattern.Diatonic, Pattern.Triad, Pattern.Seventh],
+    allPatterns: [Pattern.Pentatonic, Pattern.Blue, Pattern.Diatonic, Pattern.Chromatic, Pattern.Triad, Pattern.Seventh],
     hasSidebarUpdated: false,
     hasTonalityUpdated: false,
     hasReset: false,
@@ -84,29 +86,32 @@ export const usePatternStore = defineStore('pattern', {
 
         case Pattern.Pentatonic:
           if (state.currentTonality == Tonality.MAJOR)
-            return ["roots", "seconds", "thirds", "fifths", "sixths"];
+            return [roots, seconds, thirds, fifths, sixths];
           if (state.currentTonality == Tonality.MINOR)
-            return ["roots", "thirds", "fourths", "fifths", "sevenths"];
+            return [roots, thirds, fourths, fifths, sevenths];
           break;
 
         case Pattern.Blue:
           if (state.currentTonality == Tonality.MAJOR)
-            return ["roots", "seconds", "thirds", "fifths", "sixths", "blues"];
+            return [roots, seconds, thirds, fifths, sixths, blues];
           if (state.currentTonality == Tonality.MINOR)
-            return ["roots", "thirds", "fourths", "fifths", "sevenths", "blues"];
+            return [roots, thirds, fourths, fifths, sevenths, blues];
           break;
 
         case Pattern.Diatonic:
-          return ["roots", "seconds", "thirds", "fourths", "fifths", "sixths", "sevenths"];
+          return [roots, seconds, thirds, fourths, fifths, sixths, sevenths];
+
+        case Pattern.Chromatic:
+          return [ roots, minorSeconds, seconds, minorThirds, thirds, fourths, tritone, fifths, minorSixths, sixths, minorSevenths, sevenths];
 
         case Pattern.Triad:
-          return ["roots", "thirds", "fifths"];
+          return [roots, thirds, fifths];
 
         case Pattern.Seventh:
-          return ["roots", "thirds", "fifths", "sevenths"];
+          return [roots, thirds, fifths, sevenths];
 
         default:
-          return ["roots", "thirds", "fifths"];
+          return [roots, thirds, fifths];
       }
     },
   },

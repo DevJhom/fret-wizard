@@ -12,6 +12,9 @@ export const fetchScalePattern = async (tonality: Tonality, scale: string, key: 
         case Pattern.Diatonic:
             return pattern.diatonic_scale.C;
 
+        case Pattern.Chromatic:
+            return pattern.chromaic_scale.C;
+
         case Pattern.Triad:
           if (tonality == Tonality.MAJOR)
             return pattern.triad.C
