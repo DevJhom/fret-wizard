@@ -2,10 +2,10 @@
 import { ref } from 'vue';
 import { usePatternStore } from '@/stores/usePatternStore';
 import { storeToRefs } from 'pinia';
-import { Tonality, Accidental, Degree } from '@data/constants';
+import { Accidental, Degree } from '@data/constants';
 
 const patternStore = usePatternStore();
-const { currentTonality, currentAccidental, currentHighlightNotes, currentCAGED, currentStrings } = storeToRefs(patternStore);
+const { currentAccidental, currentHighlightNotes, currentCAGED, currentStrings } = storeToRefs(patternStore);
 
 const { roots, minorSeconds, seconds, minorThirds, thirds, fourths, tritones, fifths, minorSixths, sixths, minorSevenths, sevenths } = Degree;
 
@@ -23,21 +23,6 @@ const toggleSidebar = () => {
         <div class="hamburger text-start" @click="toggleSidebar()">☰</div>
         <Transition name="fade"> 
             <div v-show="isCollapsed">
-                <!-- Tonality -->
-                <div class="d-flex mt-5 switch-radio">
-                    <label>
-                        <input type="radio" name="tonality" :value="Tonality.MAJOR" v-model="currentTonality" @change="patternStore.toggleSidebarStatus(); patternStore.toggleTonalityStatus()">
-                            <div class="label"> Major </div>
-                        </input>
-                    </label>
-
-                    <label>
-                        <input type="radio" name="tonality" :value="Tonality.MINOR" v-model="currentTonality" @change="patternStore.toggleSidebarStatus(); patternStore.toggleTonalityStatus()"> 
-                            <div class="label"> Minor </div>
-                        </input>
-                    </label>
-                </div>
-
                 <!-- Accidental -->
                 <div class="d-flex mt-3 switch-radio">
                     <label>
@@ -198,7 +183,7 @@ const toggleSidebar = () => {
 
 .highlightNotes-filter .checkbox__checkmark {
     margin-top: 4px !important;
-    background-color: $black;
+    background-color: var(--note-background-color);
     cursor: pointer;
 }
 

@@ -23,6 +23,8 @@ interface FretboardRenderer extends FretboardData {
     e: string[];
 }
 
+const setup = ref<string>("Scale");
+
 const fretboards = ref<FretboardRenderer[]>([]);
 const currentFretboardIndex = ref<number>(0);
 const isEditing = ref<boolean>(true);
@@ -283,28 +285,23 @@ onMounted(async () => {
             :id="`fretboard-${index}`"
         >
             <div v-if="index == currentFretboardIndex && isEditing == true">
-                <!-- Key Selector -->
-                <div class="d-flex justify-content-center align-items-center mb-3">
-                    <span class="me-2 text-yellow fw-bold">
-                        Key
-                    </span>
-                    <div v-for="(key, index) in allKeys" :key="key" class="d-inline-block custom-radio">
-                        <label class="d-flex flex-column">
-                            <input type="radio" name="keys" v-model="currentKey" :value="allKeys[index]" @change="onChangeCurrentKey()">
-                                <span class="label"> {{ key }} </span>
+                <div class="selector-wrapper mb-3">
+                    <!-- Setup Selector -->
+                    <div class="switch-setup switch-radio me-2 fw-bold">
+                        <label>
+                            <input type="radio" name="setup" value="Scale" v-model="setup" @change="() => {}">
+                                <div class="label px-2 py-1">Scale</div>
+                            </input>
+                        </label>
+
+                        <label>
+                            <input type="radio" name="setup" value="Chord" v-model="setup" @change="() => {}"> 
+                                <div class="label px-2 py-1">Chord</div>
                             </input>
                         </label>
                     </div>
-                    <span class="me-2 text-yellow fw-bold">
-                        ({{ fretboard.currentTonality }})
-                    </span>
-                </div>
 
-                <!-- Pattern Selector -->
-                <div class="d-flex justify-content-center align-items-center mb-3">
-                    <span class="me-2 text-yellow fw-bold">
-                        Pattern
-                    </span>
+                    <!-- Pattern Selector -->
                     <div v-for="(scale, index) in allPatterns" :key="scale" class="d-inline-block custom-radio">
                         <label class="d-flex flex-column">
                             <input type="radio" name="scales" v-model="currentPattern" :value="allPatterns[index]" @change="onChangeCurrentPattern()">
@@ -314,19 +311,34 @@ onMounted(async () => {
                     </div>
                 </div>
 
-                <!-- Fret Amount Selector -->
-                <div class="mb-3">
-                    <span class="me-3 text-yellow fw-bold">
-                        Number of Frets
-                    </span>
-                    <input type="range" min="12" max="24" step="1" v-model.number="fretAmount" @change="onChangeFretAmount()">
-                    <span class="ms-3 text-yellow fw-bold">
-                        {{ fretAmount }}
-                    </span>
+                <div class="selector-wrapper mb-3">
+                    <!-- Tonality -->
+                    <div class="switch-tonality switch-radio me-2 fw-bold">
+                        <label>
+                            <input type="radio" name="tonality" :value="Tonality.MAJOR" v-model="currentTonality" @change="patternStore.toggleSidebarStatus(); patternStore.toggleTonalityStatus()">
+                                <div class="label px-2 py-1"> Major </div>
+                            </input>
+                        </label>
+
+                        <label>
+                            <input type="radio" name="tonality" :value="Tonality.MINOR" v-model="currentTonality" @change="patternStore.toggleSidebarStatus(); patternStore.toggleTonalityStatus()"> 
+                                <div class="label px-2 py-1"> Minor </div>
+                            </input>
+                        </label>
+                    </div>
+
+                    <!-- Key Selector -->
+                    <div v-for="(key, index) in allKeys" :key="key" class="d-inline-block custom-radio">
+                        <label class="d-flex flex-column">
+                            <input type="radio" name="keys" v-model="currentKey" :value="allKeys[index]" @change="onChangeCurrentKey()">
+                                <span class="label"> {{ key }} </span>
+                            </input>
+                        </label>
+                    </div>
                 </div>
             </div>
 
-            <div class="d-flex">
+            <div class="my-fretboard">
                 <h5 class="d-flex align-items-center text-yellow mx-4">
                     {{ fretboard.currentKey }} {{ fretboard.currentTonality }}
                 </h5>
@@ -361,6 +373,17 @@ onMounted(async () => {
             > 
                 <Done/>
             </div>
+
+            <!-- Fret Amount Selector -->
+            <div v-if="index == currentFretboardIndex && isEditing == true" class="mt-3">
+                <span class="me-3 text-yellow fw-bold">
+                    Number of Frets
+                </span>
+                <input type="range" min="12" max="24" step="1" v-model.number="fretAmount" @change="onChangeFretAmount()">
+                <span class="ms-3 text-yellow fw-bold">
+                    {{ fretAmount }}
+                </span>
+            </div>
         </div>
 
         <h2 @click="addCurrentFretboard" class="text-yellow"> + </h2>
@@ -390,6 +413,13 @@ onMounted(async () => {
     padding: 1rem;
 }
 
+.my-fretboard {
+    display: flex;
+    padding: 0.5rem 0;
+    background-color: $black;
+    border-radius: 9px;
+}
+
 .action-icon {
     display: flex;
     align-items: center;
@@ -407,6 +437,18 @@ onMounted(async () => {
     position: absolute;
     top: -14px;
     right: -14px;
+}
+
+.selector-wrapper {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.switch-setup, .switch-tonality {
+    display: flex;
+    left: 0;
 }
 
 .custom-radio {
