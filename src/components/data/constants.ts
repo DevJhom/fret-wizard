@@ -17,9 +17,16 @@ export enum Pattern {
   Pentatonic = "Pentatonic Scale",
   Blue = "Blue Scale",
   Diatonic = "Diatonic Scale",
+  Chromatic = "Chromatic Scale",
+  Power = "Power Chord",
   Triad = "Triad",
+  //Sixth = "Sixth Chord",
   Seventh = "Seventh Chord",
-  Chromatic = "Chromatic Scale"
+  Add9 = "Add9 Chord",
+  Add11 = "Add11 Chord",
+  Add13 = "Add13 Chord",
+  Dominant = "Dominant Chord",
+  //Suspended = "Suspended Chord"
 }
 
 export enum Degree {

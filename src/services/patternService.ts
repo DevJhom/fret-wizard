@@ -29,6 +29,33 @@ export const fetchScalePattern = async (tonality: Tonality, scale: string, key: 
             return pattern.minor_seventh.A
         break;
 
+        case Pattern.Add9:
+          if (tonality == Tonality.MAJOR)
+            return pattern.add9.C
+          if (tonality == Tonality.MINOR)
+            return pattern.minor_add9.A
+        break;
+
+        case Pattern.Add11:
+          if (tonality == Tonality.MAJOR)
+            return pattern.add11.C
+          if (tonality == Tonality.MINOR)
+            return pattern.minor_add11.A
+        break;
+
+        case Pattern.Add13:
+          if (tonality == Tonality.MAJOR)
+            return pattern.add13.C
+          if (tonality == Tonality.MINOR)
+            return pattern.minor_add13.A
+        break;
+
+        case Pattern.Dominant:
+          return pattern.dominant.C;
+
+        case Pattern.Power:
+          return pattern.power.C;
+
         default:
             return pattern.pentatonic_scale.C;
     }
