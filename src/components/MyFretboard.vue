@@ -165,7 +165,8 @@ const fretIndicator = new Array(24);
 <style scoped lang="scss">
 .fret-indicator {
     min-width: 2rem;
-    height: 40px;
+    height: 30px;
+    font-size: 12px;
 }
 
 .string-name {
