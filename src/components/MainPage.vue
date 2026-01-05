@@ -416,7 +416,7 @@ onMounted(async () => {
 .my-fretboard {
     display: flex;
     padding: 0.5rem 0;
-    background-color: $black;
+    background-color: var(--fretboard-background-color);
     border-radius: 9px;
 }
 
