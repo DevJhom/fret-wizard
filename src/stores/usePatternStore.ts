@@ -32,7 +32,7 @@ export interface FretboardData {
 }
 
 interface State extends FretboardData {
-  allPatterns: string[];
+  isScale: boolean;
   hasSidebarUpdated: boolean;
   hasTonalityUpdated: boolean;
   hasReset: boolean;
@@ -66,13 +66,21 @@ export const defaultData: FretboardData = {
 
 export const usePatternStore = defineStore('pattern', {
   state: (): State => ({
-    allPatterns: [Pattern.Pentatonic, Pattern.Blue, Pattern.Diatonic, Pattern.Chromatic, Pattern.Triad, Pattern.Seventh],
+    isScale: true, 
     hasSidebarUpdated: false,
     hasTonalityUpdated: false,
     hasReset: false,
     ...defaultData
   }),
   getters: {
+    allPatterns: (state: State) => {
+      if (state.isScale) {
+        return [Pattern.Pentatonic, Pattern.Blue, Pattern.Diatonic, Pattern.Chromatic, Pattern.Triad]
+      }
+      else {
+        return[Pattern.Triad, Pattern.Seventh, Pattern.Add9, Pattern.Add11, Pattern.Add13, Pattern.Dominant, Pattern.Power]
+      }
+    },
     allKeys: (state: State) => {
       if (state.currentTonality == Tonality.MAJOR) {
         return (state.currentAccidental == Accidental.SHARP ? majorSharpAllNotes : majorFlatAllNotes);
@@ -121,6 +129,33 @@ export const usePatternStore = defineStore('pattern', {
           if (state.currentTonality == Tonality.MINOR)
             return [roots, minorThirds, fifths, minorSevenths];
         break;
+
+        case Pattern.Add9:
+          if (state.currentTonality == Tonality.MAJOR)
+            return [roots, thirds, fifths, seconds]; //the second is called the ninth
+          if (state.currentTonality == Tonality.MINOR)
+            return [roots, minorThirds, fifths, seconds]; //the second is called the ninth
+        break;
+
+        case Pattern.Add11:
+          if (state.currentTonality == Tonality.MAJOR)
+            return [roots, thirds, fifths, fourths]; //the fourth is called the eleventh
+          if (state.currentTonality == Tonality.MINOR)
+            return [roots, minorThirds, fifths, fourths]; //the fourth is called the eleventh
+        break;
+
+        case Pattern.Add13:
+          if (state.currentTonality == Tonality.MAJOR)
+            return [roots, thirds, fifths, sixths]; //the sixth is called the thirteenth
+          if (state.currentTonality == Tonality.MINOR)
+            return [roots, minorThirds, fifths, sixths]; //the sixth is called the thirteenth
+        break;
+
+        case Pattern.Dominant:
+          return [roots, thirds, fifths, minorSevenths];
+
+        case Pattern.Power:
+          return [roots, fifths];
 
         default:
           return [roots, seconds, thirds, fifths, sixths];
