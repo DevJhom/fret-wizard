@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { Tonality, Accidental, Pattern, Degree } from '@data/constants';
+import { Tonality, Accidental, Setup, Pattern, Degree } from '@data/constants';
 import { majorSharpAllNotes, majorFlatAllNotes, minorSharpAllNotes, minorFlatAllNotes } from '@/components/data/constants';
 import { findRelativeMajor, findRelativeMinor } from '@/components/data/noteNames';
 
@@ -23,6 +23,7 @@ export interface CurrentCAGED {
 export interface FretboardData {
   fretAmount: number;
   currentKey: string;
+  currentSetup: Setup;
   currentPattern: Pattern;
   currentTonality: Tonality;
   currentAccidental: Accidental;
@@ -32,7 +33,6 @@ export interface FretboardData {
 }
 
 interface State extends FretboardData {
-  isScale: boolean;
   hasSidebarUpdated: boolean;
   hasTonalityUpdated: boolean;
   hasReset: boolean;
@@ -44,6 +44,7 @@ export const defaultData: FretboardData = {
   fretAmount: 24,
   currentKey: "C",
   currentPattern: Pattern.Pentatonic,
+  currentSetup: Setup.Scale,
   currentTonality: Tonality.MAJOR, 
   currentAccidental: Accidental.SHARP,
   currentHighlightNotes: [roots],
@@ -66,7 +67,6 @@ export const defaultData: FretboardData = {
 
 export const usePatternStore = defineStore('pattern', {
   state: (): State => ({
-    isScale: true, 
     hasSidebarUpdated: false,
     hasTonalityUpdated: false,
     hasReset: false,
@@ -74,7 +74,7 @@ export const usePatternStore = defineStore('pattern', {
   }),
   getters: {
     allPatterns: (state: State) => {
-      if (state.isScale) {
+      if (state.currentSetup == Setup.Scale) {
         return [Pattern.Pentatonic, Pattern.Blue, Pattern.Diatonic, Pattern.Chromatic, Pattern.Triad]
       }
       else {

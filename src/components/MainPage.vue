@@ -12,7 +12,7 @@ import Edit from '@/assets/icons/Edit.vue';
 import Trash from '@/assets/icons/Trash.vue';
 
 const patternStore = usePatternStore();
-const { allKeys, allPatterns, fretAmount, currentKey, currentPattern, currentTonality, currentAccidental, currentHighlightNotes, currentCAGED, currentStrings, hasSidebarUpdated, hasTonalityUpdated, hasReset } = storeToRefs(patternStore);
+const { allKeys, allPatterns, fretAmount, currentKey, currentSetup, currentPattern, currentTonality, currentAccidental, currentHighlightNotes, currentCAGED, currentStrings, hasSidebarUpdated, hasTonalityUpdated, hasReset } = storeToRefs(patternStore);
 
 interface FretboardRenderer extends FretboardData {
     E: string[];
@@ -22,8 +22,6 @@ interface FretboardRenderer extends FretboardData {
     B: string[];
     e: string[];
 }
-
-const setup = ref<string>("Scale");
 
 const fretboards = ref<FretboardRenderer[]>([]);
 const currentFretboardIndex = ref<number>(0);
@@ -102,6 +100,7 @@ const constructFretboardData = (fretboard?: FretboardRenderer): FretboardData =>
         return {
             fretAmount: fretboard.fretAmount,
             currentKey: fretboard.currentKey,
+            currentSetup: fretboard.currentSetup,
             currentPattern: fretboard.currentPattern,
             currentTonality: fretboard.currentTonality,
             currentAccidental: fretboard.currentAccidental,
@@ -114,6 +113,7 @@ const constructFretboardData = (fretboard?: FretboardRenderer): FretboardData =>
         return {
             fretAmount: fretAmount.value,
             currentKey: currentKey.value,
+            currentSetup: currentSetup.value,
             currentPattern: currentPattern.value,
             currentTonality: currentTonality.value,
             currentAccidental: currentAccidental.value,
@@ -289,13 +289,13 @@ onMounted(async () => {
                     <!-- Setup Selector -->
                     <div class="switch-setup switch-radio me-2 fw-bold">
                         <label>
-                            <input type="radio" name="setup" value="Scale" v-model="setup" @change="() => {}">
+                            <input type="radio" name="setup" value="Scale" v-model="currentSetup" @change="() => {}">
                                 <div class="label px-2 py-1">Scale</div>
                             </input>
                         </label>
 
                         <label>
-                            <input type="radio" name="setup" value="Chord" v-model="setup" @change="() => {}"> 
+                            <input type="radio" name="setup" value="Chord" v-model="currentSetup" @change="() => {}"> 
                                 <div class="label px-2 py-1">Chord</div>
                             </input>
                         </label>
