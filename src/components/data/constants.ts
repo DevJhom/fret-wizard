@@ -3,6 +3,11 @@ export enum Theme {
   light = "light-theme"
 }
 
+export enum Setup {
+  Scale = "Scale",
+  Chord = "Chord"
+}
+
 export enum Accidental {
   SHARP = "sharp",
   FLAT = "flat"
