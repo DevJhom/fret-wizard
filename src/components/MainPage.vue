@@ -193,6 +193,11 @@ const onChangeCurrentKey = () => {
     updateCurrentFretboard();
 }
 
+const onChangeCurrentSetup = () => {
+    patternStore.setDefaultPattern(currentSetup.value);
+    onChangeCurrentPattern();
+}
+
 const onChangeCurrentPattern = () => {
     updateCurrentFretboard();
     patternStore.updateCurrentHighlightNotes();
@@ -289,13 +294,13 @@ onMounted(async () => {
                     <!-- Setup Selector -->
                     <div class="switch-setup switch-radio me-2 fw-bold">
                         <label>
-                            <input type="radio" name="setup" value="Scale" v-model="currentSetup" @change="() => {}">
+                            <input type="radio" name="setup" value="Scale" v-model="currentSetup" @change="onChangeCurrentSetup()">
                                 <div class="label px-2 py-1">Scale</div>
                             </input>
                         </label>
 
                         <label>
-                            <input type="radio" name="setup" value="Chord" v-model="currentSetup" @change="() => {}"> 
+                            <input type="radio" name="setup" value="Chord" v-model="currentSetup" @change="onChangeCurrentSetup()"> 
                                 <div class="label px-2 py-1">Chord</div>
                             </input>
                         </label>

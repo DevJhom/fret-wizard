@@ -163,8 +163,8 @@ export const usePatternStore = defineStore('pattern', {
     },
   },
   actions: {
-    setCurrentPattern(pattern: string) {
-      this.currentPattern = pattern;
+    setDefaultPattern(setup: Setup) {
+      this.currentPattern = (setup == Setup.Scale ? Pattern.Pentatonic : Pattern.Triad);
     },
     updateCurrentHighlightNotes() {
       // This functions unhighlights some notes that are not present in the scale.
