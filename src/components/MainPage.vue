@@ -199,8 +199,8 @@ const onChangeCurrentSetup = () => {
 }
 
 const onChangeCurrentPattern = () => {
-    updateCurrentFretboard();
     patternStore.updateCurrentHighlightNotes();
+    updateCurrentFretboard();
 }
 
 const onChangeFretAmount = () => {

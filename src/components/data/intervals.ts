@@ -228,7 +228,7 @@ const constructBasePattern = (tonality: Tonality, pattern: Pattern, stringName: 
     degree == Degree.sevenths ? sevenths.forEach(value => allNoteIndexes.add(value)) : {};
   });
 
-  for (let i = 0; i < length; i++) {
+  for (let i = 1; i <= length; i++) {
     returnValue.push(allNoteIndexes.has(i));
   }
 
