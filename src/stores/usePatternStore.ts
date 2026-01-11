@@ -33,6 +33,7 @@ export interface FretboardData {
 }
 
 interface State extends FretboardData {
+  isSidebarActive: boolean;
   hasSidebarUpdated: boolean;
   hasTonalityUpdated: boolean;
   hasReset: boolean;
@@ -67,6 +68,7 @@ export const defaultData: FretboardData = {
 
 export const usePatternStore = defineStore('pattern', {
   state: (): State => ({
+    isSidebarActive: true,
     hasSidebarUpdated: false,
     hasTonalityUpdated: false,
     hasReset: false,

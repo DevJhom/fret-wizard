@@ -5,16 +5,13 @@ import { storeToRefs } from 'pinia';
 import { Accidental, Degree } from '@data/constants';
 
 const patternStore = usePatternStore();
-const { currentAccidental, currentHighlightNotes, currentCAGED, currentStrings } = storeToRefs(patternStore);
-
+const { currentAccidental, currentHighlightNotes, currentCAGED, currentStrings, isSidebarActive } = storeToRefs(patternStore);
 const { roots, minorSeconds, seconds, minorThirds, thirds, fourths, tritones, fifths, minorSixths, sixths, minorSevenths, sevenths } = Degree;
-
-const isCollapsed = ref(true);
 
 const toggleSidebar = () => {
   const sidebar = document.getElementById("sidebar")!;
   sidebar.classList.toggle("collapsed");
-  isCollapsed.value = !isCollapsed.value;
+  isSidebarActive.value = !isSidebarActive.value;
 }
 </script>
 
@@ -22,7 +19,7 @@ const toggleSidebar = () => {
     <div id="sidebar" class="side-bar">
         <div class="hamburger text-start" @click="toggleSidebar()">☰</div>
         <Transition name="fade"> 
-            <div v-show="isCollapsed">
+            <div v-show="isSidebarActive">
                 <!-- Accidental -->
                 <div class="d-flex mt-3 switch-radio">
                     <label>

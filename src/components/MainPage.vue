@@ -12,7 +12,7 @@ import Edit from '@/assets/icons/Edit.vue';
 import Trash from '@/assets/icons/Trash.vue';
 
 const patternStore = usePatternStore();
-const { allKeys, allPatterns, fretAmount, currentKey, currentSetup, currentPattern, currentTonality, currentAccidental, currentHighlightNotes, currentCAGED, currentStrings, hasSidebarUpdated, hasTonalityUpdated, hasReset } = storeToRefs(patternStore);
+const { allKeys, allPatterns, fretAmount, currentKey, currentSetup, currentPattern, currentTonality, currentAccidental, currentHighlightNotes, currentCAGED, currentStrings, isSidebarActive, hasSidebarUpdated, hasTonalityUpdated, hasReset } = storeToRefs(patternStore);
 
 interface FretboardRenderer extends FretboardData {
     E: string[];
@@ -343,10 +343,15 @@ onMounted(async () => {
                 </div>
             </div>
 
-            <div class="my-fretboard">
-                <h5 class="d-flex align-items-center text-yellow mx-4">
-                    {{ fretboard.currentKey }} {{ fretboard.currentTonality }}
-                </h5>
+            <div class="my-fretboard" :class="{'active-fretboard': index == currentFretboardIndex && isEditing == false && isSidebarActive == true }">
+                <div class="d-flex flex-column justify-content-center align-items-center mx-4">
+                    <h5 class="text-yellow">
+                        {{ fretboard.currentKey }} {{ fretboard.currentTonality }}
+                    </h5>
+                    <small class="text-yellow">
+                        {{ fretboard.currentPattern }}
+                    </small>
+                </div>
                 <MyFretboard
                     :fretAmount="fretboard.fretAmount"
                     :currentPattern="fretboard.currentPattern"
@@ -423,6 +428,10 @@ onMounted(async () => {
     padding: 0.5rem 0;
     background-color: var(--fretboard-background-color);
     border-radius: 9px;
+}
+
+.active-fretboard {
+    border: 1px solid $yellow;
 }
 
 .action-icon {
