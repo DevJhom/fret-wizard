@@ -99,3 +99,77 @@ export const minorKeyToNumber: { [key: string]: number } = {
   "G": 10,
   "G♯": 11, "A♭": 11, 
 };
+
+export const degreeInPattern = (pattern: Pattern, tonality: Tonality) => {
+  const { roots, minorSeconds, seconds, minorThirds, thirds, fourths, tritones, fifths, minorSixths, sixths, minorSevenths, sevenths } = Degree;
+
+  switch (pattern) {
+    case Pattern.Pentatonic:
+      if (tonality == Tonality.MAJOR)
+        return [roots, seconds, thirds, fifths, sixths];
+      if (tonality == Tonality.MINOR)
+        return [roots, minorThirds, fourths, fifths, minorSevenths];
+      break;
+
+    case Pattern.Blue:
+      if (tonality == Tonality.MAJOR)
+        return [roots, seconds, minorThirds, thirds, fifths, sixths];
+      if (tonality == Tonality.MINOR)
+        return [roots, minorThirds, fourths, tritones, fifths, sevenths];
+      break;
+
+    case Pattern.Diatonic:
+      if (tonality == Tonality.MAJOR)
+        return [roots, seconds, thirds, fourths, fifths, sixths, sevenths];
+      if (tonality == Tonality.MINOR)
+        return [roots, seconds, minorThirds, fourths, fifths, minorSixths, minorSevenths];
+      break;
+
+    case Pattern.Chromatic:
+      return [ roots, minorSeconds, seconds, minorThirds, thirds, fourths, tritones, fifths, minorSixths, sixths, minorSevenths, sevenths];
+
+    case Pattern.Triad:
+      if (tonality == Tonality.MAJOR)
+        return [roots, thirds, fifths];
+      if (tonality == Tonality.MINOR)
+        return [roots, minorThirds, fifths];
+    break;
+
+    case Pattern.Seventh:
+      if (tonality == Tonality.MAJOR)
+        return [roots, thirds, fifths, sevenths];
+      if (tonality == Tonality.MINOR)
+        return [roots, minorThirds, fifths, minorSevenths];
+    break;
+
+    case Pattern.Add9:
+      if (tonality == Tonality.MAJOR)
+        return [roots, thirds, fifths, seconds]; //the second is called the ninth
+      if (tonality == Tonality.MINOR)
+        return [roots, minorThirds, fifths, seconds]; //the second is called the ninth
+    break;
+
+    case Pattern.Add11:
+      if (tonality == Tonality.MAJOR)
+        return [roots, thirds, fifths, fourths]; //the fourth is called the eleventh
+      if (tonality == Tonality.MINOR)
+        return [roots, minorThirds, fifths, fourths]; //the fourth is called the eleventh
+    break;
+
+    case Pattern.Add13:
+      if (tonality == Tonality.MAJOR)
+        return [roots, thirds, fifths, sixths]; //the sixth is called the thirteenth
+      if (tonality == Tonality.MINOR)
+        return [roots, minorThirds, fifths, sixths]; //the sixth is called the thirteenth
+    break;
+
+    case Pattern.Dominant:
+      return [roots, thirds, fifths, minorSevenths];
+
+    case Pattern.Power:
+      return [roots, fifths];
+
+    default:
+      return [roots, seconds, thirds, fifths, sixths];
+  }
+}
