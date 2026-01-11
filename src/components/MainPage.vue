@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue';
 import { Pattern, Tonality, majorKeyToNumber, minorKeyToNumber } from '@data/constants';
-import { fetchScalePattern } from '@/services/patternService';
+import { fetchBasePattern } from '@/components/data/intervals';
 import { fetchCurrentFretboard, fetchFretboards, saveCurrentFretboard, saveFretboards } from '@/services/customizerService';
 import { usePatternStore, FretboardData } from '@/stores/usePatternStore';
 import { storeToRefs } from 'pinia';
@@ -53,7 +53,7 @@ const renderFretboard = async () => {
 
 const getScale = async (tonality: Tonality, pattern: Pattern, key: string) => {
     // Fetch the default key "C" and shift the data based on "keyToNumber"
-    const data = await fetchScalePattern(tonality, pattern, "C");
+    const data = await fetchBasePattern(tonality, pattern, "C");
     const tempData = _.cloneDeep(data);
 
     let keyToNumber = 0;

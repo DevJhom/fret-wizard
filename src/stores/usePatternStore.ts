@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import { Tonality, Accidental, Setup, Pattern, Degree } from '@data/constants';
+import { Tonality, Accidental, Setup, Pattern, Degree, degreeInPattern } from '@data/constants';
 import { majorSharpAllNotes, majorFlatAllNotes, minorSharpAllNotes, minorFlatAllNotes } from '@/components/data/constants';
 import { findRelativeMajor, findRelativeMinor } from '@/components/data/noteNames';
 
@@ -90,77 +90,8 @@ export const usePatternStore = defineStore('pattern', {
       }
     },
     highlightNotes: (state: State) => {
-      switch (state.currentPattern) {
-
-        case Pattern.Pentatonic:
-          if (state.currentTonality == Tonality.MAJOR)
-            return [roots, seconds, thirds, fifths, sixths];
-          if (state.currentTonality == Tonality.MINOR)
-            return [roots, minorThirds, fourths, fifths, minorSevenths];
-          break;
-
-        case Pattern.Blue:
-          if (state.currentTonality == Tonality.MAJOR)
-            return [roots, seconds, minorThirds, thirds, fifths, sixths];
-          if (state.currentTonality == Tonality.MINOR)
-            return [roots, minorThirds, fourths, tritones, fifths, sevenths];
-          break;
-
-        case Pattern.Diatonic:
-          if (state.currentTonality == Tonality.MAJOR)
-            return [roots, seconds, thirds, fourths, fifths, sixths, sevenths];
-          if (state.currentTonality == Tonality.MINOR)
-            return [roots, seconds, minorThirds, fourths, fifths, minorSixths, minorSevenths];
-          break;
-
-        case Pattern.Chromatic:
-          return [ roots, minorSeconds, seconds, minorThirds, thirds, fourths, tritones, fifths, minorSixths, sixths, minorSevenths, sevenths];
-
-        case Pattern.Triad:
-          if (state.currentTonality == Tonality.MAJOR)
-            return [roots, thirds, fifths];
-          if (state.currentTonality == Tonality.MINOR)
-            return [roots, minorThirds, fifths];
-        break;
-
-        case Pattern.Seventh:
-          if (state.currentTonality == Tonality.MAJOR)
-            return [roots, thirds, fifths, sevenths];
-          if (state.currentTonality == Tonality.MINOR)
-            return [roots, minorThirds, fifths, minorSevenths];
-        break;
-
-        case Pattern.Add9:
-          if (state.currentTonality == Tonality.MAJOR)
-            return [roots, thirds, fifths, seconds]; //the second is called the ninth
-          if (state.currentTonality == Tonality.MINOR)
-            return [roots, minorThirds, fifths, seconds]; //the second is called the ninth
-        break;
-
-        case Pattern.Add11:
-          if (state.currentTonality == Tonality.MAJOR)
-            return [roots, thirds, fifths, fourths]; //the fourth is called the eleventh
-          if (state.currentTonality == Tonality.MINOR)
-            return [roots, minorThirds, fifths, fourths]; //the fourth is called the eleventh
-        break;
-
-        case Pattern.Add13:
-          if (state.currentTonality == Tonality.MAJOR)
-            return [roots, thirds, fifths, sixths]; //the sixth is called the thirteenth
-          if (state.currentTonality == Tonality.MINOR)
-            return [roots, minorThirds, fifths, sixths]; //the sixth is called the thirteenth
-        break;
-
-        case Pattern.Dominant:
-          return [roots, thirds, fifths, minorSevenths];
-
-        case Pattern.Power:
-          return [roots, fifths];
-
-        default:
-          return [roots, seconds, thirds, fifths, sixths];
-      }
-    },
+      return degreeInPattern(state.currentPattern, state.currentTonality);
+    }
   },
   actions: {
     setDefaultPattern(setup: Setup) {

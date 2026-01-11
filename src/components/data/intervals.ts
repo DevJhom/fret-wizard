@@ -1,4 +1,4 @@
-import { Tonality } from '@data/constants';
+import { Degree, Pattern, Tonality, degreeInPattern } from '@/components/data/constants';
 import { majorKeyToNumber } from "@data/constants";
 
 interface Intervals {
@@ -173,3 +173,64 @@ export const getSevenths = (tonality: Tonality, currentKey: string, stringName: 
   const shift = majorKeyToNumber[currentKey];
   return sevenths[stringName].map(note => (note + shift));
 };
+
+export const fetchBasePattern = async (tonality: Tonality, scale: Pattern, key: string) => {
+  var E: boolean[] = constructBasePattern(tonality, scale, "E");
+  var A: boolean[] = constructBasePattern(tonality, scale, "A");
+  var D: boolean[] = constructBasePattern(tonality, scale, "D");
+  var G: boolean[] = constructBasePattern(tonality, scale, "G");
+  var B: boolean[] = constructBasePattern(tonality, scale, "B");
+  var e: boolean[] = constructBasePattern(tonality, scale, "e");
+
+  return {
+    E: E,
+    A: A,
+    D: D,
+    G: G,
+    B: B,
+    e: e
+  }
+}
+
+const constructBasePattern = (tonality: Tonality, pattern: Pattern, stringName: string) => {
+  const defaultKey = "C";
+  const length = 24;
+  const returnValue: boolean[] = [];
+
+  const roots = getRoots(tonality, defaultKey, stringName);
+  const minorSeconds = getMinorSeconds(tonality, defaultKey, stringName);
+  const seconds = getSeconds(tonality, defaultKey, stringName);
+  const minorThirds = getMinorThirds(tonality, defaultKey, stringName);
+  const thirds = getThirds(tonality, defaultKey, stringName);
+  const fourths = getFourths(tonality, defaultKey, stringName);
+  const tritones = getTritones(tonality, defaultKey, stringName);
+  const fifths = getFifths(tonality, defaultKey, stringName);
+  const minorSixths = getMinorSixths(tonality, defaultKey, stringName);
+  const sixths = getSixths(tonality, defaultKey, stringName);
+  const minorSevenths = getMinorSevenths(tonality, defaultKey, stringName);
+  const sevenths = getSevenths(tonality, defaultKey, stringName);
+
+  const allNoteIndexes = new Set<number>([]);
+  const degrees = degreeInPattern(pattern, tonality);
+
+  degrees.forEach(degree => {
+    degree == Degree.roots ? roots.forEach(value => allNoteIndexes.add(value)) : {};
+    degree == Degree.minorSeconds ? minorSeconds.forEach(value => allNoteIndexes.add(value)) : {};
+    degree == Degree.seconds ? seconds.forEach(value => allNoteIndexes.add(value)) : {};
+    degree == Degree.minorThirds ? minorThirds.forEach(value => allNoteIndexes.add(value)) : {};
+    degree == Degree.thirds ? thirds.forEach(value => allNoteIndexes.add(value)) : {};
+    degree == Degree.fourths ? fourths.forEach(value => allNoteIndexes.add(value)) : {};
+    degree == Degree.tritones ? tritones.forEach(value => allNoteIndexes.add(value)) : {};
+    degree == Degree.fifths ? fifths.forEach(value => allNoteIndexes.add(value)) : {};
+    degree == Degree.minorSixths ? minorSixths.forEach(value => allNoteIndexes.add(value)) : {};
+    degree == Degree.sixths ? sixths.forEach(value => allNoteIndexes.add(value)) : {};
+    degree == Degree.minorSevenths ? minorSevenths.forEach(value => allNoteIndexes.add(value)) : {};
+    degree == Degree.sevenths ? sevenths.forEach(value => allNoteIndexes.add(value)) : {};
+  });
+
+  for (let i = 0; i < length; i++) {
+    returnValue.push(allNoteIndexes.has(i));
+  }
+
+  return returnValue;
+}
