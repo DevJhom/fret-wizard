@@ -174,7 +174,7 @@ export const getSevenths = (tonality: Tonality, currentKey: string, stringName: 
   return sevenths[stringName].map(note => (note + shift));
 };
 
-export const fetchBasePattern = async (tonality: Tonality, scale: Pattern, key: string) => {
+export const getBasePattern = (tonality: Tonality, scale: Pattern, key: string) => {
   var E: boolean[] = constructBasePattern(tonality, scale, "E");
   var A: boolean[] = constructBasePattern(tonality, scale, "A");
   var D: boolean[] = constructBasePattern(tonality, scale, "D");
