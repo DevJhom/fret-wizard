@@ -279,6 +279,27 @@ onMounted(async () => {
     await getCurrentFretboard();
     await renderFretboard();
 })
+
+// To be implemented later
+const isChordFocused = false;
+
+const barPositions = {
+    e: [],
+    B: [5],
+    G: [5],
+    D: [],
+    A: [],
+    E: []
+}
+
+const chordPositions = {
+    e: [],
+    B: [5],
+    G: [5],
+    D: [5],
+    A: [],
+    E: []
+}
 </script>
 
 <template>
@@ -361,6 +382,9 @@ onMounted(async () => {
                     :currentHighlightNotes="fretboard.currentHighlightNotes"
                     :currentCAGED="fretboard.currentCAGED"
                     :currentStrings="fretboard.currentStrings"
+                    :chordPositions="chordPositions"
+                    :barPositions="barPositions"
+                    :isChordFocused="isChordFocused"
                     :E="fretboard.E"
                     :A="fretboard.A"
                     :D="fretboard.D"
