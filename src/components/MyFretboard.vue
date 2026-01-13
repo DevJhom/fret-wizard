@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CurrentCAGED, CurrentStrings } from '@/stores/usePatternStore';
+import { CurrentCAGED, CurrentStrings, ChordPositions } from '@/stores/usePatternStore';
 import { Pattern, Tonality, Accidental } from '@data/constants';
 import { isCAGEDNameHere, GetCAGEDName } from '@data/CAGED';
 import MyString from '@components/MyString.vue';
@@ -13,6 +13,9 @@ const props = defineProps<{
     currentHighlightNotes: string[],
     currentCAGED: CurrentCAGED, 
     currentStrings: CurrentStrings,
+    chordPositions: ChordPositions,
+    barPositions: ChordPositions,
+    isChordFocused: boolean,
     E: string[],
     A: string[],
     D: string[],
@@ -54,6 +57,9 @@ const fretIndicator = new Array(24);
                         :current-highlight-notes="currentHighlightNotes"
                         :currentCAGED="currentCAGED"
                         :current-strings="currentStrings"
+                        :chordPositions="chordPositions.e"
+                        :bar-positions="barPositions.e"
+                        :is-chord-focused="isChordFocused"
                     />
                 </div>
             </div>
@@ -70,6 +76,9 @@ const fretIndicator = new Array(24);
                         :current-highlight-notes="currentHighlightNotes"
                         :currentCAGED="currentCAGED"
                         :current-strings="currentStrings"
+                        :chordPositions="chordPositions.B"
+                        :bar-positions="barPositions.B"
+                        :is-chord-focused="isChordFocused"
                     />
                 </div>
             </div>
@@ -86,6 +95,9 @@ const fretIndicator = new Array(24);
                         :current-highlight-notes="currentHighlightNotes"
                         :currentCAGED="currentCAGED"
                         :current-strings="currentStrings"
+                        :chordPositions="chordPositions.G"
+                        :bar-positions="barPositions.G"
+                        :is-chord-focused="isChordFocused"
                     />
                 </div>
             </div>
@@ -110,6 +122,9 @@ const fretIndicator = new Array(24);
                         :current-highlight-notes="currentHighlightNotes"
                         :currentCAGED="currentCAGED"
                         :current-strings="currentStrings"
+                        :chordPositions="chordPositions.D"
+                        :bar-positions="barPositions.D"
+                        :is-chord-focused="isChordFocused"
                     />
                 </div>
             </div>
@@ -126,6 +141,9 @@ const fretIndicator = new Array(24);
                         :current-highlight-notes="currentHighlightNotes"
                         :currentCAGED="currentCAGED"
                         :current-strings="currentStrings"
+                        :chordPositions="chordPositions.A"
+                        :bar-positions="barPositions.A"
+                        :is-chord-focused="isChordFocused"
                     />
                 </div>
             </div>
@@ -143,6 +161,9 @@ const fretIndicator = new Array(24);
                         :current-highlight-notes="currentHighlightNotes"
                         :currentCAGED="currentCAGED"
                         :current-strings="currentStrings"
+                        :chordPositions="chordPositions.E"
+                        :bar-positions="barPositions.E"
+                        :is-chord-focused="isChordFocused"
                     />
                 </div>
             </div>
