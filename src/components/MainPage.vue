@@ -6,6 +6,7 @@ import { fetchCurrentFretboard, fetchFretboards, saveCurrentFretboard, saveFretb
 import { usePatternStore, FretboardData } from '@/stores/usePatternStore';
 import { storeToRefs } from 'pinia';
 import _ from "lodash";
+import Sortable from "sortablejs";
 import MyFretboard from '@components/MyFretboard.vue';
 import Done from '@/assets/icons/Done.vue';
 import Edit from '@/assets/icons/Edit.vue';
@@ -23,6 +24,7 @@ interface FretboardRenderer extends FretboardData {
     e: string[];
 }
 
+const draggableList = ref(null);
 const fretboards = ref<FretboardRenderer[]>([]);
 const currentFretboardIndex = ref<number>(0);
 const isEditing = ref<boolean>(true);
@@ -278,6 +280,15 @@ watch(hasReset, () => {
 onMounted(async () => {
     await getCurrentFretboard();
     await renderFretboard();
+
+    Sortable.create(draggableList.value, {
+        animation: 150,
+        async onEnd({ oldIndex, newIndex }) {
+            const moved = fretboards.value.splice(oldIndex, 1)[0];
+            fretboards.value.splice(newIndex, 0, moved);
+            handleSaveFretboards(fretboards.value);
+        },
+    });
 })
 
 // To be implemented later
@@ -305,118 +316,123 @@ const chordPositions = {
 <template>
     <div class="my-guitar mt-4">
         <!-- FRETBOARD -->
-        <div v-for="(fretboard, index) in fretboards" 
-            class="mt-4 fretboard"
-            :class="{ 'selected-fretboard': (fretboards.length > 1 && index == currentFretboardIndex && isEditing == true) }"
-            :id="`fretboard-${index}`"
-        >
-            <div v-if="index == currentFretboardIndex && isEditing == true">
-                <div class="selector-wrapper mb-3">
-                    <!-- Setup Selector -->
-                    <div class="switch-setup switch-radio me-2 fw-bold">
-                        <label>
-                            <input type="radio" name="setup" value="Scale" v-model="currentSetup" @change="onChangeCurrentSetup()">
-                                <div class="label px-2 py-1">Scale</div>
-                            </input>
-                        </label>
+        <div ref="draggableList">
+            <!-- fix me -->
+            <!-- binds key to fretboard.id instead of fretboard.currentKey -->
+            <div v-for="(fretboard, index) in fretboards" 
+                class="mt-4 fretboard"
+                :class="{ 'selected-fretboard': (fretboards.length > 1 && index == currentFretboardIndex && isEditing == true) }"
+                :id="`fretboard-${index}`"
+                :key="fretboard.currentKey"
+            >
+                <div v-if="index == currentFretboardIndex && isEditing == true">
+                    <div class="selector-wrapper mb-3">
+                        <!-- Setup Selector -->
+                        <div class="switch-setup switch-radio me-2 fw-bold">
+                            <label>
+                                <input type="radio" name="setup" value="Scale" v-model="currentSetup" @change="onChangeCurrentSetup()">
+                                    <div class="label px-2 py-1">Scale</div>
+                                </input>
+                            </label>
 
-                        <label>
-                            <input type="radio" name="setup" value="Chord" v-model="currentSetup" @change="onChangeCurrentSetup()"> 
-                                <div class="label px-2 py-1">Chord</div>
-                            </input>
-                        </label>
+                            <label>
+                                <input type="radio" name="setup" value="Chord" v-model="currentSetup" @change="onChangeCurrentSetup()"> 
+                                    <div class="label px-2 py-1">Chord</div>
+                                </input>
+                            </label>
+                        </div>
+
+                        <!-- Pattern Selector -->
+                        <div v-for="(scale, index) in allPatterns" :key="scale" class="d-inline-block custom-radio">
+                            <label class="d-flex flex-column">
+                                <input type="radio" name="scales" v-model="currentPattern" :value="allPatterns[index]" @change="onChangeCurrentPattern()">
+                                    <span class="label px-3">{{ scale }}</span>
+                                </input>
+                            </label>
+                        </div>
                     </div>
 
-                    <!-- Pattern Selector -->
-                    <div v-for="(scale, index) in allPatterns" :key="scale" class="d-inline-block custom-radio">
-                        <label class="d-flex flex-column">
-                            <input type="radio" name="scales" v-model="currentPattern" :value="allPatterns[index]" @change="onChangeCurrentPattern()">
-                                <span class="label px-3">{{ scale }}</span>
-                            </input>
-                        </label>
+                    <div class="selector-wrapper mb-3">
+                        <!-- Tonality -->
+                        <div class="switch-tonality switch-radio me-2 fw-bold">
+                            <label>
+                                <input type="radio" name="tonality" :value="Tonality.MAJOR" v-model="currentTonality" @change="patternStore.toggleSidebarStatus(); patternStore.toggleTonalityStatus()">
+                                    <div class="label px-2 py-1"> Major </div>
+                                </input>
+                            </label>
+
+                            <label>
+                                <input type="radio" name="tonality" :value="Tonality.MINOR" v-model="currentTonality" @change="patternStore.toggleSidebarStatus(); patternStore.toggleTonalityStatus()"> 
+                                    <div class="label px-2 py-1"> Minor </div>
+                                </input>
+                            </label>
+                        </div>
+
+                        <!-- Key Selector -->
+                        <div v-for="(key, index) in allKeys" :key="key" class="d-inline-block custom-radio">
+                            <label class="d-flex flex-column">
+                                <input type="radio" name="keys" v-model="currentKey" :value="allKeys[index]" @change="onChangeCurrentKey()">
+                                    <span class="label"> {{ key }} </span>
+                                </input>
+                            </label>
+                        </div>
                     </div>
                 </div>
 
-                <div class="selector-wrapper mb-3">
-                    <!-- Tonality -->
-                    <div class="switch-tonality switch-radio me-2 fw-bold">
-                        <label>
-                            <input type="radio" name="tonality" :value="Tonality.MAJOR" v-model="currentTonality" @change="patternStore.toggleSidebarStatus(); patternStore.toggleTonalityStatus()">
-                                <div class="label px-2 py-1"> Major </div>
-                            </input>
-                        </label>
-
-                        <label>
-                            <input type="radio" name="tonality" :value="Tonality.MINOR" v-model="currentTonality" @change="patternStore.toggleSidebarStatus(); patternStore.toggleTonalityStatus()"> 
-                                <div class="label px-2 py-1"> Minor </div>
-                            </input>
-                        </label>
+                <div class="my-fretboard" :class="{'active-fretboard': index == currentFretboardIndex && isEditing == false && isSidebarActive == true }">
+                    <div class="d-flex flex-column justify-content-center align-items-center mx-4">
+                        <h5 class="text-yellow">
+                            {{ fretboard.currentKey }} {{ fretboard.currentTonality }}
+                        </h5>
+                        <small class="text-yellow">
+                            {{ fretboard.currentPattern }}
+                        </small>
                     </div>
-
-                    <!-- Key Selector -->
-                    <div v-for="(key, index) in allKeys" :key="key" class="d-inline-block custom-radio">
-                        <label class="d-flex flex-column">
-                            <input type="radio" name="keys" v-model="currentKey" :value="allKeys[index]" @change="onChangeCurrentKey()">
-                                <span class="label"> {{ key }} </span>
-                            </input>
-                        </label>
+                    <MyFretboard
+                        :fretAmount="fretboard.fretAmount"
+                        :currentPattern="fretboard.currentPattern"
+                        :currentKey="fretboard.currentKey"
+                        :currentTonality="fretboard.currentTonality"
+                        :currentAccidental="fretboard.currentAccidental"
+                        :currentHighlightNotes="fretboard.currentHighlightNotes"
+                        :currentCAGED="fretboard.currentCAGED"
+                        :currentStrings="fretboard.currentStrings"
+                        :chordPositions="chordPositions"
+                        :barPositions="barPositions"
+                        :isChordFocused="isChordFocused"
+                        :E="fretboard.E"
+                        :A="fretboard.A"
+                        :D="fretboard.D"
+                        :G="fretboard.G"
+                        :B="fretboard.B"
+                        :e="fretboard.e"
+                    />
+                    <div v-if="fretboards.length > 1 && (isEditing == false || index != currentFretboardIndex)" class="action-icon edit-icon" @click="selectFretboard(index)"> 
+                        <Edit/>      
+                    </div>
+                    <div v-else class="mx-5"></div>
+                    <div v-if="fretboards.length > 1 && (isEditing == false || index != currentFretboardIndex)" class="action-icon trash-icon" @click="deleteFretboard(index)"> 
+                        <Trash/>
                     </div>
                 </div>
-            </div>
 
-            <div class="my-fretboard" :class="{'active-fretboard': index == currentFretboardIndex && isEditing == false && isSidebarActive == true }">
-                <div class="d-flex flex-column justify-content-center align-items-center mx-4">
-                    <h5 class="text-yellow">
-                        {{ fretboard.currentKey }} {{ fretboard.currentTonality }}
-                    </h5>
-                    <small class="text-yellow">
-                        {{ fretboard.currentPattern }}
-                    </small>
+                <div v-if="fretboards.length > 1 && isEditing == true && index == currentFretboardIndex" 
+                    class="finish-editing" 
+                    @click="finishEditing()"
+                > 
+                    <Done/>
                 </div>
-                <MyFretboard
-                    :fretAmount="fretboard.fretAmount"
-                    :currentPattern="fretboard.currentPattern"
-                    :currentKey="fretboard.currentKey"
-                    :currentTonality="fretboard.currentTonality"
-                    :currentAccidental="fretboard.currentAccidental"
-                    :currentHighlightNotes="fretboard.currentHighlightNotes"
-                    :currentCAGED="fretboard.currentCAGED"
-                    :currentStrings="fretboard.currentStrings"
-                    :chordPositions="chordPositions"
-                    :barPositions="barPositions"
-                    :isChordFocused="isChordFocused"
-                    :E="fretboard.E"
-                    :A="fretboard.A"
-                    :D="fretboard.D"
-                    :G="fretboard.G"
-                    :B="fretboard.B"
-                    :e="fretboard.e"
-                />
-                <div v-if="fretboards.length > 1 && (isEditing == false || index != currentFretboardIndex)" class="action-icon edit-icon" @click="selectFretboard(index)"> 
-                    <Edit/>      
-                </div>
-                <div v-else class="mx-5"></div>
-                <div v-if="fretboards.length > 1 && (isEditing == false || index != currentFretboardIndex)" class="action-icon trash-icon" @click="deleteFretboard(index)"> 
-                    <Trash/>
-                </div>
-            </div>
 
-            <div v-if="fretboards.length > 1 && isEditing == true && index == currentFretboardIndex" 
-                class="finish-editing" 
-                @click="finishEditing()"
-            > 
-                <Done/>
-            </div>
-
-            <!-- Fret Amount Selector -->
-            <div v-if="index == currentFretboardIndex && isEditing == true" class="mt-3">
-                <span class="me-3 text-yellow fw-bold">
-                    Number of Frets
-                </span>
-                <input type="range" min="12" max="24" step="1" v-model.number="fretAmount" @change="onChangeFretAmount()">
-                <span class="ms-3 text-yellow fw-bold">
-                    {{ fretAmount }}
-                </span>
+                <!-- Fret Amount Selector -->
+                <div v-if="index == currentFretboardIndex && isEditing == true" class="mt-3">
+                    <span class="me-3 text-yellow fw-bold">
+                        Number of Frets
+                    </span>
+                    <input type="range" min="12" max="24" step="1" v-model.number="fretAmount" @change="onChangeFretAmount()">
+                    <span class="ms-3 text-yellow fw-bold">
+                        {{ fretAmount }}
+                    </span>
+                </div>
             </div>
         </div>
 
