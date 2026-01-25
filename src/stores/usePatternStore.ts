@@ -20,15 +20,6 @@ export interface CurrentCAGED {
   DShape: boolean;
 }
 
-export interface ChordPositions {
-  E: number[];
-  A: number[];
-  D: number[];
-  G: number[];
-  B: number[];
-  e: number[];
-}
-
 export interface FretboardData {
   fretAmount: number;
   currentKey: string;

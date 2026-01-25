@@ -152,12 +152,12 @@ const openIndex = 11; //equivalent note to the open position
 
 .bar {
     position: absolute;
-    height: 100%;
-    width: 5px;
+    height: 110%;
+    width: 8px;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: $green;
+    background-color: #8f8575;
 }
 
 @media only screen and (max-width: 1024px) and (orientation: landscape) {
