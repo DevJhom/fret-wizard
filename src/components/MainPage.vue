@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue';
-import { Pattern, Tonality, majorKeyToNumber, minorKeyToNumber } from '@data/constants';
+import { Pattern, Setup, Tonality, majorKeyToNumber, minorKeyToNumber } from '@data/constants';
 import { getBasePattern } from '@/components/data/intervals';
+import { getChordPositions, getBarPositions } from '@/components/data/chords';
 import { fetchCurrentFretboard, fetchFretboards, saveCurrentFretboard, saveFretboards } from '@/services/customizerService';
 import { usePatternStore, FretboardData } from '@/stores/usePatternStore';
 import { storeToRefs } from 'pinia';
@@ -40,6 +41,7 @@ const getCurrentFretboard = async () => {
     currentHighlightNotes.value = data.currentHighlightNotes;
     currentCAGED.value = data.currentCAGED;
     currentStrings.value = data.currentStrings;
+    currentSetup.value = data.currentSetup;
 }
 
 const renderFretboard = async () => {
@@ -290,27 +292,6 @@ onMounted(async () => {
         },
     });
 })
-
-// To be implemented later
-const isChordFocused = false;
-
-const barPositions = {
-    e: [],
-    B: [5],
-    G: [5],
-    D: [],
-    A: [],
-    E: []
-}
-
-const chordPositions = {
-    e: [],
-    B: [5],
-    G: [5],
-    D: [5],
-    A: [],
-    E: []
-}
 </script>
 
 <template>
@@ -397,9 +378,9 @@ const chordPositions = {
                         :currentHighlightNotes="fretboard.currentHighlightNotes"
                         :currentCAGED="fretboard.currentCAGED"
                         :currentStrings="fretboard.currentStrings"
-                        :chordPositions="chordPositions"
-                        :barPositions="barPositions"
-                        :isChordFocused="isChordFocused"
+                        :isChordFocused="fretboard.currentSetup == Setup.Chord"
+                        :chordPositions="getChordPositions(fretboard.currentPattern, fretboard.currentKey)"
+                        :barPositions="getBarPositions(fretboard.currentPattern, fretboard.currentKey)"
                         :E="fretboard.E"
                         :A="fretboard.A"
                         :D="fretboard.D"

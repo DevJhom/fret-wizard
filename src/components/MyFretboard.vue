@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { CurrentCAGED, CurrentStrings, ChordPositions } from '@/stores/usePatternStore';
+import { CurrentCAGED, CurrentStrings } from '@/stores/usePatternStore';
 import { Pattern, Tonality, Accidental } from '@data/constants';
 import { isCAGEDNameHere, GetCAGEDName } from '@data/CAGED';
+import { ChordPositions } from '@/components/data/chords';
 import MyString from '@components/MyString.vue';
 
 const props = defineProps<{
