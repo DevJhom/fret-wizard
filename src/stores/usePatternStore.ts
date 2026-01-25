@@ -30,6 +30,7 @@ export interface FretboardData {
   currentHighlightNotes: string[];
   currentCAGED: CurrentCAGED;
   currentStrings: CurrentStrings;
+  currentChordPosition: number;
 }
 
 interface State extends FretboardData {
@@ -63,7 +64,8 @@ export const defaultData: FretboardData = {
     GShape: true,
     EShape: true,
     DShape: true
-  }
+  },
+  currentChordPosition: 0
 }  
 
 export const usePatternStore = defineStore('pattern', {

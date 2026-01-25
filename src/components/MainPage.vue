@@ -2,7 +2,7 @@
 import { ref, watch, onMounted } from 'vue';
 import { Pattern, Setup, Tonality, majorKeyToNumber, minorKeyToNumber } from '@data/constants';
 import { getBasePattern } from '@/components/data/intervals';
-import { getChordPositions, getBarPositions } from '@/components/data/chords';
+import { getChordPositions, getBarPositions, getChordPositionIndexes } from '@/components/data/chords';
 import { fetchCurrentFretboard, fetchFretboards, saveCurrentFretboard, saveFretboards } from '@/services/customizerService';
 import { usePatternStore, FretboardData } from '@/stores/usePatternStore';
 import { storeToRefs } from 'pinia';
@@ -14,7 +14,7 @@ import Edit from '@/assets/icons/Edit.vue';
 import Trash from '@/assets/icons/Trash.vue';
 
 const patternStore = usePatternStore();
-const { allKeys, allPatterns, fretAmount, currentKey, currentSetup, currentPattern, currentTonality, currentAccidental, currentHighlightNotes, currentCAGED, currentStrings, isSidebarActive, hasSidebarUpdated, hasTonalityUpdated, hasReset } = storeToRefs(patternStore);
+const { allKeys, allPatterns, fretAmount, currentKey, currentSetup, currentPattern, currentTonality, currentAccidental, currentHighlightNotes, currentCAGED, currentStrings, currentChordPosition, isSidebarActive, hasSidebarUpdated, hasTonalityUpdated, hasReset } = storeToRefs(patternStore);
 
 interface FretboardRenderer extends FretboardData {
     E: string[];
@@ -110,7 +110,8 @@ const constructFretboardData = (fretboard?: FretboardRenderer): FretboardData =>
             currentAccidental: fretboard.currentAccidental,
             currentHighlightNotes: fretboard.currentHighlightNotes, 
             currentCAGED: fretboard.currentCAGED,
-            currentStrings: fretboard.currentStrings
+            currentStrings: fretboard.currentStrings,
+            currentChordPosition: fretboard.currentChordPosition
         }
     }
     else {
@@ -124,6 +125,7 @@ const constructFretboardData = (fretboard?: FretboardRenderer): FretboardData =>
             currentHighlightNotes: currentHighlightNotes.value,
             currentCAGED: currentCAGED.value,
             currentStrings: currentStrings.value,
+            currentChordPosition: currentChordPosition.value
         }
     }
 }
@@ -208,6 +210,10 @@ const onChangeCurrentPattern = () => {
 }
 
 const onChangeFretAmount = () => {
+    updateCurrentFretboard();
+}
+
+const onChangeChordPosition = () => {
     updateCurrentFretboard();
 }
 
@@ -379,8 +385,8 @@ onMounted(async () => {
                         :currentCAGED="fretboard.currentCAGED"
                         :currentStrings="fretboard.currentStrings"
                         :isChordFocused="fretboard.currentSetup == Setup.Chord"
-                        :chordPositions="getChordPositions(fretboard.currentPattern, fretboard.currentKey)"
-                        :barPositions="getBarPositions(fretboard.currentPattern, fretboard.currentKey)"
+                        :chordPositions="getChordPositions(fretboard.currentPattern, fretboard.currentKey, fretboard.currentChordPosition)"
+                        :barPositions="getBarPositions(fretboard.currentPattern, fretboard.currentKey, fretboard.currentChordPosition)"
                         :E="fretboard.E"
                         :A="fretboard.A"
                         :D="fretboard.D"
@@ -402,6 +408,20 @@ onMounted(async () => {
                     @click="finishEditing()"
                 > 
                     <Done/>
+                </div>
+
+                <!-- Chord Positions -->
+                <div class="mt-2">
+                    <span class="me-1 text-yellow fw-bold">
+                        Chord Positions
+                    </span>
+                    <div v-for="(position) in getChordPositionIndexes(fretboard.currentPattern, fretboard.currentKey)" :key="position" class="d-inline-block custom-radio">
+                        <label class="d-flex flex-column">
+                            <input type="radio" name="chordPositions" v-model="currentChordPosition" :value="position" @change="onChangeChordPosition()">
+                                <span class="label px-3">{{ position + 1 }}</span>
+                            </input>
+                        </label>
+                    </div>
                 </div>
 
                 <!-- Fret Amount Selector -->
