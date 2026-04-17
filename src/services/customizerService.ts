@@ -1,62 +1,31 @@
-import { Theme } from '@data/constants';
-import { FretboardData, defaultData } from '@/stores/usePatternStore';
+import { Theme } from '@data/constants'
+import { FretboardData } from '@/stores/usePatternStore'
+import * as local from '@services/adapters/localStorageAdapter'
+import * as api from '@services/adapters/apiAdapter'
 
-const themeStorageKey = "theme";
-const fretboardStorageKey = "currentFretboard";
-const fretboardListStorageKey = "fretboardList";
+// Set to true to use the Express API backend, false to use localStorage
+const USE_API = false
 
-export const fetchCurrentTheme = () => {
-  const theme = localStorage.getItem(themeStorageKey) as Theme;
-  return theme;
+export const fetchCurrentTheme = (): Promise<Theme | null> | Theme | null => {
+  return USE_API ? api.fetchCurrentTheme() : local.fetchCurrentTheme()
 }
 
-export const saveCurrentTheme = (theme: Theme) => {
-  localStorage.setItem(themeStorageKey, theme);
+export const saveCurrentTheme = (theme: Theme): Promise<void> | void => {
+  return USE_API ? api.saveCurrentTheme(theme) : local.saveCurrentTheme(theme)
 }
 
-export const fetchCurrentFretboard = () => {
-  try {
-    const fretboard = localStorage.getItem(fretboardStorageKey);
-
-    if (fretboard) {
-      return JSON.parse(fretboard) as FretboardData;
-    }
-    else {
-      return defaultData;
-    }
-  }
-  catch (error) {
-    console.log("fetchCurrentFretboard: ", error);
-  }
+export const fetchCurrentFretboard = (): Promise<FretboardData | undefined> | FretboardData | undefined => {
+  return USE_API ? api.fetchCurrentFretboard() : local.fetchCurrentFretboard()
 }
 
-export const saveCurrentFretboard = (fretboard: FretboardData) => {
-  try {
-    localStorage.setItem(fretboardStorageKey, JSON.stringify(fretboard));
-  }
-  catch (error) {
-    console.log("saveCurrentFretboard: ", error);
-  }
+export const saveCurrentFretboard = (fretboard: FretboardData): Promise<void> | void => {
+  return USE_API ? api.saveCurrentFretboard(fretboard) : local.saveCurrentFretboard(fretboard)
 }
 
-export const fetchFretboards = () => {
-  try {
-    const fretboardList = localStorage.getItem(fretboardListStorageKey);
-
-    if (fretboardList) {
-      return JSON.parse(fretboardList) as FretboardData[];
-    }
-  }
-  catch (error) {
-    console.log("saveFretboards: ", error);
-  }
+export const fetchFretboards = (): Promise<FretboardData[] | undefined> | FretboardData[] | undefined => {
+  return USE_API ? api.fetchFretboards() : local.fetchFretboards()
 }
 
-export const saveFretboards = (fretboards: any) => {
-  try {
-    localStorage.setItem(fretboardListStorageKey, JSON.stringify(fretboards));
-  }
-  catch (error) {
-    console.log("saveFretboards: ", error);
-  }
+export const saveFretboards = (fretboards: FretboardData[]): Promise<void> | void => {
+  return USE_API ? api.saveFretboards(fretboards) : local.saveFretboards(fretboards)
 }

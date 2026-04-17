@@ -411,7 +411,7 @@ onMounted(async () => {
                 </div>
 
                 <!-- Chord Positions -->
-                <div class="mt-2">
+                <div v-if="fretboard.currentSetup == Setup.Chord" class="mt-2">
                     <span class="me-1 text-yellow fw-bold">
                         Chord Positions
                     </span>
