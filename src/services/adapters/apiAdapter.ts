@@ -1,5 +1,6 @@
 import { Theme } from '@data/constants'
 import { FretboardData, defaultData } from '@/stores/usePatternStore'
+import type { LibraryCard } from '@services/adapters/localStorageAdapter'
 
 const BASE_URL = 'http://localhost:3000'
 
@@ -69,5 +70,27 @@ export const saveFretboards = async (fretboards: FretboardData[]): Promise<void>
     })
   } catch (error) {
     console.log('saveFretboards: ', error)
+  }
+}
+
+export const fetchLibraryCards = async (): Promise<LibraryCard[] | undefined> => {
+  try {
+    const res = await fetch(`${BASE_URL}/library-cards`)
+    if (!res.ok) return undefined
+    return await res.json() as LibraryCard[]
+  } catch (error) {
+    console.log('fetchLibraryCards: ', error)
+  }
+}
+
+export const saveLibraryCards = async (cards: LibraryCard[]): Promise<void> => {
+  try {
+    await fetch(`${BASE_URL}/library-cards`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(cards),
+    })
+  } catch (error) {
+    console.log('saveLibraryCards: ', error)
   }
 }
