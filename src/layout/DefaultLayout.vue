@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { Theme } from '@/components/data/constants';
+import { Theme } from '@data/constants';
 import { fetchCurrentTheme, saveCurrentTheme } from '@/services/customizerService';
 import MainPage from '@/components/MainPage.vue';
 import SideBar from '@components/SideBar.vue';

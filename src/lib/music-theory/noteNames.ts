@@ -1,5 +1,5 @@
 import { Tonality, Accidental, Degree, degreeToNumber } from "@data/constants";
-import { majorSharpAllNotes, majorFlatAllNotes, minorSharpAllNotes, minorFlatAllNotes, majorKeyToNumber } from '@/components/data/constants';
+import { majorSharpAllNotes, majorFlatAllNotes, minorSharpAllNotes, minorFlatAllNotes, majorKeyToNumber } from '@data/constants';
 
 export const findRelativeMajor = (currentKey: string) => {
   const indexInSharp = minorSharpAllNotes.indexOf(currentKey);
