@@ -95,7 +95,19 @@ export const usePatternStore = defineStore('pattern', {
     },
     highlightNotes: (state: State) => {
       return degreeInPattern(state.currentPattern, state.currentTonality);
-    }
+    },
+    currentFretboardData: (state: State): FretboardData => ({
+      fretAmount: state.fretAmount,
+      currentKey: state.currentKey,
+      currentSetup: state.currentSetup,
+      currentPattern: state.currentPattern,
+      currentTonality: state.currentTonality,
+      currentAccidental: state.currentAccidental,
+      currentHighlightNotes: [...state.currentHighlightNotes],
+      currentCAGED: { ...state.currentCAGED },
+      currentStrings: { ...state.currentStrings },
+      currentChordPosition: state.currentChordPosition,
+    })
   },
   actions: {
     setDefaultPattern(setup: Setup) {
@@ -144,6 +156,20 @@ export const usePatternStore = defineStore('pattern', {
       this.currentHighlightNotes = defaultData.currentHighlightNotes;
       this.currentCAGED = defaultData.currentCAGED;
       this.currentStrings = defaultData.currentStrings;
+
+      this.toggleResetStatus();
+    },
+    loadFromFretboardData(data: FretboardData) {
+      this.fretAmount = data.fretAmount;
+      this.currentKey = data.currentKey;
+      this.currentSetup = data.currentSetup;
+      this.currentPattern = data.currentPattern;
+      this.currentTonality = data.currentTonality;
+      this.currentAccidental = data.currentAccidental;
+      this.currentHighlightNotes = [...data.currentHighlightNotes];
+      this.currentCAGED = { ...data.currentCAGED };
+      this.currentStrings = { ...data.currentStrings };
+      this.currentChordPosition = data.currentChordPosition;
 
       this.toggleResetStatus();
     }
