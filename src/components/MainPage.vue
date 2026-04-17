@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue';
-import { Pattern, Setup, Tonality, majorKeyToNumber, minorKeyToNumber } from '@data/constants';
-import { getBasePattern } from '@/components/data/intervals';
-import { getChordPositions, getBarPositions, getChordPositionIndexes } from '@/components/data/chords';
+import { Pattern, Setup, Tonality } from '@data/constants';
+import { getScale } from '@data/intervals';
+import { getChordPositions, getBarPositions, getChordPositionIndexes } from '@data/chords';
 import { fetchCurrentFretboard, fetchFretboards, saveCurrentFretboard, saveFretboards } from '@/services/customizerService';
 import { usePatternStore, FretboardData } from '@/stores/usePatternStore';
 import { storeToRefs } from 'pinia';
@@ -55,49 +55,6 @@ const renderFretboard = async () => {
     }
 }
 
-const getScale = (tonality: Tonality, pattern: Pattern, key: string) => {
-    // Fetch the default key "C" and shift the data based on "keyToNumber"
-    const data = getBasePattern(tonality, pattern, "C");
-    const tempData = _.cloneDeep(data);
-
-    let keyToNumber = 0;
-
-    if (tonality == Tonality.MAJOR) {
-        keyToNumber = majorKeyToNumber[key];
-    }
-    if (tonality == Tonality.MINOR) {
-        keyToNumber = minorKeyToNumber[key];
-    }
-
-    for (let i = 0; i < keyToNumber; i++) {
-        const lastValueOfE = tempData.E.pop(); 
-        tempData.E.unshift(lastValueOfE);
-
-        const lastValueOfA = tempData.A.pop(); 
-        tempData.A.unshift(lastValueOfA);
-
-        const lastValueOfD = tempData.D.pop(); 
-        tempData.D.unshift(lastValueOfD);
-
-        const lastValueOfG = tempData.G.pop(); 
-        tempData.G.unshift(lastValueOfG);
-
-        const lastValueOfB = tempData.B.pop(); 
-        tempData.B.unshift(lastValueOfB);
-
-        const lastValueOfe = tempData.e.pop(); 
-        tempData.e.unshift(lastValueOfe);
-    }
-
-    return {
-        E: tempData.E,
-        A: tempData.A,
-        D: tempData.D,
-        G: tempData.G,
-        B: tempData.B,
-        e: tempData.e,
-    }
-}
 
 const constructFretboardData = (fretboard?: FretboardRenderer): FretboardData => {
     if (fretboard) {

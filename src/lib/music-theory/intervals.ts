@@ -1,5 +1,5 @@
-import { Degree, Pattern, Tonality, degreeInPattern } from '@/components/data/constants';
-import { majorKeyToNumber } from "@data/constants";
+import { Degree, Pattern, Tonality, degreeInPattern, majorKeyToNumber, minorKeyToNumber } from '@data/constants';
+import _ from 'lodash';
 
 interface Intervals {
   [key: string]: number[];
@@ -233,4 +233,42 @@ const constructBasePattern = (tonality: Tonality, pattern: Pattern, stringName: 
   }
 
   return returnValue;
+}
+
+export const getScale = (tonality: Tonality, pattern: Pattern, key: string) => {
+  const data = getBasePattern(tonality, pattern, 'C');
+  const tempData = _.cloneDeep(data);
+
+  let keyToNumber = 0;
+  if (tonality == Tonality.MAJOR) keyToNumber = majorKeyToNumber[key];
+  if (tonality == Tonality.MINOR) keyToNumber = minorKeyToNumber[key];
+
+  for (let i = 0; i < keyToNumber; i++) {
+    const lastValueOfE = tempData.E.pop();
+    tempData.E.unshift(lastValueOfE);
+
+    const lastValueOfA = tempData.A.pop();
+    tempData.A.unshift(lastValueOfA);
+
+    const lastValueOfD = tempData.D.pop();
+    tempData.D.unshift(lastValueOfD);
+
+    const lastValueOfG = tempData.G.pop();
+    tempData.G.unshift(lastValueOfG);
+
+    const lastValueOfB = tempData.B.pop();
+    tempData.B.unshift(lastValueOfB);
+
+    const lastValueOfe = tempData.e.pop();
+    tempData.e.unshift(lastValueOfe);
+  }
+
+  return {
+    E: tempData.E,
+    A: tempData.A,
+    D: tempData.D,
+    G: tempData.G,
+    B: tempData.B,
+    e: tempData.e,
+  }
 }

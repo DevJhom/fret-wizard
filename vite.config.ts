@@ -9,7 +9,7 @@ export default defineConfig({
     alias: {
       '@': '/src/',
       '@components': '/src/components',
-      '@data': '/src/components/data',
+      '@data': '/src/lib/music-theory',
       '@stores': '/src/stores',
       '@services': '/src/services',
       '@assets': '/src/assets',

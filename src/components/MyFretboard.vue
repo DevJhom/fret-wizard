@@ -2,7 +2,7 @@
 import { CurrentCAGED, CurrentStrings } from '@/stores/usePatternStore';
 import { Pattern, Tonality, Accidental } from '@data/constants';
 import { isCAGEDNameHere, GetCAGEDName } from '@data/CAGED';
-import { ChordPositions } from '@/components/data/chords';
+import { ChordPositions } from '@data/chords';
 import MyString from '@components/MyString.vue';
 
 const props = defineProps<{

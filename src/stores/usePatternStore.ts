@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { Tonality, Accidental, Setup, Pattern, Degree, degreeInPattern } from '@data/constants';
-import { majorSharpAllNotes, majorFlatAllNotes, minorSharpAllNotes, minorFlatAllNotes } from '@/components/data/constants';
-import { findRelativeMajor, findRelativeMinor } from '@/components/data/noteNames';
+import { majorSharpAllNotes, majorFlatAllNotes, minorSharpAllNotes, minorFlatAllNotes } from '@data/constants';
+import { findRelativeMajor, findRelativeMinor } from '@data/noteNames';
 
 export interface CurrentStrings {
   E: boolean;
