@@ -28,7 +28,8 @@
       "@stores/*": ["src/stores/*"],
       "@services/*": ["src/services/*"],
       "@assets/*": ["src/assets/*"],
-      "@scss/*": ["src/scss/*"],
+      "@scss/*": ["src/assets/scss/*"],
+      "@images/*": ["src/assets/images/*"]
     }
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"],

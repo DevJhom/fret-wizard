@@ -26,6 +26,7 @@ const props = defineProps<{
 }>();
 
 const fretIndicator = new Array(24);
+const fretIndicatorIndexes = [3,5,7,9,12,15,17,19,21,24];
 
 </script>
 
@@ -37,7 +38,7 @@ const fretIndicator = new Array(24);
                 <div class="d-inline-block string-name"></div>
                 <div v-for="(_, index) in fretIndicator" :key="index" class="d-inline-block" :class="{'fret-indicator': index < fretAmount}">
                     <div v-if="index < fretAmount">
-                        <small v-if="[3,5,7,9,12,15,17,19,21,24].includes(index + 1)" class="opacity-75">
+                        <small v-if="fretIndicatorIndexes.includes(index + 1)" class="opacity-75">
                             {{ index + 1 }}
                         </small>
                     </div>
@@ -170,7 +171,7 @@ const fretIndicator = new Array(24);
             </div>
 
             <!-- CAGED Names -->
-            <div class="CAGED-name-container text-start">
+            <div v-if="!isChordFocused" class="CAGED-name-container text-start">
                 <div v-for="(_, index) in e" :key="index" class="d-inline-block CAGED-box" :class="{'fret': index < fretAmount}" style="border-right: none;">
                     <div v-if="index < fretAmount">
                         <!-- to be refactored -->
