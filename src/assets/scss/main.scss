@@ -71,8 +71,22 @@ button:focus-visible {
   color: #d8d1c7;
   background-color: #191a1b;
   --note-background-color: #393937;
+  --note-ring: none;
+  --toggle-off-color: #393937;
+  --range-track-color: #393937;
+  --accent-text-color: #{$yellow};
+  --icon-color: #cccccc;
   --sidebar-background-color: #2a2d2e;
+  --sidebar-shadow: none;
   --fretboard-background-color: #242525;
+  --fretboard-shadow: none;
+  --neck-background-color: transparent;
+  --string-color: #8f8575;
+  --nut-color: #8f8575;
+  --fret-wire-color: gray;
+  --card-background-color: #242525;
+  --card-border-color: #{$gray};
+  --card-shadow: none;
   --switch-input-background-color: #242525;
   --reset-settings-background-color: #696d6f;
 }
@@ -81,8 +95,26 @@ button:focus-visible {
   color: #2a2a2a;
   background-color: #fafafa;
   --note-background-color: #393937;
-  --sidebar-background-color: #6b6b6b;
-  --fretboard-background-color: #dedede;
-  --switch-input-background-color: #cccccc;
-  --reset-settings-background-color: #cccccc;
+  --note-ring: inset 0 0 0 1px rgba(58, 38, 8, 0.28);
+  --toggle-off-color: #e7e2d9;
+  --range-track-color: #e7e2d9;
+  --accent-text-color: #a0620a;
+  --icon-color: #a59d90;
+  --sidebar-background-color: #ffffff;
+  --sidebar-shadow: 1px 0 0 #ebe6dd, 6px 0 24px -12px rgba(58, 45, 25, 0.12);
+  --fretboard-background-color: #ffffff;
+  --fretboard-shadow: 0 0 0 1px #ebe6dd, 0 12px 28px -18px rgba(58, 45, 25, 0.22);
+  --neck-background-color: #f1dcb3;
+  --string-color: #7c6f5c;
+  --nut-color: #4f463c;
+  --fret-wire-color: #a99b80;
+  --card-background-color: #ffffff;
+  --card-border-color: #e2dbcf;
+  --card-shadow: 0 10px 24px -18px rgba(58, 45, 25, 0.28);
+  --switch-input-background-color: #efebe4;
+  --reset-settings-background-color: #efebe4;
+}
+
+.light-theme .text-yellow {
+  color: var(--accent-text-color);
 }

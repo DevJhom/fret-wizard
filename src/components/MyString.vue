@@ -147,7 +147,7 @@ const openIndex = 11; //equivalent note to the open position
     position: relative;
     min-width: 2rem;
     max-width: 50px;
-    border-right: 1px solid gray;
+    border-right: 1px solid var(--fret-wire-color);
 }
 
 .bar {
@@ -157,7 +157,7 @@ const openIndex = 11; //equivalent note to the open position
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: #8f8575;
+    background-color: var(--string-color);
 }
 
 @media only screen and (max-width: 1024px) and (orientation: landscape) {

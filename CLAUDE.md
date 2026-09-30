@@ -33,13 +33,18 @@ The app will fail silently if `npm run json-server` is not running. Always start
 
 ### Component Hierarchy
 ```
-DefaultLayout.vue (theme toggle, orientation detection)
-├── MainPage.vue (sidebar + fretboard controller)
-│   ├── SideBar.vue (pattern/key selection, controls)
-│   ├── MyFretboard.vue (renders single fretboard)
-│   │   └── MyString.vue (renders individual strings)
-│   └── RotateMessage.vue (portrait mode notice)
+DefaultLayout.vue (theme toggle, orientation detection, Scale | Chord | Chord Progression | Library nav)
+├── SideBar.vue (notes, CAGED, strings, reset; hidden on Chord Progression)
+├── MainPage.vue (fretboard stack controller; rendered for the Scale and Chord pages via `setup` prop)
+│   └── MyFretboard.vue (renders single fretboard)
+│       └── MyString.vue (renders individual strings)
+├── ChordProgressionPage.vue (diatonic chord palette per key; drag/click chords into a progression)
+│   └── ChordBlock.vue (numeral + chord name block)
+├── LibraryPage.vue (saved fretboard stacks; opening a card loads it into its Scale/Chord page)
+└── RotateMessage.vue (portrait mode notice)
 ```
+
+Scale and Chord pages persist separate fretboard stacks (`scaleCurrentFretboard`/`scaleFretboardList`, `chordCurrentFretboard`/`chordFretboardList`). Legacy `currentFretboard`/`fretboardList` keys are migrated on first read in `localStorageAdapter.ts`. A `LibraryCard` stores `setup` plus a `fretboards` stack; the active card auto-updates when leaving its page. The Chord Progression page persists `{ key, tonality, progression: { id, degree }[] }` under `chordProgression`; storing degrees means the progression transposes with the key.
 
 ### Service Layer
 - **`customizerService.ts`** — LocalStorage persistence (theme, fretboard state, visible strings)
@@ -52,6 +57,7 @@ Located in `src/components/data/`:
 - **`noteNames.ts`** — Note naming and enharmonic equivalents (C♯ vs D♭). Functions: `getNoteName()`, `findRelativeMajor()`, `findRelativeMinor()`
 - **`CAGED.ts`** — CAGED system shape definitions with pre-defined fret ranges. Function: `isCAGED()` checks if fret matches active shapes
 - **`chords.ts`** — Chord voicing positions (root position, inversions). Functions: `getChordPositions()`, `getBarPositions()`
+- **`progressions.ts`** — Diatonic chords per key with correct letter spelling. Functions: `progressionKeys()`, `diatonicChords()`, `relativeProgressionKey()`
 
 ### State Management (Pinia Store)
 Single store in `src/stores/usePatternStore.ts` — source of truth for:

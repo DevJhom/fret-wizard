@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { Theme } from '@data/constants';
-import { fetchCurrentTheme, saveCurrentTheme } from '@/services/customizerService';
-import { usePatternStore } from '@stores/usePatternStore';
+import { Setup, Theme } from '@data/constants';
+import { fetchCurrentTheme, saveCurrentTheme, fetchFretboards, saveFretboards, saveCurrentFretboard } from '@/services/customizerService';
 import MainPage from '@/components/MainPage.vue';
 import LibraryPage from '@components/LibraryPage.vue';
+import ChordProgressionPage from '@components/ChordProgressionPage.vue';
 import SideBar from '@components/SideBar.vue';
 import RotateMessage from '@/components/RotateMessage.vue';
 import Moon from '@/assets/icons/Moon.vue';
@@ -12,12 +12,23 @@ import Sun from '@/assets/icons/Sun.vue';
 import { useLibraryStore } from '@stores/useLibraryStore';
 import type { LibraryCard } from '@stores/useLibraryStore';
 
-const patternStore = usePatternStore();
 const libraryStore = useLibraryStore();
 
 const theme = ref(Theme.dark);
-const currentView = ref<'main' | 'library'>('main');
-const activeCardId = ref<string | null>(null);
+type FretboardView = 'scale' | 'chord';
+type View = FretboardView | 'progression' | 'library';
+
+const setupForView: Record<FretboardView, Setup> = {
+  scale: Setup.Scale,
+  chord: Setup.Chord,
+};
+
+const viewForSetup: Record<Setup, FretboardView> = {
+  [Setup.Scale]: 'scale',
+  [Setup.Chord]: 'chord',
+};
+
+const currentView = ref<View>('scale');
 const isLandscape = ref(true);
 isLandscape.value = window.matchMedia("(orientation: landscape)").matches;
 
@@ -29,22 +40,28 @@ const getCurrentTheme = async () => {
 }
 
 const saveActiveCard = async () => {
-  if (activeCardId.value) {
-    await libraryStore.updateCardData(activeCardId.value, patternStore.currentFretboardData);
+  if (currentView.value !== 'scale' && currentView.value !== 'chord') return;
+
+  const setup = setupForView[currentView.value];
+  const activeCard = libraryStore.activeCard;
+  if (activeCard && activeCard.setup === setup) {
+    const fretboards = await fetchFretboards(setup);
+    if (fretboards) {
+      await libraryStore.updateCardFretboards(activeCard.id, fretboards);
+    }
   }
 }
 
 const onLoadCard = async (card: LibraryCard) => {
   await saveActiveCard();
-  activeCardId.value = card.id;
-  patternStore.loadFromFretboardData(card.data);
-  currentView.value = 'main';
+  libraryStore.activeCardId = card.id;
+  await saveFretboards(card.setup, card.fretboards);
+  await saveCurrentFretboard(card.setup, card.fretboards[0]);
+  currentView.value = viewForSetup[card.setup];
 }
 
-const switchView = async (view: 'main' | 'library') => {
-  if (currentView.value === 'main' && view === 'library') {
-    await saveActiveCard();
-  }
+const switchView = async (view: View) => {
+  await saveActiveCard();
   currentView.value = view;
 }
 
@@ -69,7 +86,7 @@ onMounted(async () => {
   <div :class="theme">
     <RotateMessage v-if="!isLandscape"/>
     <div v-else class="layout">
-      <SideBar />
+      <SideBar v-if="currentView !== 'progression'"/>
       <div class="content">
         <div class="top-bar">
           <span class="logo" @click="refreshPage()">
@@ -77,8 +94,18 @@ onMounted(async () => {
           </span>
           <div class="nav-tabs switch-radio">
             <label>
-              <input type="radio" name="nav" value="main" :checked="currentView === 'main'" @change="switchView('main')">
-                <div class="label px-2">Fretboard</div>
+              <input type="radio" name="nav" value="scale" :checked="currentView === 'scale'" @change="switchView('scale')">
+                <div class="label px-2">Scale</div>
+              </input>
+            </label>
+            <label>
+              <input type="radio" name="nav" value="chord" :checked="currentView === 'chord'" @change="switchView('chord')">
+                <div class="label px-2">Chord</div>
+              </input>
+            </label>
+            <label>
+              <input type="radio" name="nav" value="progression" :checked="currentView === 'progression'" @change="switchView('progression')">
+                <div class="label px-2">Chord Progression</div>
               </input>
             </label>
             <label>
@@ -101,8 +128,9 @@ onMounted(async () => {
             </label>
           </div>
         </div>
-        <MainPage v-if="currentView === 'main'"/>
-        <LibraryPage v-else-if="currentView === 'library'" @load-card="onLoadCard"/>
+        <LibraryPage v-if="currentView === 'library'" @load-card="onLoadCard"/>
+        <ChordProgressionPage v-else-if="currentView === 'progression'"/>
+        <MainPage v-else :key="currentView" :setup="setupForView[currentView]"/>
       </div>
     </div>
   </div>
@@ -133,13 +161,17 @@ onMounted(async () => {
   padding: 1rem;
   font-size: 1rem;
   font-weight: bold;
-  color: $yellow;
+  color: var(--accent-text-color);
   cursor: pointer;
 }
 
 .nav-tabs {
   display: flex;
   border: none;
+
+  .label {
+    white-space: nowrap;
+  }
 }
 
 .switch-theme {

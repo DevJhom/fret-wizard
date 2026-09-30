@@ -23,6 +23,7 @@
     height: 18px;
     background-color: var(--note-background-color);
     border-radius: 50%;
+    box-shadow: var(--note-ring);
     transform: scale(0);
     // transition: transform 0.5s ease;
 }

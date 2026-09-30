@@ -200,31 +200,35 @@ const fretIndicatorIndexes = [3,5,7,9,12,15,17,19,21,24];
 }
 
 .fret-start {
-    border-left: 3px solid #8f8575;
+    border-left: 3px solid var(--nut-color);
+}
+
+.string-e, .string-B, .string-G, .string-D, .string-A {
+    background-color: var(--neck-background-color);
 }
 
 .string-e {
-    border-top: 1px solid #8f8575;
+    border-top: 1px solid var(--string-color);
 }
 
 .string-B {
-    border-top: 1.5px solid #8f8575;
+    border-top: 1.5px solid var(--string-color);
 }
 
 .string-G {
-    border-top: 2px solid #8f8575;
+    border-top: 2px solid var(--string-color);
 }
 
 .string-D {
-    border-top: 2.5px solid #8f8575;
+    border-top: 2.5px solid var(--string-color);
 }
 
 .string-A {
-    border-top: 3px solid #8f8575;
+    border-top: 3px solid var(--string-color);
 }
 
 .string-E {
-    border-top: 3.5px solid #8f8575;
+    border-top: 3.5px solid var(--string-color);
 }
 
 .last-string {

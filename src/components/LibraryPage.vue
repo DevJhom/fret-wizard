@@ -40,6 +40,14 @@ const cancelRename = () => {
   editingId.value = null
 }
 
+const stackSummary = (card: LibraryCard) => {
+  return card.fretboards.map(f => `${f.currentKey} ${f.currentTonality}`).join(' · ')
+}
+
+const patternSummary = (card: LibraryCard) => {
+  return [...new Set(card.fretboards.map(f => f.currentPattern))].join(', ')
+}
+
 const handleDelete = async (id: string) => {
   await libraryStore.deleteCard(id)
 }
@@ -62,6 +70,7 @@ onMounted(async () => {
         class="library-card"
         @click="emit('load-card', card)"
       >
+        <div class="card-setup">{{ card.setup }}</div>
         <div class="card-name">
           <span v-if="editingId !== card.id">{{ card.name }}</span>
           <input
@@ -75,7 +84,8 @@ onMounted(async () => {
           />
         </div>
         <div class="card-summary" v-if="editingId !== card.id">
-          {{ card.data.currentKey }} {{ card.data.currentTonality }} {{ card.data.currentPattern }}
+          <div>{{ stackSummary(card) }}</div>
+          <div class="card-pattern">{{ patternSummary(card) }}</div>
         </div>
         <div v-if="editingId === card.id" class="action-icon finish-editing" @click.stop="confirmRename(card.id)">
           <Done />
@@ -110,7 +120,7 @@ onMounted(async () => {
   margin-bottom: 1.5rem;
 
   h2 {
-    color: $yellow;
+    color: var(--accent-text-color);
     margin: 0;
     font-size: 1.2rem;
   }
@@ -124,7 +134,7 @@ onMounted(async () => {
 }
 
 .input-rename {
-  background-color: var(--fretboard-background-color);
+  background-color: var(--card-background-color);
   color: inherit;
   border: 1px solid $gray-1;
   border-radius: 6px;
@@ -148,8 +158,9 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   min-height: 120px;
-  background-color: var(--fretboard-background-color);
-  border: 1px solid $gray;
+  background-color: var(--card-background-color);
+  border: 1px solid var(--card-border-color);
+  box-shadow: var(--card-shadow);
   border-radius: 8px;
   padding: 1rem 1rem 0.5rem 1rem;
   cursor: pointer;
@@ -170,7 +181,25 @@ onMounted(async () => {
   font-weight: 600;
   font-size: 1rem;
   margin-bottom: 0.5rem;
-  color: $yellow;
+  color: var(--accent-text-color);
+}
+
+.card-setup {
+  align-self: flex-start;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: $black;
+  background-color: $yellow;
+  border-radius: 6px;
+  padding: 0.1rem 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.card-pattern {
+  margin-top: 0.25rem;
+  font-style: italic;
 }
 
 .card-summary {

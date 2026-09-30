@@ -156,19 +156,21 @@ const toggleSidebar = () => {
     min-height: 100vh;
     padding: 1rem 1.5rem;
     background-color: var(--sidebar-background-color);
+    box-shadow: var(--sidebar-shadow);
     transition: 0.5s;
 }
 
 .side-bar.collapsed {
     width: 60px; 
     background-color: transparent;
+    box-shadow: none;
     padding: 1rem;
 }
 
 .hamburger {
     font-size: 1.5rem;
     margin-top: -4px;
-    color: $yellow;
+    color: var(--accent-text-color);
     cursor: pointer;
 }
 
@@ -180,7 +182,7 @@ const toggleSidebar = () => {
 
 .highlightNotes-filter .checkbox__checkmark {
     margin-top: 4px !important;
-    background-color: var(--note-background-color);
+    background-color: var(--toggle-off-color);
     cursor: pointer;
 }
 

@@ -11,7 +11,7 @@ input[type="range"]:focus {
 }
 
 input[type="range"]::-webkit-slider-runnable-track {
-  background-color: var(--note-background-color);
+  background-color: var(--range-track-color);
   border-radius: 0.5rem;
   height: 0.5rem;
 }

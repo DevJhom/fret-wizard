@@ -19,7 +19,7 @@ svg {
 }
 
 .icon {
-  color: #cccccc;
+  color: var(--icon-color, #cccccc);
   transition: color 0.3s ease;
 }
 

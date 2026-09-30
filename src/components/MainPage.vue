@@ -5,6 +5,7 @@ import { getScale } from '@data/intervals';
 import { getChordPositions, getBarPositions, getChordPositionIndexes } from '@data/chords';
 import { fetchCurrentFretboard, fetchFretboards, saveCurrentFretboard, saveFretboards } from '@/services/customizerService';
 import { usePatternStore, FretboardData } from '@/stores/usePatternStore';
+import { useLibraryStore } from '@stores/useLibraryStore';
 import { storeToRefs } from 'pinia';
 import _ from "lodash";
 import Sortable from "sortablejs";
@@ -13,7 +14,10 @@ import Done from '@/assets/icons/Done.vue';
 import Edit from '@/assets/icons/Edit.vue';
 import Trash from '@/assets/icons/Trash.vue';
 
+const props = defineProps<{ setup: Setup }>();
+
 const patternStore = usePatternStore();
+const libraryStore = useLibraryStore();
 const { allKeys, allPatterns, fretAmount, currentKey, currentSetup, currentPattern, currentTonality, currentAccidental, currentHighlightNotes, currentCAGED, currentStrings, currentChordPosition, isSidebarActive, hasSidebarUpdated, hasTonalityUpdated, hasReset } = storeToRefs(patternStore);
 
 interface FretboardRenderer extends FretboardData {
@@ -29,10 +33,12 @@ const draggableList = ref(null);
 const fretboards = ref<FretboardRenderer[]>([]);
 const currentFretboardIndex = ref<number>(0);
 const isEditing = ref<boolean>(true);
+const hasSavedToLibrary = ref<boolean>(false);
 
 const getCurrentFretboard = async () => {
-    const data = await fetchCurrentFretboard();
-    
+    const data = await fetchCurrentFretboard(props.setup);
+    if (!data) return;
+
     fretAmount.value = data.fretAmount;
     currentKey.value = data.currentKey;
     currentPattern.value = data.currentPattern;
@@ -41,11 +47,11 @@ const getCurrentFretboard = async () => {
     currentHighlightNotes.value = data.currentHighlightNotes;
     currentCAGED.value = data.currentCAGED;
     currentStrings.value = data.currentStrings;
-    currentSetup.value = data.currentSetup;
+    currentChordPosition.value = data.currentChordPosition;
 }
 
 const renderFretboard = async () => {
-    const fretboardList = await fetchFretboards();
+    const fretboardList = await fetchFretboards(props.setup);
 
     if (fretboardList && fretboardList.length > 1) {
         addFretboardList(fretboardList);
@@ -144,21 +150,16 @@ const updateCurrentFretboard = () => {
 
 const handleSaveCurrentFretboard = () => {
     const currentFretboard = constructFretboardData();
-    saveCurrentFretboard(currentFretboard);
+    saveCurrentFretboard(props.setup, currentFretboard);
 }
 
 const handleSaveFretboards = (fretboards: FretboardRenderer[]) => {
     const fretboardList = fretboards.map(constructFretboardData);
-    saveFretboards(fretboardList);
+    saveFretboards(props.setup, fretboardList);
 }
 
 const onChangeCurrentKey = () => {
     updateCurrentFretboard();
-}
-
-const onChangeCurrentSetup = () => {
-    patternStore.setDefaultPattern(currentSetup.value);
-    onChangeCurrentPattern();
 }
 
 const onChangeCurrentPattern = () => {
@@ -172,6 +173,18 @@ const onChangeFretAmount = () => {
 
 const onChangeChordPosition = () => {
     updateCurrentFretboard();
+}
+
+const saveToLibrary = async () => {
+    await libraryStore.ensureLoaded();
+    const card = await libraryStore.createCard(
+        `Card ${libraryStore.cards.length + 1}`,
+        props.setup,
+        fretboards.value.map(constructFretboardData)
+    );
+    libraryStore.activeCardId = card.id;
+    hasSavedToLibrary.value = true;
+    setTimeout(() => hasSavedToLibrary.value = false, 1500);
 }
 
 const scrollToLastEdit = () => {
@@ -197,6 +210,7 @@ const updateCustomizers = () => {
     currentHighlightNotes.value = selectedFretboard.currentHighlightNotes;
     currentCAGED.value = selectedFretboard.currentCAGED;
     currentStrings.value = selectedFretboard.currentStrings;
+    currentChordPosition.value = selectedFretboard.currentChordPosition;
 }
 
 const selectFretboard = (index: number) => {
@@ -243,6 +257,7 @@ watch(hasReset, () => {
 })
 
 onMounted(async () => {
+    currentSetup.value = props.setup;
     await getCurrentFretboard();
     await renderFretboard();
 
@@ -271,21 +286,6 @@ onMounted(async () => {
             >
                 <div v-if="index == currentFretboardIndex && isEditing == true">
                     <div class="selector-wrapper mb-3">
-                        <!-- Setup Selector -->
-                        <div class="switch-setup switch-radio me-2 fw-bold">
-                            <label>
-                                <input type="radio" name="setup" value="Scale" v-model="currentSetup" @change="onChangeCurrentSetup()">
-                                    <div class="label px-2 py-1">Scale</div>
-                                </input>
-                            </label>
-
-                            <label>
-                                <input type="radio" name="setup" value="Chord" v-model="currentSetup" @change="onChangeCurrentSetup()"> 
-                                    <div class="label px-2 py-1">Chord</div>
-                                </input>
-                            </label>
-                        </div>
-
                         <!-- Pattern Selector -->
                         <div v-for="(scale, index) in allPatterns" :key="scale" class="d-inline-block custom-radio">
                             <label class="d-flex flex-column">
@@ -394,7 +394,12 @@ onMounted(async () => {
             </div>
         </div>
 
-        <h2 @click="addCurrentFretboard" class="text-yellow"> + </h2>
+        <div class="page-actions">
+            <h2 @click="addCurrentFretboard" class="text-yellow add-fretboard"> + </h2>
+            <button class="save-library" @click="saveToLibrary()">
+                {{ hasSavedToLibrary ? 'Saved' : 'Save to Library' }}
+            </button>
+        </div>
     </div>
 </template>
 
@@ -425,6 +430,7 @@ onMounted(async () => {
     display: flex;
     padding: 0.5rem 0;
     background-color: var(--fretboard-background-color);
+    box-shadow: var(--fretboard-shadow);
     border-radius: 9px;
 }
 
@@ -458,9 +464,34 @@ onMounted(async () => {
     align-items: center;
 }
 
-.switch-setup, .switch-tonality {
+.switch-tonality {
     display: flex;
     left: 0;
+}
+
+.page-actions {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.add-fretboard {
+    margin: 0;
+    cursor: pointer;
+}
+
+.save-library {
+    background-color: var(--reset-settings-background-color);
+    color: $black;
+    border: none;
+    border-radius: 9px;
+    padding: 0.25rem 1rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+
+    &:hover {
+        background-color: $yellow;
+    }
 }
 
 .custom-radio {
@@ -475,7 +506,7 @@ onMounted(async () => {
     border: 3px solid $yellow;
     border-radius: 9px;
     padding: 5px;
-    color: $yellow;
+    color: var(--accent-text-color);
     cursor: pointer;
 }
 

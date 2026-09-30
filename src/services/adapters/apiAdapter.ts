@@ -1,6 +1,7 @@
-import { Theme } from '@data/constants'
-import { FretboardData, defaultData } from '@/stores/usePatternStore'
-import type { LibraryCard } from '@services/adapters/localStorageAdapter'
+import { Setup, Theme } from '@data/constants'
+import { FretboardData, defaultDataFor } from '@/stores/usePatternStore'
+import { defaultChordProgression } from '@services/adapters/localStorageAdapter'
+import type { LibraryCard, ChordProgression } from '@services/adapters/localStorageAdapter'
 
 const BASE_URL = 'http://localhost:3000'
 
@@ -28,20 +29,20 @@ export const saveCurrentTheme = async (theme: Theme): Promise<void> => {
   }
 }
 
-export const fetchCurrentFretboard = async (): Promise<FretboardData | undefined> => {
+export const fetchCurrentFretboard = async (setup: Setup): Promise<FretboardData | undefined> => {
   try {
-    const res = await fetch(`${BASE_URL}/fretboard`)
-    if (!res.ok) return defaultData
+    const res = await fetch(`${BASE_URL}/fretboard/${setup}`)
+    if (!res.ok) return defaultDataFor(setup)
     return await res.json() as FretboardData
   } catch (error) {
     console.log('fetchCurrentFretboard: ', error)
-    return defaultData
+    return defaultDataFor(setup)
   }
 }
 
-export const saveCurrentFretboard = async (fretboard: FretboardData): Promise<void> => {
+export const saveCurrentFretboard = async (setup: Setup, fretboard: FretboardData): Promise<void> => {
   try {
-    await fetch(`${BASE_URL}/fretboard`, {
+    await fetch(`${BASE_URL}/fretboard/${setup}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(fretboard),
@@ -51,9 +52,9 @@ export const saveCurrentFretboard = async (fretboard: FretboardData): Promise<vo
   }
 }
 
-export const fetchFretboards = async (): Promise<FretboardData[] | undefined> => {
+export const fetchFretboards = async (setup: Setup): Promise<FretboardData[] | undefined> => {
   try {
-    const res = await fetch(`${BASE_URL}/fretboards`)
+    const res = await fetch(`${BASE_URL}/fretboards/${setup}`)
     if (!res.ok) return undefined
     return await res.json() as FretboardData[]
   } catch (error) {
@@ -61,9 +62,9 @@ export const fetchFretboards = async (): Promise<FretboardData[] | undefined> =>
   }
 }
 
-export const saveFretboards = async (fretboards: FretboardData[]): Promise<void> => {
+export const saveFretboards = async (setup: Setup, fretboards: FretboardData[]): Promise<void> => {
   try {
-    await fetch(`${BASE_URL}/fretboards`, {
+    await fetch(`${BASE_URL}/fretboards/${setup}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(fretboards),
@@ -92,5 +93,28 @@ export const saveLibraryCards = async (cards: LibraryCard[]): Promise<void> => {
     })
   } catch (error) {
     console.log('saveLibraryCards: ', error)
+  }
+}
+
+export const fetchChordProgression = async (): Promise<ChordProgression> => {
+  try {
+    const res = await fetch(`${BASE_URL}/chord-progression`)
+    if (!res.ok) return structuredClone(defaultChordProgression)
+    return await res.json() as ChordProgression
+  } catch (error) {
+    console.log('fetchChordProgression: ', error)
+    return structuredClone(defaultChordProgression)
+  }
+}
+
+export const saveChordProgression = async (progression: ChordProgression): Promise<void> => {
+  try {
+    await fetch(`${BASE_URL}/chord-progression`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(progression),
+    })
+  } catch (error) {
+    console.log('saveChordProgression: ', error)
   }
 }

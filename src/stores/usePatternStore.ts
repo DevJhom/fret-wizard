@@ -68,13 +68,21 @@ export const defaultData: FretboardData = {
   currentChordPosition: 0
 }  
 
+export const defaultPatternFor = (setup: Setup): Pattern => (setup == Setup.Scale ? Pattern.Pentatonic : Pattern.Triad);
+
+export const defaultDataFor = (setup: Setup): FretboardData => ({
+  ...structuredClone(defaultData),
+  currentSetup: setup,
+  currentPattern: defaultPatternFor(setup)
+});
+
 export const usePatternStore = defineStore('pattern', {
   state: (): State => ({
     isSidebarActive: true,
     hasSidebarUpdated: false,
     hasTonalityUpdated: false,
     hasReset: false,
-    ...defaultData
+    ...defaultDataFor(Setup.Scale)
   }),
   getters: {
     allPatterns: (state: State) => {
@@ -111,7 +119,7 @@ export const usePatternStore = defineStore('pattern', {
   },
   actions: {
     setDefaultPattern(setup: Setup) {
-      this.currentPattern = (setup == Setup.Scale ? Pattern.Pentatonic : Pattern.Triad);
+      this.currentPattern = defaultPatternFor(setup);
     },
     updateCurrentHighlightNotes() {
       // This functions unhighlights some notes that are not present in the scale.
@@ -148,27 +156,16 @@ export const usePatternStore = defineStore('pattern', {
       this.hasReset = !this.hasReset
     },
     resetToDefault() {
-      this.fretAmount = defaultData.fretAmount;
-      this.currentKey = defaultData.currentKey;
-      this.currentPattern = defaultData.currentPattern;
-      this.currentTonality = defaultData.currentTonality;
-      this.currentAccidental = defaultData.currentAccidental;
-      this.currentHighlightNotes = defaultData.currentHighlightNotes;
-      this.currentCAGED = defaultData.currentCAGED;
-      this.currentStrings = defaultData.currentStrings;
+      const data = defaultDataFor(this.currentSetup);
 
-      this.toggleResetStatus();
-    },
-    loadFromFretboardData(data: FretboardData) {
       this.fretAmount = data.fretAmount;
       this.currentKey = data.currentKey;
-      this.currentSetup = data.currentSetup;
       this.currentPattern = data.currentPattern;
       this.currentTonality = data.currentTonality;
       this.currentAccidental = data.currentAccidental;
-      this.currentHighlightNotes = [...data.currentHighlightNotes];
-      this.currentCAGED = { ...data.currentCAGED };
-      this.currentStrings = { ...data.currentStrings };
+      this.currentHighlightNotes = data.currentHighlightNotes;
+      this.currentCAGED = data.currentCAGED;
+      this.currentStrings = data.currentStrings;
       this.currentChordPosition = data.currentChordPosition;
 
       this.toggleResetStatus();
