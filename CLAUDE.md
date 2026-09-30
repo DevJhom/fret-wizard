@@ -34,9 +34,11 @@ The app will fail silently if `npm run json-server` is not running. Always start
 ### Component Hierarchy
 ```
 DefaultLayout.vue (theme toggle, orientation detection, Scale | Chord | Chord Progression | Library nav)
-├── SideBar.vue (notes, CAGED, strings, reset; hidden on Chord Progression)
-├── MainPage.vue (fretboard stack controller; rendered for the Scale and Chord pages via `setup` prop)
-│   └── MyFretboard.vue (renders single fretboard)
+├── FretboardPage.vue (Scale and Chord pages via `setup` prop; no sidebar; state is the fretboard stack itself)
+│   ├── StackBar.vue (stack chips: select, add, reorder, remove; Reset, Save to Library)
+│   ├── PatternSummary.vue (title, subtitle, tone chips that show/hide degrees)
+│   ├── PatternBuilder.vue (Root + ♯/♭, Quality, Type/Scale)
+│   └── MyFretboard.vue (shape fading, string toggles, note/interval labels, optional fingering + barre)
 │       └── MyString.vue (renders individual strings)
 ├── ChordProgressionPage.vue (diatonic chord palette per key; drag/click chords into a progression)
 │   └── ChordBlock.vue (numeral + chord name block)
@@ -44,7 +46,7 @@ DefaultLayout.vue (theme toggle, orientation detection, Scale | Chord | Chord Pr
 └── RotateMessage.vue (portrait mode notice)
 ```
 
-Scale and Chord pages persist separate fretboard stacks (`scaleCurrentFretboard`/`scaleFretboardList`, `chordCurrentFretboard`/`chordFretboardList`). Legacy `currentFretboard`/`fretboardList` keys are migrated on first read in `localStorageAdapter.ts`. A `LibraryCard` stores `setup` plus a `fretboards` stack; the active card auto-updates when leaving its page. The Chord Progression page persists `{ key, tonality, progression: { id, degree }[] }` under `chordProgression`; storing degrees means the progression transposes with the key.
+Scale and Chord pages persist separate fretboard stacks (`scaleCurrentFretboard`/`scaleFretboardList`, `chordCurrentFretboard`/`chordFretboardList`). Legacy `currentFretboard`/`fretboardList` keys are migrated on first read in `localStorageAdapter.ts`. A `LibraryCard` stores `setup` plus a `fretboards` stack; the active card auto-updates when leaving its page. A Shape is one `currentCAGED` entry set to true (all true = All); tones outside it fade. Chord shapes are named from the chord root; Scale shapes keep the tonality-based offset (relative major for minor keys). The Chord page also has a Fingering view (`chordView: 'fingering'`, position in `currentChordPosition`) using `chords.ts` triad fingerings, adapted for minor, for Triad and Power only. The Chord Progression page persists `{ key, tonality, progression: { id, degree }[] }` under `chordProgression`; storing degrees means the progression transposes with the key.
 
 ### Service Layer
 - **`customizerService.ts`** — LocalStorage persistence (theme, fretboard state, visible strings)
@@ -55,37 +57,21 @@ Located in `src/components/data/`:
 - **`constants.ts`** — Enums (Pattern, Tonality, Setup, Accidental, Degree), note arrays for all key/tonality/accidental combos, degree-to-pattern lookup tables, key-to-number mappings
 - **`intervals.ts`** — Fret positions for each interval/degree on each string, accounts for 3 octaves per string. Functions: `getRoots()`, `getSeconds()`, `getThirds()`, etc.
 - **`noteNames.ts`** — Note naming and enharmonic equivalents (C♯ vs D♭). Functions: `getNoteName()`, `findRelativeMajor()`, `findRelativeMinor()`
-- **`CAGED.ts`** — CAGED system shape definitions with pre-defined fret ranges. Function: `isCAGED()` checks if fret matches active shapes
-- **`chords.ts`** — Chord voicing positions (root position, inversions). Functions: `getChordPositions()`, `getBarPositions()`
+- **`CAGED.ts`** — CAGED system shape definitions with pre-defined fret ranges. Functions: `isCAGED()` checks if fret matches active shapes
+- **`patternNames.ts`** — Titles, subtitles and stack-chip labels for chords and scales (`patternTitle()`, `patternSubtitle()`, `patternSymbol()`), degree labels (`degreeLabel()`), `isQualityLocked()` for Dominant/Power/Chromatic
+- **`chords.ts`** — Triad fingerings (C, A, G shapes) and barre positions for the Chord page's Fingering view. Functions: `getChordPositions()` (minor-aware), `getBarPositions()`, `fingeringFretRange()`, `fingeringAvailable()`
 - **`progressions.ts`** — Diatonic chords per key with correct letter spelling. Functions: `progressionKeys()`, `diatonicChords()`, `relativeProgressionKey()`
 
-### State Management (Pinia Store)
-Single store in `src/stores/usePatternStore.ts` — source of truth for:
-- Current pattern, key, tonality, accidental selection
-- Fretboard visibility state (visible strings, active frets, fret amount 0-24)
-- CAGED shape toggles (C, A, G, E, D)
-- Chord position/voicing variant
-- Pattern list from JSON server
-
-**Store usage pattern:**
-```typescript
-import { usePatternStore } from '@stores/usePatternStore'
-import { storeToRefs } from 'pinia'
-
-const store = usePatternStore()
-const { currentKey, currentPattern } = storeToRefs(store)  // Reactive refs
-store.updatePattern('Pentatonic')  // Action call
-```
-
-**Key getters:** `allPatterns` (patterns for current setup), `allKeys` (keys based on tonality/accidental), `highlightNotes` (degrees in current pattern)
-
-**Key actions:** `updateTonality()`, `updateToEqualAccidental()`, `updateCurrentHighlightNotes()`, `resetToDefault()`
+### State
+- **`src/lib/fretboardData.ts`** — `FretboardData` (one fretboard: key, tonality, pattern, accidental, visible tones, CAGED, strings, frets, chord position/view) plus `defaultDataFor(setup)`
+- **`FretboardPage.vue`** owns its stack (`FretboardData[]`) and saves it to storage on every change; there is no global pattern store
+- **`src/stores/useLibraryStore.ts`** — the only Pinia store: Library cards and the active card
 
 ## Key Files & Their Purposes
 
 | File | Purpose |
 |------|---------|
-| `src/main.ts` | Vue app initialization, Pinia store setup |
+| `src/main.ts` | Vue app initialization, Pinia setup (library store) |
 | `src/App.vue` | Root component, imports DefaultLayout |
 | `vite.config.ts` | Path aliases, GitHub Pages base path (`/fret-wizard/`), SCSS auto-import, Vite plugins |
 | `tsconfig.json` | CompilerOptions for path aliases and Vue 3 |
@@ -132,10 +118,10 @@ Variables from `src/assets/scss/variables.scss` are **auto-imported** in all com
 - Interval-specific colors defined in `variables.scss` (reds, oranges, greens, cyans, blues)
 
 ### Naming Conventions
-- **Components:** PascalCase (`MainPage.vue`, `MyFretboard.vue`)
+- **Components:** PascalCase (`FretboardPage.vue`, `MyFretboard.vue`)
 - **Functions:** camelCase (`getBasePattern()`, `updateTonality()`)
 - **Variables/Constants:** camelCase for variables, UPPER_CASE for true constants
-- **Store actions:** action verbs (`updatePattern()`, `toggleSidebarStatus()`)
+- **Store actions:** action verbs (`createCard()`, `updateCardFretboards()`)
 - **Props:** typed via `defineProps<T>()`
 
 ### Responsive Design
@@ -166,8 +152,8 @@ SortableJS is used for reordering multiple fretboards. When modifying fretboard 
 1. Define the pattern in `src/components/data/intervals.ts` or `chords.ts`
 2. Add enum value in `constants.ts` if needed
 3. Update the music database `database/all-scales.json`
-4. Add pattern option to `SideBar.vue` dropdown
-5. Ensure `MainPage.vue` fetches and displays it via the store
+4. Add it to the type/scale list in `PatternBuilder.vue` and its names in `patternNames.ts`
+5. Check it renders on `FretboardPage.vue` for the right setup
 6. Test with both single and multiple fretboards
 
 ### Customizing the Fretboard
@@ -175,13 +161,13 @@ SortableJS is used for reordering multiple fretboards. When modifying fretboard 
 2. Style with component `<style scoped>` or relevant SCSS files
 3. Update `customizerService` if persisting new settings
 
-### Working with the Store
+### Working with the Library Store
 ```typescript
-import { usePatternStore } from '@stores/usePatternStore'
+import { useLibraryStore } from '@stores/useLibraryStore'
 
-const store = usePatternStore()
-const currentKey = computed(() => store.selectedKey)
-store.updatePattern('Major Pentatonic')
+const libraryStore = useLibraryStore()
+await libraryStore.ensureLoaded()
+await libraryStore.createCard('Card 1', Setup.Chord, fretboards)
 ```
 
 ## Potential Pitfalls

@@ -29,3 +29,18 @@ $dissonant-2: #1e5eac;
 $dissonant-3: #3aaaaf;
 $dissonant-4: #60bfad;
 $dissonant-5: #95b9d2;
+
+$degree-colors: (
+    root-note: $red,
+    minor-second: $dissonant-1,
+    second: $red-orange,
+    minor-third: $dissonant-2,
+    third: $orange,
+    fourth: $orange-yellow,
+    tritone: $dissonant-5,
+    fifth: $yellow,
+    minor-sixth: $dissonant-3,
+    sixth: $yellow-green,
+    minor-seventh: $dissonant-4,
+    seventh: $green
+);

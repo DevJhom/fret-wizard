@@ -172,30 +172,17 @@ onMounted(async () => {
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: 4px;
 }
 
-.switch-tonality {
+.switch-tonality .label,
+.custom-radio .label {
     display: flex;
-}
-
-.custom-radio {
-    min-width: 50px;
-}
-
-.custom-radio input {
-    display: none;
-}
-
-.custom-radio input:checked + .label {
-    border: 3px solid $yellow;
-    border-radius: 9px;
-    padding: 5px;
-    color: var(--accent-text-color);
-    cursor: pointer;
-}
-
-.custom-radio span {
-    cursor: pointer;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    height: 44px;
+    padding: 0 5px;
 }
 
 .chord-palette {

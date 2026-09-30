@@ -1,5 +1,5 @@
 import { Setup, Theme } from '@data/constants'
-import { FretboardData, defaultDataFor } from '@/stores/usePatternStore'
+import { FretboardData, defaultDataFor } from '@/lib/fretboardData'
 import { defaultChordProgression } from '@services/adapters/localStorageAdapter'
 import type { LibraryCard, ChordProgression } from '@services/adapters/localStorageAdapter'
 

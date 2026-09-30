@@ -115,7 +115,7 @@ export const degreeInPattern = (pattern: Pattern, tonality: Tonality) => {
       if (tonality == Tonality.MAJOR)
         return [roots, seconds, minorThirds, thirds, fifths, sixths];
       if (tonality == Tonality.MINOR)
-        return [roots, minorThirds, fourths, tritones, fifths, sevenths];
+        return [roots, minorThirds, fourths, tritones, fifths, minorSevenths];
       break;
 
     case Pattern.Diatonic:

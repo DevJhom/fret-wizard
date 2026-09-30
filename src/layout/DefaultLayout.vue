@@ -2,10 +2,9 @@
 import { ref, onMounted } from 'vue';
 import { Setup, Theme } from '@data/constants';
 import { fetchCurrentTheme, saveCurrentTheme, fetchFretboards, saveFretboards, saveCurrentFretboard } from '@/services/customizerService';
-import MainPage from '@/components/MainPage.vue';
 import LibraryPage from '@components/LibraryPage.vue';
 import ChordProgressionPage from '@components/ChordProgressionPage.vue';
-import SideBar from '@components/SideBar.vue';
+import FretboardPage from '@components/FretboardPage.vue';
 import RotateMessage from '@/components/RotateMessage.vue';
 import Moon from '@/assets/icons/Moon.vue';
 import Sun from '@/assets/icons/Sun.vue';
@@ -86,7 +85,6 @@ onMounted(async () => {
   <div :class="theme">
     <RotateMessage v-if="!isLandscape"/>
     <div v-else class="layout">
-      <SideBar v-if="currentView !== 'progression'"/>
       <div class="content">
         <div class="top-bar">
           <span class="logo" @click="refreshPage()">
@@ -130,7 +128,7 @@ onMounted(async () => {
         </div>
         <LibraryPage v-if="currentView === 'library'" @load-card="onLoadCard"/>
         <ChordProgressionPage v-else-if="currentView === 'progression'"/>
-        <MainPage v-else :key="currentView" :setup="setupForView[currentView]"/>
+        <FretboardPage v-else :key="currentView" :setup="setupForView[currentView]"/>
       </div>
     </div>
   </div>
@@ -166,7 +164,6 @@ onMounted(async () => {
 }
 
 .nav-tabs {
-  display: flex;
   border: none;
 
   .label {
@@ -175,7 +172,6 @@ onMounted(async () => {
 }
 
 .switch-theme {
-  display: flex;
   position: absolute;
   top: 1rem;
   right: 2rem;

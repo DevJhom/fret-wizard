@@ -1,5 +1,5 @@
 import { Setup, Theme, Tonality } from '@data/constants'
-import { FretboardData, defaultDataFor } from '@/stores/usePatternStore'
+import { FretboardData, defaultDataFor } from '@/lib/fretboardData'
 
 export interface LibraryCard {
   id: string

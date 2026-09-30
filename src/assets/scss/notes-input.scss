@@ -48,64 +48,15 @@
     margin-left: 5px;
 }
 
-.notes .root-note, 
-.notes .root-note:after {
-    background-color: $red !important;
-}
+@each $name, $color in $degree-colors {
+    .notes .#{$name},
+    .notes .#{$name}:after {
+        background-color: $color !important;
+    }
 
-.notes .minor-second,
-.notes .minor-second:after {
-    background-color: $dissonant-1 !important;
-}
-
-.notes .second,
-.notes .second:after {
-    background-color: $red-orange !important;
-}
-
-.notes .minor-third,
-.notes .minor-third:after {
-    background-color: $dissonant-2 !important;
-}
-
-.notes .third, 
-.notes .third:after {
-    background-color: $orange !important;
-}
-
-.notes .fourth, 
-.notes .fourth:after {
-    background-color: $orange-yellow !important;
-}
-
-.notes .tritone, 
-.notes .tritone:after {
-    background-color: $dissonant-5 !important;
-}
-
-.notes .fifth,
-.notes .fifth:after {
-    background-color: $yellow !important;
-}
-
-.notes .minor-sixth,
-.notes .minor-sixth:after {
-    background-color: $dissonant-3 !important;
-}
-
-.notes .sixth, 
-.notes .sixth:after {
-    background-color: $yellow-green !important;
-}
-
-.notes .minor-seventh,
-.notes .minor-seventh:after {
-    background-color: $dissonant-4 !important;
-}
-
-.notes .seventh, 
-.notes .seventh:after {
-    background-color: $green !important;
+    .degree-dot.#{$name} {
+        background-color: $color;
+    }
 }
 
 .notes .yellow, 

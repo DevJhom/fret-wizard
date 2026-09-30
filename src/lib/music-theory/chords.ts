@@ -1,4 +1,4 @@
-import { majorKeyToNumber, Pattern } from "@data/constants";
+import { majorKeyToNumber, Pattern, Tonality } from "@data/constants";
 
 export interface ChordPositions {
   E: number[];
@@ -9,24 +9,60 @@ export interface ChordPositions {
   e: number[];
 }
 
+const openStringPitches: Record<keyof ChordPositions, number> = {
+  E: 4,
+  A: 9,
+  D: 2,
+  G: 7,
+  B: 11,
+  e: 4,
+};
+
+const majorThird = 4;
+
+const fingeringSpans: [number, number][] = [[0, 3], [3, 5], [5, 8]];
+
+export const fingeringShapes = ['C', 'A', 'G'];
+
+export const fingeringAvailable = (pattern: Pattern) => {
+  return pattern == Pattern.Triad || pattern == Pattern.Power;
+}
+
 export const getChordPositionIndexes = (chord: Pattern, currentKey: string) => {
     return [0, 1, 2];
 }
 
-export const getChordPositions = (chord: Pattern, currentKey: string, currentChordPosition: number) => {
+export const getChordPositions = (chord: Pattern, currentKey: string, currentChordPosition: number, tonality: Tonality = Tonality.MAJOR) => {
     const chordPositions = triad[currentChordPosition];
     const shift = majorKeyToNumber[currentKey];
 
+    const shiftString = (stringName: keyof ChordPositions) => chordPositions[stringName]
+        .flatMap(fret => [fret, fret - 12])
+        .map(fret => {
+            const isMajorThird = (openStringPitches[stringName] + fret + 120) % 12 == majorThird;
+            return fret + shift - (tonality == Tonality.MINOR && isMajorThird ? 1 : 0);
+        });
+
     const shiftedChordPositions: ChordPositions = {
-        E: chordPositions.E.map(fret => fret + shift),
-        A: chordPositions.A.map(fret => fret + shift),
-        D: chordPositions.D.map(fret => fret + shift),
-        G: chordPositions.G.map(fret => fret + shift),
-        B: chordPositions.B.map(fret => fret + shift),
-        e: chordPositions.e.map(fret => fret + shift),
+        E: shiftString('E'),
+        A: shiftString('A'),
+        D: shiftString('D'),
+        G: shiftString('G'),
+        B: shiftString('B'),
+        e: shiftString('e'),
     }
 
     return shiftedChordPositions;
+}
+
+export const fingeringFretRange = (currentKey: string, currentChordPosition: number, fretAmount: number): [number, number] => {
+    const shift = majorKeyToNumber[currentKey];
+    let [from, to] = fingeringSpans[currentChordPosition].map(fret => fret + shift);
+    if (from - 12 >= 0) {
+        from -= 12;
+        to -= 12;
+    }
+    return [from, Math.min(to, fretAmount)];
 }
 
 export const getBarPositions = (chord: Pattern, currentKey: string, currentChordPosition: number) => {
@@ -34,12 +70,12 @@ export const getBarPositions = (chord: Pattern, currentKey: string, currentChord
     const shift = majorKeyToNumber[currentKey];
 
     const shiftedChordPositions: ChordPositions = {
-        e: chordPositions.e.map(fret => fret + shift),
-        B: chordPositions.B.map(fret => fret + shift),
-        G: chordPositions.G.map(fret => fret + shift),
-        D: chordPositions.D.map(fret => fret + shift),
-        A: chordPositions.A.map(fret => fret + shift),
-        E: chordPositions.E.map(fret => fret + shift),
+        e: chordPositions.e.flatMap(fret => [fret, fret - 12]).map(fret => fret + shift),
+        B: chordPositions.B.flatMap(fret => [fret, fret - 12]).map(fret => fret + shift),
+        G: chordPositions.G.flatMap(fret => [fret, fret - 12]).map(fret => fret + shift),
+        D: chordPositions.D.flatMap(fret => [fret, fret - 12]).map(fret => fret + shift),
+        A: chordPositions.A.flatMap(fret => [fret, fret - 12]).map(fret => fret + shift),
+        E: chordPositions.E.flatMap(fret => [fret, fret - 12]).map(fret => fret + shift),
     }
 
     return shiftedChordPositions;

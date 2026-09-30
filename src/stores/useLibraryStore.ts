@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import _ from 'lodash'
 import { Setup } from '@data/constants'
-import { defaultDataFor, FretboardData } from '@stores/usePatternStore'
+import { defaultDataFor, FretboardData } from '@/lib/fretboardData'
 import { fetchLibraryCards, saveLibraryCards } from '@services/customizerService'
 import type { LibraryCard } from '@services/adapters/localStorageAdapter'
 

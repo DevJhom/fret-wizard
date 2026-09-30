@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { CurrentCAGED, CurrentStrings } from '@/stores/usePatternStore';
+import { CurrentCAGED, CurrentStrings } from '@/lib/fretboardData';
 import { Pattern, Tonality, Accidental } from '@data/constants';
 import { isCAGEDNameHere, GetCAGEDName } from '@data/CAGED';
 import { ChordPositions } from '@data/chords';
@@ -14,15 +14,22 @@ const props = defineProps<{
     currentHighlightNotes: string[],
     currentCAGED: CurrentCAGED, 
     currentStrings: CurrentStrings,
-    chordPositions: ChordPositions,
-    barPositions: ChordPositions,
-    isChordFocused: boolean,
+    fadeOutsideShape?: boolean,
+    rootBasedShapes?: boolean,
+    labelMode?: 'notes' | 'intervals',
+    stringToggles?: boolean,
+    chordPositions?: ChordPositions,
+    barPositions?: ChordPositions,
     E: string[],
     A: string[],
     D: string[],
     G: string[],
     B: string[],
     e: string[],
+}>();
+
+const emit = defineEmits<{
+    (e: 'toggle-string', stringName: keyof CurrentStrings): void
 }>();
 
 const fretIndicator = new Array(24);
@@ -47,11 +54,14 @@ const fretIndicatorIndexes = [3,5,7,9,12,15,17,19,21,24];
 
             <!-- Strings -->
             <div class="d-flex text-nowrap w-75">
-                <div class="d-inline-block string-name">e</div>
+                <button v-if="stringToggles" type="button" class="string-name string-toggle" :class="{ 'string-hidden': !currentStrings.e }" :aria-pressed="currentStrings.e" :aria-label="`${currentStrings.e ? 'Hide' : 'Show'} e string`" @click="emit('toggle-string', 'e')">e</button>
+                <div v-else class="d-inline-block string-name">e</div>
                 <div class="fret-start string-e">
                     <MyString
                         :string-name="'e'"
                         :string-data="e"
+                        :chord-positions="chordPositions?.e"
+                        :bar-positions="barPositions?.e"
                         :fret-amount="fretAmount"
                         :current-key="currentKey"
                         :current-tonality="currentTonality"
@@ -59,18 +69,22 @@ const fretIndicatorIndexes = [3,5,7,9,12,15,17,19,21,24];
                         :current-highlight-notes="currentHighlightNotes"
                         :currentCAGED="currentCAGED"
                         :current-strings="currentStrings"
-                        :chordPositions="chordPositions.e"
-                        :bar-positions="barPositions.e"
-                        :is-chord-focused="isChordFocused"
+                        :current-pattern="currentPattern"
+                        :fade-outside-shape="fadeOutsideShape"
+                        :root-based-shapes="rootBasedShapes"
+                        :label-mode="labelMode"
                     />
                 </div>
             </div>
             <div class="d-flex text-nowrap w-75">
-                <div class="d-inline-block string-name">B</div>
+                <button v-if="stringToggles" type="button" class="string-name string-toggle" :class="{ 'string-hidden': !currentStrings.B }" :aria-pressed="currentStrings.B" :aria-label="`${currentStrings.B ? 'Hide' : 'Show'} B string`" @click="emit('toggle-string', 'B')">B</button>
+                <div v-else class="d-inline-block string-name">B</div>
                 <div class="fret-start string-B">
                     <MyString
                         :string-name="'B'"
                         :string-data="B"
+                        :chord-positions="chordPositions?.B"
+                        :bar-positions="barPositions?.B"
                         :fret-amount="fretAmount"
                         :current-key="currentKey"
                         :current-tonality="currentTonality"
@@ -78,18 +92,22 @@ const fretIndicatorIndexes = [3,5,7,9,12,15,17,19,21,24];
                         :current-highlight-notes="currentHighlightNotes"
                         :currentCAGED="currentCAGED"
                         :current-strings="currentStrings"
-                        :chordPositions="chordPositions.B"
-                        :bar-positions="barPositions.B"
-                        :is-chord-focused="isChordFocused"
+                        :current-pattern="currentPattern"
+                        :fade-outside-shape="fadeOutsideShape"
+                        :root-based-shapes="rootBasedShapes"
+                        :label-mode="labelMode"
                     />
                 </div>
             </div>
             <div class="d-flex text-nowrap w-75">
-                <div class="d-inline-block string-name">G</div>
+                <button v-if="stringToggles" type="button" class="string-name string-toggle" :class="{ 'string-hidden': !currentStrings.G }" :aria-pressed="currentStrings.G" :aria-label="`${currentStrings.G ? 'Hide' : 'Show'} G string`" @click="emit('toggle-string', 'G')">G</button>
+                <div v-else class="d-inline-block string-name">G</div>
                 <div class="fret-start string-G">
                     <MyString
                         :string-name="'G'"
                         :string-data="G"
+                        :chord-positions="chordPositions?.G"
+                        :bar-positions="barPositions?.G"
                         :fret-amount="fretAmount"
                         :current-key="currentKey"
                         :current-tonality="currentTonality"
@@ -97,9 +115,10 @@ const fretIndicatorIndexes = [3,5,7,9,12,15,17,19,21,24];
                         :current-highlight-notes="currentHighlightNotes"
                         :currentCAGED="currentCAGED"
                         :current-strings="currentStrings"
-                        :chordPositions="chordPositions.G"
-                        :bar-positions="barPositions.G"
-                        :is-chord-focused="isChordFocused"
+                        :current-pattern="currentPattern"
+                        :fade-outside-shape="fadeOutsideShape"
+                        :root-based-shapes="rootBasedShapes"
+                        :label-mode="labelMode"
                     />
                 </div>
             </div>
@@ -112,11 +131,14 @@ const fretIndicatorIndexes = [3,5,7,9,12,15,17,19,21,24];
                 </div>
             </div> -->
             <div class="d-flex text-nowrap w-75">
-                <div class="d-inline-block string-name">D</div>
+                <button v-if="stringToggles" type="button" class="string-name string-toggle" :class="{ 'string-hidden': !currentStrings.D }" :aria-pressed="currentStrings.D" :aria-label="`${currentStrings.D ? 'Hide' : 'Show'} D string`" @click="emit('toggle-string', 'D')">D</button>
+                <div v-else class="d-inline-block string-name">D</div>
                 <div class="fret-start string-D">
                     <MyString
                         :string-name="'D'"
                         :string-data="D"
+                        :chord-positions="chordPositions?.D"
+                        :bar-positions="barPositions?.D"
                         :fret-amount="fretAmount"
                         :current-key="currentKey"
                         :current-tonality="currentTonality"
@@ -124,18 +146,22 @@ const fretIndicatorIndexes = [3,5,7,9,12,15,17,19,21,24];
                         :current-highlight-notes="currentHighlightNotes"
                         :currentCAGED="currentCAGED"
                         :current-strings="currentStrings"
-                        :chordPositions="chordPositions.D"
-                        :bar-positions="barPositions.D"
-                        :is-chord-focused="isChordFocused"
+                        :current-pattern="currentPattern"
+                        :fade-outside-shape="fadeOutsideShape"
+                        :root-based-shapes="rootBasedShapes"
+                        :label-mode="labelMode"
                     />
                 </div>
             </div>
             <div class="d-flex text-nowrap w-75">
-                <div class="d-inline-block string-name">A</div>
+                <button v-if="stringToggles" type="button" class="string-name string-toggle" :class="{ 'string-hidden': !currentStrings.A }" :aria-pressed="currentStrings.A" :aria-label="`${currentStrings.A ? 'Hide' : 'Show'} A string`" @click="emit('toggle-string', 'A')">A</button>
+                <div v-else class="d-inline-block string-name">A</div>
                 <div class="fret-start string-A">
                     <MyString
                         :string-name="'A'"
                         :string-data="A"
+                        :chord-positions="chordPositions?.A"
+                        :bar-positions="barPositions?.A"
                         :fret-amount="fretAmount"
                         :current-key="currentKey"
                         :current-tonality="currentTonality"
@@ -143,18 +169,22 @@ const fretIndicatorIndexes = [3,5,7,9,12,15,17,19,21,24];
                         :current-highlight-notes="currentHighlightNotes"
                         :currentCAGED="currentCAGED"
                         :current-strings="currentStrings"
-                        :chordPositions="chordPositions.A"
-                        :bar-positions="barPositions.A"
-                        :is-chord-focused="isChordFocused"
+                        :current-pattern="currentPattern"
+                        :fade-outside-shape="fadeOutsideShape"
+                        :root-based-shapes="rootBasedShapes"
+                        :label-mode="labelMode"
                     />
                 </div>
             </div>
             <div class="d-flex text-nowrap w-75">
-                <div class="d-inline-block string-name">E</div>
+                <button v-if="stringToggles" type="button" class="string-name string-toggle" :class="{ 'string-hidden': !currentStrings.E }" :aria-pressed="currentStrings.E" :aria-label="`${currentStrings.E ? 'Hide' : 'Show'} E string`" @click="emit('toggle-string', 'E')">E</button>
+                <div v-else class="d-inline-block string-name">E</div>
                 <div class="fret-start string-E last-string">
                     <MyString
                         :string-name="'E'"
                         :string-data="E"
+                        :chord-positions="chordPositions?.E"
+                        :bar-positions="barPositions?.E"
                         :fret-amount="fretAmount"
                         :is-last-string="true"
                         :current-key="currentKey"
@@ -163,15 +193,16 @@ const fretIndicatorIndexes = [3,5,7,9,12,15,17,19,21,24];
                         :current-highlight-notes="currentHighlightNotes"
                         :currentCAGED="currentCAGED"
                         :current-strings="currentStrings"
-                        :chordPositions="chordPositions.E"
-                        :bar-positions="barPositions.E"
-                        :is-chord-focused="isChordFocused"
+                        :current-pattern="currentPattern"
+                        :fade-outside-shape="fadeOutsideShape"
+                        :root-based-shapes="rootBasedShapes"
+                        :label-mode="labelMode"
                     />
                 </div>
             </div>
 
             <!-- CAGED Names -->
-            <div v-if="!isChordFocused" class="CAGED-name-container text-start">
+            <div v-if="!stringToggles" class="CAGED-name-container text-start">
                 <div v-for="(_, index) in e" :key="index" class="d-inline-block CAGED-box" :class="{'fret': index < fretAmount}" style="border-right: none;">
                     <div v-if="index < fretAmount">
                         <!-- to be refactored -->
@@ -197,6 +228,27 @@ const fretIndicatorIndexes = [3,5,7,9,12,15,17,19,21,24];
     max-width: 30px;
     margin-top: -13px;
     margin-right: 12px;
+}
+
+.string-toggle {
+    display: inline-block;
+    height: 26px;
+    padding: 0;
+    border: none;
+    border-radius: 6px;
+    background: none;
+    color: inherit;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:hover {
+        color: var(--accent-text-color);
+    }
+}
+
+.string-hidden {
+    opacity: 0.45;
+    text-decoration: line-through;
 }
 
 .fret-start {

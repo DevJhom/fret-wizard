@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { CurrentStrings, CurrentCAGED } from '@/stores/usePatternStore';
+import { CurrentStrings, CurrentCAGED } from '@/lib/fretboardData';
 import { isCAGED } from '@data/CAGED';
-import { Accidental, Tonality, Degree } from '@data/constants';
+import { Accidental, Tonality, Degree, Pattern } from '@data/constants';
 import { getRoots, getMinorSeconds, getSeconds, getMinorThirds, getThirds, getFourths, getTritones, getFifths, getSixths, getSevenths, getMinorSixths, getMinorSevenths } from '@data/intervals';
 import { getNoteName } from '@data/noteNames';
+import { degreeLabel } from '@data/patternNames';
 
 const props = defineProps<{
     stringName: string,
@@ -17,9 +18,12 @@ const props = defineProps<{
     currentHighlightNotes: string[],
     currentCAGED: CurrentCAGED,
     currentStrings: CurrentStrings,
-    chordPositions: number[],
-    barPositions: number[],
-    isChordFocused: boolean
+    currentPattern?: Pattern,
+    fadeOutsideShape?: boolean,
+    rootBasedShapes?: boolean,
+    labelMode?: 'notes' | 'intervals',
+    chordPositions?: number[],
+    barPositions?: number[]
 }>();
 
 const { roots, minorSeconds, seconds, minorThirds, thirds, fourths, tritones, fifths, minorSixths, sixths, minorSevenths, sevenths } = Degree;
@@ -50,7 +54,7 @@ const fifthNoteName = computed(() => getNoteName(fifths, props.currentKey, props
 const minorSixthNoteName = computed(() => getNoteName(minorSixths, props.currentKey, props.currentAccidental));
 const sixthNoteName = computed(() => getNoteName(sixths, props.currentKey, props.currentAccidental));
 const minorSeventhNoteName = computed(() => getNoteName(minorSevenths, props.currentKey, props.currentAccidental));
-const seventhNoteName = computed(() => getNoteName(minorSevenths, props.currentKey, props.currentAccidental));
+const seventhNoteName = computed(() => getNoteName(sevenths, props.currentKey, props.currentAccidental));
 
 const isStringActive = computed(() => {
     return props.currentStrings[props.stringName];
@@ -61,19 +65,30 @@ const currentHighlightCAGED = computed(() => {
     return Object.keys(props.currentCAGED).filter(key => props.currentCAGED[key]);
 })
 
+const isInShape = (index: number) => {
+    const tonality = props.rootBasedShapes ? Tonality.MAJOR : props.currentTonality;
+    return isCAGED(index, props.stringName, props.currentKey, tonality, currentHighlightCAGED.value);
+}
+
+const isOutsideShape = (index: number) => {
+    return !!props.fadeOutsideShape && !isInShape(index);
+}
+
 const isNoteActive = (index: number, noteName: Degree, noteIntervals: number[]) => {
     const isNoteHighlighted = props.currentHighlightNotes.includes(noteName);
     const isInIntervals = noteIntervals?.includes(index + 1);
-    const isInCAGED = isCAGED(index, props.stringName, props.currentKey, props.currentTonality, currentHighlightCAGED.value);
-    const isInChordPostions = props.chordPositions.includes(index + 1) || !props.isChordFocused;
 
     return (
         isNoteHighlighted &&
         isInIntervals &&
-        isInCAGED &&
-        isInChordPostions &&
-        isStringActive
+        (props.fadeOutsideShape || isInShape(index)) &&
+        (!props.chordPositions || props.chordPositions.includes(index + 1)) &&
+        isStringActive.value
     );
+}
+
+const noteLabel = (degree: Degree, noteName: string) => {
+    return props.labelMode === 'intervals' && props.currentPattern ? degreeLabel(degree, props.currentPattern) : noteName;
 }
 
 const openIndex = 11; //equivalent note to the open position
@@ -85,6 +100,7 @@ const openIndex = 11; //equivalent note to the open position
             <input type="checkbox" v-model="stringData[openIndex]"/>
             <div class="checkbox__checkmark"
                 :class="{
+                            'outside-shape': isOutsideShape(openIndex),
                             'root-note': isNoteActive(openIndex, roots, rootIntervals), 
                             'minor-second': isNoteActive(openIndex, minorSeconds, minorSecondIntervals),
                             'second': isNoteActive(openIndex, seconds, secondIntervals),
@@ -102,11 +118,12 @@ const openIndex = 11; //equivalent note to the open position
         </label>
     </div>
     <div v-for="(_, index) in stringData" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}" :style="{ 'border-right': isLastString ? 'none' : '' }">
-        <div v-if="barPositions.includes(index + 1) && isChordFocused" class="bar"></div>
+        <div v-if="barPositions?.includes(index + 1) && index < fretAmount" class="bar"></div>
         <label v-if="index < fretAmount" class="notes">
             <input type="checkbox" v-model="stringData[index]"/>
             <div class="checkbox__checkmark" 
                 :class="{
+                    'outside-shape': isOutsideShape(index),
                     'root-note': isNoteActive(index, roots, rootIntervals), 
                     'minor-second': isNoteActive(index, minorSeconds, minorSecondIntervals),
                     'second': isNoteActive(index, seconds, secondIntervals),
@@ -120,18 +137,18 @@ const openIndex = 11; //equivalent note to the open position
                     'minor-seventh': isNoteActive(index, minorSevenths, minorSeventhIntervals),
                     'seventh': isNoteActive(index, sevenths, seventhIntervals)
                 }">
-                <span v-if="isNoteActive(index, roots, rootIntervals)" class="note-names">{{ rootNoteName }}</span>
-                <span v-if="isNoteActive(index, minorSeconds, minorSecondIntervals)" class="note-names">{{ minorSecondNoteName }}</span>
-                <span v-if="isNoteActive(index, seconds, secondIntervals)" class="note-names">{{ secondNoteName }}</span>
-                <span v-if="isNoteActive(index, minorThirds, minorThirdIntervals)" class="note-names">{{ minorThirdNoteName }}</span>
-                <span v-if="isNoteActive(index, thirds, thirdIntervals)" class="note-names">{{ thirdNoteName }}</span>
-                <span v-if="isNoteActive(index, fourths, fourthIntervals)" class="note-names">{{ fourthNoteName }}</span>
-                <span v-if="isNoteActive(index, tritones, tritoneIntervals)" class="note-names">{{ tritoneNoteName }}</span>
-                <span v-if="isNoteActive(index, fifths, fifthIntervals)" class="note-names">{{ fifthNoteName }}</span>
-                <span v-if="isNoteActive(index, minorSixths, minorSixthIntervals)" class="note-names">{{ minorSixthNoteName }}</span>
-                <span v-if="isNoteActive(index, sixths, sixthIntervals)" class="note-names">{{ sixthNoteName }}</span>
-                <span v-if="isNoteActive(index, minorSevenths, minorSeventhIntervals)" class="note-names">{{ minorSeventhNoteName }}</span>
-                <span v-if="isNoteActive(index, sevenths, seventhIntervals)" class="note-names">{{ seventhNoteName }}</span>
+                <span v-if="isNoteActive(index, roots, rootIntervals)" class="note-names">{{ noteLabel(roots, rootNoteName) }}</span>
+                <span v-if="isNoteActive(index, minorSeconds, minorSecondIntervals)" class="note-names">{{ noteLabel(minorSeconds, minorSecondNoteName) }}</span>
+                <span v-if="isNoteActive(index, seconds, secondIntervals)" class="note-names">{{ noteLabel(seconds, secondNoteName) }}</span>
+                <span v-if="isNoteActive(index, minorThirds, minorThirdIntervals)" class="note-names">{{ noteLabel(minorThirds, minorThirdNoteName) }}</span>
+                <span v-if="isNoteActive(index, thirds, thirdIntervals)" class="note-names">{{ noteLabel(thirds, thirdNoteName) }}</span>
+                <span v-if="isNoteActive(index, fourths, fourthIntervals)" class="note-names">{{ noteLabel(fourths, fourthNoteName) }}</span>
+                <span v-if="isNoteActive(index, tritones, tritoneIntervals)" class="note-names">{{ noteLabel(tritones, tritoneNoteName) }}</span>
+                <span v-if="isNoteActive(index, fifths, fifthIntervals)" class="note-names">{{ noteLabel(fifths, fifthNoteName) }}</span>
+                <span v-if="isNoteActive(index, minorSixths, minorSixthIntervals)" class="note-names">{{ noteLabel(minorSixths, minorSixthNoteName) }}</span>
+                <span v-if="isNoteActive(index, sixths, sixthIntervals)" class="note-names">{{ noteLabel(sixths, sixthNoteName) }}</span>
+                <span v-if="isNoteActive(index, minorSevenths, minorSeventhIntervals)" class="note-names">{{ noteLabel(minorSevenths, minorSeventhNoteName) }}</span>
+                <span v-if="isNoteActive(index, sevenths, seventhIntervals)" class="note-names">{{ noteLabel(sevenths, seventhNoteName) }}</span>
             </div>
         </label>
     </div>
@@ -158,6 +175,10 @@ const openIndex = 11; //equivalent note to the open position
     left: 50%;
     transform: translate(-50%, -50%);
     background-color: var(--string-color);
+}
+
+.outside-shape {
+    opacity: 0.25;
 }
 
 @media only screen and (max-width: 1024px) and (orientation: landscape) {

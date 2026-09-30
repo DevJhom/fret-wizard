@@ -1,4 +1,4 @@
-import { CurrentCAGED } from '@/stores/usePatternStore';
+import { CurrentCAGED } from '@/lib/fretboardData';
 import { majorKeyToNumber, minorKeyToNumber } from '@data/constants';
 import { Tonality } from '@data/constants';
 
