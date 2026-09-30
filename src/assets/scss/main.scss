@@ -87,7 +87,9 @@ button:focus-visible {
   --card-background-color: #242525;
   --card-border-color: #{$gray};
   --card-shadow: none;
-  --switch-input-background-color: #2e3031;
+  --switch-input-background-color: #242525;
+  --option-background-color: #2e3031;
+  --shape-band-color: rgba(250, 174, 37, 0.13);
   --reset-settings-background-color: #696d6f;
 }
 
@@ -112,6 +114,8 @@ button:focus-visible {
   --card-border-color: #e2dbcf;
   --card-shadow: 0 10px 24px -18px rgba(58, 45, 25, 0.28);
   --switch-input-background-color: #efebe4;
+  --option-background-color: #efebe4;
+  --shape-band-color: rgba(160, 98, 10, 0.16);
   --reset-settings-background-color: #efebe4;
 }
 

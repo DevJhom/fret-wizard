@@ -43,78 +43,66 @@ const types = computed(() => isScale.value ? scaleTypes : chordTypes);
 
 <template>
     <div class="pattern-builder">
-        <div class="builder-row">
-            <span class="builder-label">Root</span>
-            <div class="option-row">
-                <label v-for="root in roots" :key="root" class="custom-radio">
-                    <input type="radio" name="chord-root" :value="root" :checked="chord.currentKey == root" @change="emit('change-root', root)">
-                        <span class="label">{{ root }}</span>
-                    </input>
-                </label>
-            </div>
-            <span class="builder-label accidental-label">Accidental</span>
-            <div class="switch-radio fw-bold">
-                <label>
-                    <input type="radio" name="chord-accidental" :checked="chord.currentAccidental == Accidental.SHARP" @change="emit('change-accidental', Accidental.SHARP)">
-                        <div class="label px-2 py-1" aria-label="Sharps">♯</div>
-                    </input>
-                </label>
-                <label>
-                    <input type="radio" name="chord-accidental" :checked="chord.currentAccidental == Accidental.FLAT" @change="emit('change-accidental', Accidental.FLAT)">
-                        <div class="label px-2 py-1" aria-label="Flats">♭</div>
-                    </input>
-                </label>
-            </div>
+        <span class="builder-label">Key</span>
+        <div class="option-row">
+            <label v-for="root in roots" :key="root" class="custom-radio">
+                <input type="radio" name="chord-root" :value="root" :checked="chord.currentKey == root" @change="emit('change-root', root)">
+                    <span class="label">{{ root }}</span>
+                </input>
+            </label>
+        </div>
+        <span class="builder-label side-label">Accidental</span>
+        <div class="tile-radio fw-bold">
+            <label>
+                <input type="radio" name="chord-accidental" :checked="chord.currentAccidental == Accidental.SHARP" @change="emit('change-accidental', Accidental.SHARP)">
+                    <div class="label px-2 py-1" aria-label="Sharps">♯</div>
+                </input>
+            </label>
+            <label>
+                <input type="radio" name="chord-accidental" :checked="chord.currentAccidental == Accidental.FLAT" @change="emit('change-accidental', Accidental.FLAT)">
+                    <div class="label px-2 py-1" aria-label="Flats">♭</div>
+                </input>
+            </label>
         </div>
 
-        <div class="builder-row">
-            <span class="builder-label">Quality</span>
-            <div class="switch-radio fw-bold" :class="{ 'is-locked': qualityLocked }">
-                <label>
-                    <input type="radio" name="chord-tonality" :disabled="qualityLocked" :checked="!qualityLocked && chord.currentTonality == Tonality.MAJOR" @change="emit('change-tonality', Tonality.MAJOR)">
-                        <div class="label px-2 py-1"> Major </div>
-                    </input>
-                </label>
-                <label>
-                    <input type="radio" name="chord-tonality" :disabled="qualityLocked" :checked="!qualityLocked && chord.currentTonality == Tonality.MINOR" @change="emit('change-tonality', Tonality.MINOR)">
-                        <div class="label px-2 py-1"> Minor </div>
-                    </input>
-                </label>
-            </div>
-            <small v-if="qualityLocked" class="locked-note">{{ lockedNote }}</small>
+        <span class="builder-label">{{ isScale ? 'Scale' : 'Type' }}</span>
+        <div class="option-row">
+            <label v-for="type in types" :key="type.pattern" class="custom-radio">
+                <input type="radio" name="chord-type" :value="type.pattern" :checked="chord.currentPattern == type.pattern" @change="emit('change-pattern', type.pattern)">
+                    <span class="label px-3">{{ type.label }}</span>
+                </input>
+            </label>
+        </div>
+        <span class="builder-label side-label">Quality</span>
+        <div class="tile-radio fw-bold" :class="{ 'is-locked': qualityLocked }">
+            <label>
+                <input type="radio" name="chord-tonality" :disabled="qualityLocked" :checked="!qualityLocked && chord.currentTonality == Tonality.MAJOR" @change="emit('change-tonality', Tonality.MAJOR)">
+                    <div class="label px-2 py-1"> Major </div>
+                </input>
+            </label>
+            <label>
+                <input type="radio" name="chord-tonality" :disabled="qualityLocked" :checked="!qualityLocked && chord.currentTonality == Tonality.MINOR" @change="emit('change-tonality', Tonality.MINOR)">
+                    <div class="label px-2 py-1"> Minor </div>
+                </input>
+            </label>
         </div>
 
-        <div class="builder-row">
-            <span class="builder-label">{{ isScale ? 'Scale' : 'Type' }}</span>
-            <div class="option-row">
-                <label v-for="type in types" :key="type.pattern" class="custom-radio">
-                    <input type="radio" name="chord-type" :value="type.pattern" :checked="chord.currentPattern == type.pattern" @change="emit('change-pattern', type.pattern)">
-                        <span class="label px-3">{{ type.label }}</span>
-                    </input>
-                </label>
-            </div>
-        </div>
+        <small v-if="qualityLocked" class="locked-note">{{ lockedNote }}</small>
     </div>
 </template>
 
 <style scoped lang="scss">
 .pattern-builder {
-    display: flex;
-    flex-direction: column;
-    gap: 0.9rem;
+    display: grid;
+    grid-template-columns: 64px auto auto 1fr;
+    align-items: start;
+    align-content: start;
+    gap: 0.9rem 1rem;
     flex-grow: 1;
 }
 
-.builder-row {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    min-height: 44px;
-}
-
 .builder-label {
-    width: 64px;
-    flex-shrink: 0;
+    line-height: 44px;
     text-align: start;
     font-size: 0.75rem;
     font-weight: 700;
@@ -123,8 +111,7 @@ const types = computed(() => isScale.value ? scaleTypes : chordTypes);
     color: $gray-1;
 }
 
-.accidental-label {
-    width: auto;
+.side-label {
     margin-left: 0.5rem;
 }
 
@@ -143,6 +130,9 @@ const types = computed(() => isScale.value ? scaleTypes : chordTypes);
 }
 
 .locked-note {
+    grid-column: 3 / 5;
+    margin-left: 0.5rem;
+    text-align: start;
     color: $gray-1;
 }
 
@@ -155,7 +145,7 @@ const types = computed(() => isScale.value ? scaleTypes : chordTypes);
     padding: 0 5px;
 }
 
-.switch-radio .label {
+.tile-radio .label {
     display: flex;
     align-items: center;
     justify-content: center;

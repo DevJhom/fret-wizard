@@ -74,6 +74,10 @@ const isOutsideShape = (index: number) => {
     return !!props.fadeOutsideShape && !isInShape(index);
 }
 
+const showShapeBand = computed(() => {
+    return !!props.fadeOutsideShape && !props.isLastString && currentHighlightCAGED.value.length < Object.keys(props.currentCAGED).length;
+})
+
 const isNoteActive = (index: number, noteName: Degree, noteIntervals: number[]) => {
     const isNoteHighlighted = props.currentHighlightNotes.includes(noteName);
     const isInIntervals = noteIntervals?.includes(index + 1);
@@ -117,7 +121,7 @@ const openIndex = 11; //equivalent note to the open position
             </div>
         </label>
     </div>
-    <div v-for="(_, index) in stringData" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount}" :style="{ 'border-right': isLastString ? 'none' : '' }">
+    <div v-for="(_, index) in stringData" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount, 'shape-band': showShapeBand && index < fretAmount && isInShape(index)}" :style="{ 'border-right': isLastString ? 'none' : '' }">
         <div v-if="barPositions?.includes(index + 1) && index < fretAmount" class="bar"></div>
         <label v-if="index < fretAmount" class="notes">
             <input type="checkbox" v-model="stringData[index]"/>
@@ -165,6 +169,10 @@ const openIndex = 11; //equivalent note to the open position
     min-width: 2rem;
     max-width: 50px;
     border-right: 1px solid var(--fret-wire-color);
+}
+
+.shape-band {
+    background-color: var(--shape-band-color);
 }
 
 .bar {

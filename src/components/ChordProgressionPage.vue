@@ -101,7 +101,7 @@ onMounted(async () => {
 <template>
     <div class="progression-page">
         <div class="selector-wrapper">
-            <div class="switch-tonality switch-radio me-2 fw-bold">
+            <div class="switch-tonality tile-radio me-2 fw-bold">
                 <label>
                     <input type="radio" name="progression-tonality" :value="Tonality.MAJOR" :checked="currentTonality == Tonality.MAJOR" @change="onChangeTonality(Tonality.MAJOR)">
                         <div class="label px-2 py-1"> Major </div>

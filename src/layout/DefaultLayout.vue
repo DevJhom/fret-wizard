@@ -164,6 +164,7 @@ onMounted(async () => {
 }
 
 .nav-tabs {
+  display: flex;
   border: none;
 
   .label {
@@ -172,6 +173,7 @@ onMounted(async () => {
 }
 
 .switch-theme {
+  display: flex;
   position: absolute;
   top: 1rem;
   right: 2rem;

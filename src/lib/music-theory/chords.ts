@@ -20,10 +20,6 @@ const openStringPitches: Record<keyof ChordPositions, number> = {
 
 const majorThird = 4;
 
-const fingeringSpans: [number, number][] = [[0, 3], [3, 5], [5, 8]];
-
-export const fingeringShapes = ['C', 'A', 'G'];
-
 export const fingeringAvailable = (pattern: Pattern) => {
   return pattern == Pattern.Triad || pattern == Pattern.Power;
 }
@@ -53,16 +49,6 @@ export const getChordPositions = (chord: Pattern, currentKey: string, currentCho
     }
 
     return shiftedChordPositions;
-}
-
-export const fingeringFretRange = (currentKey: string, currentChordPosition: number, fretAmount: number): [number, number] => {
-    const shift = majorKeyToNumber[currentKey];
-    let [from, to] = fingeringSpans[currentChordPosition].map(fret => fret + shift);
-    if (from - 12 >= 0) {
-        from -= 12;
-        to -= 12;
-    }
-    return [from, Math.min(to, fretAmount)];
 }
 
 export const getBarPositions = (chord: Pattern, currentKey: string, currentChordPosition: number) => {

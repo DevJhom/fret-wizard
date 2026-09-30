@@ -116,19 +116,13 @@ onMounted(() => {
 .stack-chip {
     display: flex;
     align-items: center;
-    border: 3px solid transparent;
     border-radius: 10px;
     background-color: var(--switch-input-background-color);
 }
 
 .selected-chip {
-    border-color: $yellow;
-    color: var(--accent-text-color);
-}
-
-.stack-chip .chip-select,
-.stack-chip .chip-remove {
-    height: 38px;
+    background-color: $yellow;
+    color: $black;
 }
 
 .chip-select,

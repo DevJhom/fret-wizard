@@ -59,7 +59,7 @@ Located in `src/components/data/`:
 - **`noteNames.ts`** — Note naming and enharmonic equivalents (C♯ vs D♭). Functions: `getNoteName()`, `findRelativeMajor()`, `findRelativeMinor()`
 - **`CAGED.ts`** — CAGED system shape definitions with pre-defined fret ranges. Functions: `isCAGED()` checks if fret matches active shapes
 - **`patternNames.ts`** — Titles, subtitles and stack-chip labels for chords and scales (`patternTitle()`, `patternSubtitle()`, `patternSymbol()`), degree labels (`degreeLabel()`), `isQualityLocked()` for Dominant/Power/Chromatic
-- **`chords.ts`** — Triad fingerings (C, A, G shapes) and barre positions for the Chord page's Fingering view. Functions: `getChordPositions()` (minor-aware), `getBarPositions()`, `fingeringFretRange()`, `fingeringAvailable()`
+- **`chords.ts`** — Triad fingerings (C, A, G shapes) and barre positions for the Chord page's Fingering view. Functions: `getChordPositions()` (minor-aware), `getBarPositions()`, `fingeringAvailable()`
 - **`progressions.ts`** — Diatonic chords per key with correct letter spelling. Functions: `progressionKeys()`, `diatonicChords()`, `relativeProgressionKey()`
 
 ### State

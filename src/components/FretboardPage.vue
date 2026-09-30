@@ -4,7 +4,7 @@ import _ from 'lodash';
 import { Accidental, Degree, Pattern, Setup, Tonality, degreeInPattern, majorSharpAllNotes, majorFlatAllNotes } from '@data/constants';
 import { getScale } from '@data/intervals';
 import { isQualityLocked } from '@data/patternNames';
-import { getChordPositions, getBarPositions, getChordPositionIndexes, fingeringAvailable, fingeringFretRange, fingeringShapes } from '@data/chords';
+import { getChordPositions, getBarPositions, getChordPositionIndexes, fingeringAvailable } from '@data/chords';
 import { fetchCurrentFretboard, fetchFretboards, saveCurrentFretboard, saveFretboards } from '@/services/customizerService';
 import { defaultData, defaultDataFor, ChordView, CurrentCAGED, CurrentStrings, FretboardData } from '@/lib/fretboardData';
 import { useLibraryStore } from '@stores/useLibraryStore';
@@ -19,7 +19,6 @@ type LabelMode = 'notes' | 'intervals';
 const props = defineProps<{ setup: Setup }>();
 
 const shapes: Shape[] = ['CShape', 'AShape', 'GShape', 'EShape', 'DShape'];
-const fretOptions = [12, 15, 24];
 
 const libraryStore = useLibraryStore();
 
@@ -41,14 +40,10 @@ const selectedShape = computed<Shape | 'All'>(() => {
     return active.length === 1 ? active[0] : 'All';
 });
 
-const fingeringOptions = computed(() => getChordPositionIndexes(chord.value.currentPattern, chord.value.currentKey).map(position => {
-    const [from, to] = fingeringFretRange(chord.value.currentKey, position, chord.value.fretAmount);
-    return {
-        position,
-        label: String(position + 1),
-        detail: `${fingeringShapes[position]} shape · ${from}–${to}`,
-    };
-}));
+const fingeringOptions = computed(() => getChordPositionIndexes(chord.value.currentPattern, chord.value.currentKey).map(position => ({
+    position,
+    label: String(position + 1),
+})));
 
 const boardCAGED = computed(() => isFingering.value ? defaultData.currentCAGED : chord.value.currentCAGED);
 const chordPositions = computed(() => isFingering.value ? getChordPositions(chord.value.currentPattern, chord.value.currentKey, chord.value.currentChordPosition, chord.value.currentTonality) : undefined);
@@ -177,30 +172,26 @@ onMounted(async () => {
         <div class="page-card board-card">
             <div class="board-toolbar">
                 <template v-if="!isScale">
-                    <span class="toolbar-label">View</span>
-                    <div class="switch-radio fw-bold">
+                    <div class="switch-radio view-switch fw-bold">
                         <label>
                             <input type="radio" name="chord-view" :checked="!isFingering" @change="updateChord({ chordView: 'shapes' })">
-                                <div class="label toolbar-option">Shapes</div>
+                                <div class="label view-option">Shapes</div>
                             </input>
                         </label>
-                        <label :class="{ 'is-disabled': !canFinger }" :title="canFinger ? '' : 'Fingerings are for triads and power chords'">
+                        <label :class="{ 'is-disabled': !canFinger }" :title="canFinger ? '' : 'Positions are for triads and power chords'">
                             <input type="radio" name="chord-view" :disabled="!canFinger" :checked="isFingering" @change="updateChord({ chordView: 'fingering' })">
-                                <div class="label toolbar-option">Fingering</div>
+                                <div class="label view-option">Position</div>
                             </input>
                         </label>
                     </div>
                 </template>
 
                 <template v-if="isFingering">
-                    <span class="toolbar-label">Fingering</span>
-                    <div class="switch-radio">
+                    <span class="toolbar-label">Position</span>
+                    <div class="tile-radio">
                         <label v-for="option in fingeringOptions" :key="option.position">
                             <input type="radio" name="chord-fingering" :checked="chord.currentChordPosition === option.position" @change="updateChord({ currentChordPosition: option.position })">
-                                <div class="label stacked-option">
-                                    <span class="fw-bold">{{ option.label }}</span>
-                                    <small>{{ option.detail }}</small>
-                                </div>
+                                <div class="label toolbar-option fw-bold">{{ option.label }}</div>
                             </input>
                         </label>
                     </div>
@@ -208,7 +199,7 @@ onMounted(async () => {
 
                 <template v-else>
                     <span class="toolbar-label">Shape</span>
-                    <div class="switch-radio">
+                    <div class="tile-radio">
                         <label>
                             <input type="radio" name="board-shape" :checked="selectedShape === 'All'" @change="onChangeShape('All')">
                                 <div class="label toolbar-option fw-bold">All</div>
@@ -222,19 +213,23 @@ onMounted(async () => {
                     </div>
                 </template>
 
-                <small v-if="!isScale && !canFinger" class="toolbar-note">Fingerings are for triads and power chords</small>
+                <small v-if="!isScale && !canFinger" class="toolbar-note">Positions are for triads and power chords</small>
 
-                <span class="toolbar-label ms-auto">Frets</span>
-                <div class="switch-radio fw-bold">
-                    <label v-for="frets in fretOptions" :key="frets">
-                        <input type="radio" name="board-frets" :checked="chord.fretAmount === frets" @change="updateChord({ fretAmount: frets })">
-                            <div class="label toolbar-option">{{ frets }}</div>
-                        </input>
-                    </label>
-                </div>
+                <label for="board-frets" class="toolbar-label ms-auto">Frets</label>
+                <input
+                    id="board-frets"
+                    type="range"
+                    class="fret-slider"
+                    min="12"
+                    max="24"
+                    step="1"
+                    :value="chord.fretAmount"
+                    @input="updateChord({ fretAmount: Number(($event.target as HTMLInputElement).value) })"
+                >
+                <span class="fret-count fw-bold">{{ chord.fretAmount }}</span>
 
                 <span class="toolbar-label">Labels</span>
-                <div class="switch-radio fw-bold">
+                <div class="tile-radio fw-bold">
                     <label>
                         <input type="radio" name="board-labels" :checked="labelMode === 'notes'" @change="labelMode = 'notes'">
                             <div class="label toolbar-option">Notes</div>
@@ -324,21 +319,47 @@ onMounted(async () => {
     color: $gray-1;
 }
 
+input.fret-slider {
+    width: 10rem;
+}
+
+.fret-count {
+    min-width: 1.5rem;
+    margin-right: 0.75rem;
+    color: var(--accent-text-color);
+}
+
+.view-switch {
+    display: flex;
+}
+
+.view-switch label {
+    background-color: var(--option-background-color);
+}
+
+.view-switch input {
+    display: inline;
+    position: absolute;
+    width: 0;
+    height: 0;
+    opacity: 0;
+}
+
+.view-switch input:focus-visible + .label {
+    outline: 2px solid $yellow;
+    outline-offset: 2px;
+}
+
+.view-option {
+    display: flex;
+    align-items: center;
+    height: 38px;
+    padding: 0 0.9rem;
+}
+
 .is-disabled {
     opacity: 0.4;
     cursor: not-allowed;
-}
-
-.stacked-option {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-width: 72px;
-    height: 44px;
-    padding: 0 0.6rem;
-    line-height: 1.15;
-    white-space: nowrap;
 }
 
 .toolbar-option {
