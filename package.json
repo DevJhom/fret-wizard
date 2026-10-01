@@ -8,7 +8,6 @@
     "build": "vue-tsc && vite build",
     "preview": "vite preview",
     "test": "vitest run",
-    "json-server": "json-server --watch ./database/all-scales.json",
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {

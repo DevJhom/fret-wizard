@@ -11,7 +11,7 @@
 
 **Demo:** https://devjhom.github.io/fret-wizard/
 
-**Tech Stack:** Vue 3, TypeScript, Vite 5, Pinia, Bootstrap 5, SCSS, Axios, SortableJS, JSON Server, GitHub Pages
+**Tech Stack:** Vue 3, TypeScript, Vite 5, Pinia, Bootstrap 5, SCSS, SortableJS, Vitest, GitHub Pages; backend: `../fretWizard-service` (Express + Prisma + SQL Server)
 
 ## Development Commands
 
@@ -20,14 +20,10 @@
 | `npm run dev` | Start Vite dev server (hot reload enabled) |
 | `npm run build` | TypeScript type check with `vue-tsc` + Vite production build (outputs to `dist/`) |
 | `npm run preview` | Preview production build locally |
-| `npm run json-server` | Start JSON server for music database (listens on `http://localhost:3000`) |
+| `npm test` | Vitest unit tests (`tests/unit/`) |
 | `npm run deploy` | Deploy to GitHub Pages (`/fret-wizard/` base path) |
 
-**Typical workflow:** Open two terminals:
-1. Terminal 1: `npm run json-server` (required for data fetching)
-2. Terminal 2: `npm run dev`
-
-The app will fail silently if `npm run json-server` is not running. Always start it before `npm run dev`.
+The app works without a backend: guests save everything to `localStorage`. Accounts need the backend running on `VITE_API_BASE_URL` (`.env.development`: `http://localhost:3000`; start it with `npm start` in `../fretWizard-service`). With `VITE_API_BASE_URL` unset (production builds today) every account feature is hidden.
 
 ## Architecture & Component Structure
 
@@ -49,8 +45,12 @@ DefaultLayout.vue (theme toggle, orientation detection, Scale | Chord | Chord Pr
 Scale and Chord pages persist separate fretboard stacks (`scaleCurrentFretboard`/`scaleFretboardList`, `chordCurrentFretboard`/`chordFretboardList`). Legacy `currentFretboard`/`fretboardList` keys are migrated on first read in `localStorageAdapter.ts`. A `LibraryCard` stores `setup` plus a `fretboards` stack; the active card auto-updates when leaving its page. A Shape is one `currentCAGED` entry set to true (all true = All); tones outside it fade. Chord shapes are named from the chord root; Scale shapes keep the tonality-based offset (relative major for minor keys). The Chord page also has a Fingering view (`chordView: 'fingering'`, position in `currentChordPosition`) using `chords.ts` triad fingerings, adapted for minor, for Triad and Power only. The Chord Progression page persists `{ key, tonality, progression: { id, degree }[] }` under `chordProgression`; storing degrees means the progression transposes with the key.
 
 ### Service Layer
-- **`customizerService.ts`** — LocalStorage persistence (theme, fretboard state, visible strings)
-- **`service.ts`** — Axios HTTP client for JSON server (fetches scales/chords from `database/all-scales.json`)
+- **`customizerService.ts`** — the one entry point for persistence. Signed-in users go through `adapters/apiAdapter.ts`, guests through `adapters/localStorageAdapter.ts`; the theme always stays local. Library writes are per card (`createLibraryCard`, `updateLibraryCard`, `deleteLibraryCard`).
+- **`adapters/apiAdapter.ts`** — debounces workspace and chord-progression saves (800 ms); `flushPendingSaves()` sends them immediately. After a failed load (not a 404) it skips saves for that page, so fallback defaults never overwrite the account.
+- **`http.ts`** — `apiRequest` + `ApiError`; on a 401 it refreshes once and retries.
+- **`session.ts`** — access token in memory, refresh token in `localStorage` (`refreshToken`); refreshes are serialised across tabs with `navigator.locks` and re-read the token inside the lock.
+- **`guestData.ts`** — collects browser data for `POST /me/import` and clears it after a successful import.
+- **`authApi.ts`, `authErrors.ts`, `googleIdentity.ts`** — auth endpoints, form error messages, Google button.
 
 ### Data Layer (Music Theory)
 Located in `src/components/data/`:
@@ -65,7 +65,8 @@ Located in `src/components/data/`:
 ### State
 - **`src/lib/fretboardData.ts`** — `FretboardData` (one fretboard: key, tonality, pattern, accidental, visible tones, CAGED, strings, frets, chord position/view) plus `defaultDataFor(setup)`
 - **`FretboardPage.vue`** owns its stack (`FretboardData[]`) and saves it to storage on every change; there is no global pattern store
-- **`src/stores/useLibraryStore.ts`** — the only Pinia store: Library cards and the active card
+- **`src/stores/useLibraryStore.ts`** — Library cards and the active card
+- **`src/stores/useAuthStore.ts`** — session status (`restoring` / `guest` / `authenticated`), the user, and `sessionVersion`. DefaultLayout keys the pages on `sessionVersion` so they remount and reload when the session changes; the status turns `authenticated` only after guest data has been imported.
 
 ## Key Files & Their Purposes
 
@@ -131,9 +132,9 @@ Variables from `src/assets/scss/variables.scss` are **auto-imported** in all com
 - Test both orientations during development
 
 ### Persistence Strategy
-- **UI State** → LocalStorage via `customizerService` (theme, visible strings, fretboard list)
-- **Music Data** → JSON server (scales, chords, intervals) — read-only from client
-- Theme preference persisted and applied via class binding on root element
+- **Guests** → `localStorage` (Library cards, Scale/Chord stacks, Chord Progression, theme), exactly as before accounts existed.
+- **Signed-in users** → the backend (`/library-cards`, `/workspaces/:setup`, `/chord-progression`); theme stays in `localStorage`.
+- **First login in a browser** → guest data is imported (`POST /me/import`): cards are appended; stacks and the progression only fill empty slots. On success the guest keys are cleared.
 
 ### Drag-and-Drop
 SortableJS is used for reordering multiple fretboards. When modifying fretboard list handling, ensure `MyFretboard` components maintain stable `key` bindings in `v-for` loops.
@@ -172,7 +173,7 @@ await libraryStore.createCard('Card 1', Setup.Chord, fretboards)
 
 ## Potential Pitfalls
 
-1. **Missing json-server** — The app will fail silently if `npm run json-server` is not running. Always start it before `npm run dev`.
+1. **Backend not running** — with `VITE_API_BASE_URL` set but the backend down, guests are unaffected, sign-in shows "Something went wrong", and a saved session stays logged out for that page load (the refresh token is kept for the next one).
 
 2. **Breaking TypeScript checks** — `npm run build` includes `vue-tsc` which is strict. Ensure all `.ts` and `.vue` files have proper type annotations.
 
