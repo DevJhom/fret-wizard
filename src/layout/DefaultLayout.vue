@@ -1,7 +1,10 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import { Setup, Theme } from '@data/constants';
-import { fetchCurrentTheme, saveCurrentTheme, fetchFretboards, saveFretboards, saveCurrentFretboard } from '@/services/customizerService';
+import { fetchCurrentTheme, saveCurrentTheme, fetchFretboards, saveFretboards, saveCurrentFretboard, flushPendingSaves } from '@/services/customizerService';
+import { accountsEnabled } from '@services/apiConfig';
+import AccountMenu from '@components/AccountMenu.vue';
+import { useAuthStore } from '@stores/useAuthStore';
 import LibraryPage from '@components/LibraryPage.vue';
 import ChordProgressionPage from '@components/ChordProgressionPage.vue';
 import FretboardPage from '@components/FretboardPage.vue';
@@ -12,6 +15,8 @@ import { useLibraryStore } from '@stores/useLibraryStore';
 import type { LibraryCard } from '@stores/useLibraryStore';
 
 const libraryStore = useLibraryStore();
+const authStore = useAuthStore();
+const showAccounts = accountsEnabled();
 
 const theme = ref(Theme.dark);
 type FretboardView = 'scale' | 'chord';
@@ -39,6 +44,8 @@ const getCurrentTheme = async () => {
 }
 
 const saveActiveCard = async () => {
+  // Debounced API saves must land before the stack is read back.
+  await flushPendingSaves();
   if (currentView.value !== 'scale' && currentView.value !== 'chord') return;
 
   const setup = setupForView[currentView.value];
@@ -56,6 +63,8 @@ const onLoadCard = async (card: LibraryCard) => {
   libraryStore.activeCardId = card.id;
   await saveFretboards(card.setup, card.fretboards);
   await saveCurrentFretboard(card.setup, card.fretboards[0]);
+  // The page about to mount reads the stack back, so send it now.
+  await flushPendingSaves();
   currentView.value = viewForSetup[card.setup];
 }
 
@@ -74,6 +83,11 @@ window.matchMedia("(orientation: landscape)").addEventListener("change", (event)
   } else {
     isLandscape.value = false;
   }
+});
+
+// A new session means different data: forget the cards; the remounted pages reload.
+watch(() => authStore.sessionVersion, () => {
+  libraryStore.reset();
 });
 
 onMounted(async () => {
@@ -112,23 +126,28 @@ onMounted(async () => {
               </input>
             </label>
           </div>
-          <div class="switch-theme switch-radio">
-            <label>
-              <input type="radio" name="theme" :value="Theme.dark" v-model="theme" @change="saveCurrentTheme(theme)">
-                <div class="label px-1"><Moon class="theme-icon"/></div>
-              </input>
-            </label>
+          <div class="top-bar-actions">
+            <AccountMenu v-if="showAccounts"/>
+            <div class="switch-theme switch-radio">
+              <label>
+                <input type="radio" name="theme" :value="Theme.dark" v-model="theme" @change="saveCurrentTheme(theme)">
+                  <div class="label px-1"><Moon class="theme-icon"/></div>
+                </input>
+              </label>
 
-            <label>
-              <input type="radio" name="theme" :value="Theme.light" v-model="theme" @change="saveCurrentTheme(theme)">
-                <div class="label px-1"><Sun class="theme-icon"/></div>
-              </input>
-            </label>
+              <label>
+                <input type="radio" name="theme" :value="Theme.light" v-model="theme" @change="saveCurrentTheme(theme)">
+                  <div class="label px-1"><Sun class="theme-icon"/></div>
+                </input>
+              </label>
+            </div>
           </div>
         </div>
-        <LibraryPage v-if="currentView === 'library'" @load-card="onLoadCard"/>
-        <ChordProgressionPage v-else-if="currentView === 'progression'"/>
-        <FretboardPage v-else :key="currentView" :setup="setupForView[currentView]"/>
+        <template v-if="authStore.status !== 'restoring'">
+          <LibraryPage v-if="currentView === 'library'" :key="`library-${authStore.sessionVersion}`" @load-card="onLoadCard"/>
+          <ChordProgressionPage v-else-if="currentView === 'progression'" :key="`progression-${authStore.sessionVersion}`"/>
+          <FretboardPage v-else :key="`${currentView}-${authStore.sessionVersion}`" :setup="setupForView[currentView]"/>
+        </template>
       </div>
     </div>
   </div>
@@ -172,11 +191,16 @@ onMounted(async () => {
   }
 }
 
+.top-bar-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-left: auto;
+  padding-right: 2rem;
+}
+
 .switch-theme {
   display: flex;
-  position: absolute;
-  top: 1rem;
-  right: 2rem;
 }
 
 .theme-icon {
