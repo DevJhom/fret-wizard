@@ -2,8 +2,8 @@ import { defineStore } from 'pinia'
 import _ from 'lodash'
 import { Setup } from '@data/constants'
 import { defaultDataFor, FretboardData } from '@/lib/fretboardData'
-import { fetchLibraryCards, saveLibraryCards } from '@services/customizerService'
-import type { LibraryCard } from '@services/adapters/localStorageAdapter'
+import { createLibraryCard, deleteLibraryCard, fetchLibraryCards, updateLibraryCard } from '@services/customizerService'
+import type { LibraryCard, LibraryCardPatch } from '@services/adapters/localStorageAdapter'
 
 export type { LibraryCard }
 
@@ -18,44 +18,52 @@ export const useLibraryStore = defineStore('library', {
   },
   actions: {
     async loadCards() {
-      const saved = await fetchLibraryCards()
-      if (saved) this.cards = saved
+      this.cards = (await fetchLibraryCards()) ?? []
       this.isLoaded = true
     },
     async ensureLoaded() {
       if (!this.isLoaded) await this.loadCards()
     },
-    async createCard(name: string, setup: Setup = Setup.Scale, fretboards: FretboardData[] = [defaultDataFor(setup)]) {
+    reset() {
+      this.cards = []
+      this.activeCardId = null
+      this.isLoaded = false
+    },
+    async createCard(name: string, setup: Setup = Setup.Scale, fretboards: FretboardData[] = [defaultDataFor(setup)]): Promise<LibraryCard | undefined> {
       await this.ensureLoaded()
-      const card: LibraryCard = {
-        id: crypto.randomUUID(),
-        name,
-        setup,
-        fretboards: _.cloneDeep(fretboards),
-        createdAt: Date.now(),
+      try {
+        const card = await createLibraryCard({ name, setup, fretboards: _.cloneDeep(fretboards) })
+        this.cards.push(card)
+        return card
+      } catch (error) {
+        console.log('createCard: ', error)
+        return undefined
       }
-      this.cards.push(card)
-      await saveLibraryCards(this.cards)
-      return card
     },
     async deleteCard(id: string) {
+      try {
+        await deleteLibraryCard(id)
+      } catch (error) {
+        console.log('deleteCard: ', error)
+        return
+      }
       this.cards = this.cards.filter(c => c.id !== id)
       if (this.activeCardId === id) this.activeCardId = null
-      await saveLibraryCards(this.cards)
     },
     async renameCard(id: string, newName: string) {
-      const card = this.cards.find(c => c.id === id)
-      if (card) {
-        card.name = newName
-        await saveLibraryCards(this.cards)
-      }
+      await this.updateCard(id, { name: newName })
     },
     async updateCardFretboards(id: string, fretboards: FretboardData[]) {
       await this.ensureLoaded()
-      const card = this.cards.find(c => c.id === id)
-      if (card) {
-        card.fretboards = _.cloneDeep(fretboards)
-        await saveLibraryCards(this.cards)
+      await this.updateCard(id, { fretboards: _.cloneDeep(fretboards) })
+    },
+    async updateCard(id: string, patch: LibraryCardPatch) {
+      if (!this.cards.some(c => c.id === id)) return
+      try {
+        const updated = await updateLibraryCard(id, patch)
+        if (updated) this.cards = this.cards.map(c => (c.id === id ? updated : c))
+      } catch (error) {
+        console.log('updateCard: ', error)
       }
     },
   },
