@@ -4,6 +4,7 @@ import { Setup } from '@data/constants'
 import { defaultDataFor } from '@/lib/fretboardData'
 import { useAuthStore } from '@stores/useAuthStore'
 import { ApiError } from '@services/http'
+import { saveFretboards } from '@services/adapters/apiAdapter'
 import { clearTokens, expireSession, getAccessToken, getRefreshToken } from '@services/session'
 import { enableAccounts, jsonResponse, requestBody, routeFetch } from './support'
 
@@ -198,5 +199,21 @@ describe('auth store', () => {
 
     window.dispatchEvent(new StorageEvent('storage', { key: 'refreshToken', newValue: null }))
     expect(auth.status).toBe('guest')
+  })
+
+  it('sends pending saves before logging out', async () => {
+    const fetchMock = routeFetch({
+      'POST /auth/login': () => jsonResponse(200, authResponse),
+      'PUT /workspaces/scale': () => jsonResponse(204),
+      'POST /auth/logout': () => jsonResponse(204),
+    })
+    const auth = guestStore()
+    await auth.login(credentials)
+
+    saveFretboards(Setup.Scale, [defaultDataFor(Setup.Scale)])
+    await auth.logout()
+
+    const order = fetchMock.mock.calls.map(([url, init]) => `${init?.method} ${new URL(String(url)).pathname}`)
+    expect(order).toEqual(['POST /auth/login', 'PUT /workspaces/scale', 'POST /auth/logout'])
   })
 })

@@ -1,120 +1,100 @@
-import { Setup, Theme } from '@data/constants'
+import _ from 'lodash'
+import { Setup } from '@data/constants'
 import { FretboardData, defaultDataFor } from '@/lib/fretboardData'
+import { ApiError, apiRequest } from '@services/http'
 import { defaultChordProgression } from '@services/adapters/localStorageAdapter'
-import type { LibraryCard, ChordProgression } from '@services/adapters/localStorageAdapter'
+import type { ChordProgression, LibraryCard, LibraryCardInput, LibraryCardPatch } from '@services/adapters/localStorageAdapter'
 
-const BASE_URL = 'http://localhost:3000'
+export const SAVE_DELAY_MS = 800
 
-export const fetchCurrentTheme = async (): Promise<Theme | null> => {
+interface PendingSave {
+  (save: () => Promise<void>): void
+  flush: () => Promise<void> | undefined
+}
+
+const progressionKey = 'chordProgression'
+const pendingSaves = new Map<string, PendingSave>()
+// Anything whose last load failed for a reason other than "not saved yet". Saving it now
+// would overwrite the account with the defaults the page fell back to, so saves are skipped
+// until a load succeeds.
+const failedLoads = new Set<string>()
+
+const saveLater = (key: string, save: () => Promise<void>): void => {
+  let pending = pendingSaves.get(key)
+  if (!pending) {
+    pending = _.debounce((run: () => Promise<void>) => run(), SAVE_DELAY_MS) as PendingSave
+    pendingSaves.set(key, pending)
+  }
+  pending(save)
+}
+
+export const flushPendingSaves = async (): Promise<void> => {
+  await Promise.all([...pendingSaves.values()].map(pending => pending.flush()))
+}
+
+const isNotFound = (error: unknown): boolean => error instanceof ApiError && error.status === 404
+
+const load = async <T>(key: string, label: string, request: () => Promise<T>): Promise<T | undefined> => {
   try {
-    const res = await fetch(`${BASE_URL}/theme`)
-    if (!res.ok) return null
-    const data = await res.json()
-    return data.value as Theme
+    const value = await request()
+    failedLoads.delete(key)
+    return value
   } catch (error) {
-    console.log('fetchCurrentTheme: ', error)
-    return null
+    if (isNotFound(error)) {
+      failedLoads.delete(key)
+    } else {
+      failedLoads.add(key)
+      console.log(`${label}: `, error)
+    }
+    return undefined
   }
 }
 
-export const saveCurrentTheme = async (theme: Theme): Promise<void> => {
-  try {
-    await fetch(`${BASE_URL}/theme`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ value: theme }),
-    })
-  } catch (error) {
-    console.log('saveCurrentTheme: ', error)
-  }
-}
+const workspacePath = (setup: Setup): string => `/workspaces/${setup.toLowerCase()}`
 
-export const fetchCurrentFretboard = async (setup: Setup): Promise<FretboardData | undefined> => {
-  try {
-    const res = await fetch(`${BASE_URL}/fretboard/${setup}`)
-    if (!res.ok) return defaultDataFor(setup)
-    return await res.json() as FretboardData
-  } catch (error) {
-    console.log('fetchCurrentFretboard: ', error)
-    return defaultDataFor(setup)
-  }
-}
+// The selected fretboard is part of the stack; the API has no separate "current fretboard".
+export const fetchCurrentFretboard = (setup: Setup): FretboardData => defaultDataFor(setup)
 
-export const saveCurrentFretboard = async (setup: Setup, fretboard: FretboardData): Promise<void> => {
-  try {
-    await fetch(`${BASE_URL}/fretboard/${setup}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(fretboard),
-    })
-  } catch (error) {
-    console.log('saveCurrentFretboard: ', error)
-  }
-}
+export const saveCurrentFretboard = (_setup: Setup, _fretboard: FretboardData): void => {}
 
 export const fetchFretboards = async (setup: Setup): Promise<FretboardData[] | undefined> => {
-  try {
-    const res = await fetch(`${BASE_URL}/fretboards/${setup}`)
-    if (!res.ok) return undefined
-    return await res.json() as FretboardData[]
-  } catch (error) {
-    console.log('fetchFretboards: ', error)
-  }
+  const workspace = await load(setup, 'fetchFretboards', () => apiRequest<{ fretboards: FretboardData[] }>('GET', workspacePath(setup)))
+  return workspace?.fretboards
 }
 
-export const saveFretboards = async (setup: Setup, fretboards: FretboardData[]): Promise<void> => {
-  try {
-    await fetch(`${BASE_URL}/fretboards/${setup}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(fretboards),
-    })
-  } catch (error) {
-    console.log('saveFretboards: ', error)
-  }
+export const saveFretboards = (setup: Setup, fretboards: FretboardData[]): void => {
+  if (failedLoads.has(setup)) return
+  const snapshot = _.cloneDeep(fretboards)
+  saveLater(setup, () => apiRequest<void>('PUT', workspacePath(setup), { fretboards: snapshot })
+    .catch(error => console.log('saveFretboards: ', error)))
 }
 
 export const fetchLibraryCards = async (): Promise<LibraryCard[] | undefined> => {
   try {
-    const res = await fetch(`${BASE_URL}/library-cards`)
-    if (!res.ok) return undefined
-    return await res.json() as LibraryCard[]
+    return await apiRequest<LibraryCard[]>('GET', '/library-cards')
   } catch (error) {
     console.log('fetchLibraryCards: ', error)
+    return undefined
   }
 }
 
-export const saveLibraryCards = async (cards: LibraryCard[]): Promise<void> => {
-  try {
-    await fetch(`${BASE_URL}/library-cards`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(cards),
-    })
-  } catch (error) {
-    console.log('saveLibraryCards: ', error)
-  }
-}
+export const createLibraryCard = (input: LibraryCardInput): Promise<LibraryCard> =>
+  apiRequest<LibraryCard>('POST', '/library-cards', input)
+
+export const updateLibraryCard = (id: string, patch: LibraryCardPatch): Promise<LibraryCard> =>
+  apiRequest<LibraryCard>('PATCH', `/library-cards/${id}`, patch)
+
+export const deleteLibraryCard = (id: string): Promise<void> =>
+  apiRequest<void>('DELETE', `/library-cards/${id}`)
 
 export const fetchChordProgression = async (): Promise<ChordProgression> => {
-  try {
-    const res = await fetch(`${BASE_URL}/chord-progression`)
-    if (!res.ok) return structuredClone(defaultChordProgression)
-    return await res.json() as ChordProgression
-  } catch (error) {
-    console.log('fetchChordProgression: ', error)
-    return structuredClone(defaultChordProgression)
-  }
+  const progression = await load(progressionKey, 'fetchChordProgression', () => apiRequest<ChordProgression>('GET', '/chord-progression'))
+  return progression ?? structuredClone(defaultChordProgression)
 }
 
-export const saveChordProgression = async (progression: ChordProgression): Promise<void> => {
-  try {
-    await fetch(`${BASE_URL}/chord-progression`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(progression),
-    })
-  } catch (error) {
-    console.log('saveChordProgression: ', error)
-  }
+export const saveChordProgression = (progression: ChordProgression): void => {
+  if (failedLoads.has(progressionKey)) return
+  const snapshot = _.cloneDeep(progression)
+  saveLater(progressionKey, () => apiRequest<void>('PUT', '/chord-progression', snapshot)
+    .catch(error => console.log('saveChordProgression: ', error)))
 }

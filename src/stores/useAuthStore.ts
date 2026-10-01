@@ -5,6 +5,7 @@ import type { LoginInput, SignupInput } from '@services/authApi'
 import { clearGuestData, collectGuestData } from '@services/guestData'
 import { clearTokens, getRefreshToken, onSessionExpired, refreshSession, refreshTokenStorageKey, setTokens } from '@services/session'
 import type { AuthResponse, User } from '@services/apiTypes'
+import { flushPendingSaves } from '@services/adapters/apiAdapter'
 
 export type AuthStatus = 'restoring' | 'guest' | 'authenticated'
 
@@ -83,6 +84,8 @@ export const useAuthStore = defineStore('auth', {
       }
     },
     async logout() {
+      // Send the last debounced edits while the tokens are still valid.
+      if (this.status === 'authenticated') await flushPendingSaves()
       const refreshToken = getRefreshToken()
       if (refreshToken) {
         try {

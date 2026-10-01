@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import { Setup, Theme, Tonality } from '@data/constants'
 import { FretboardData, defaultDataFor } from '@/lib/fretboardData'
 
@@ -7,6 +8,17 @@ export interface LibraryCard {
   setup: Setup
   fretboards: FretboardData[]
   createdAt: number
+}
+
+export interface LibraryCardInput {
+  name: string
+  setup: Setup
+  fretboards: FretboardData[]
+}
+
+export interface LibraryCardPatch {
+  name?: string
+  fretboards?: FretboardData[]
 }
 
 export interface ProgressionChord {
@@ -145,12 +157,38 @@ export const fetchLibraryCards = (): LibraryCard[] | undefined => {
   }
 }
 
-export const saveLibraryCards = (cards: LibraryCard[]): void => {
+const saveLibraryCards = (cards: LibraryCard[]): void => {
   try {
     localStorage.setItem(libraryCardsStorageKey, JSON.stringify(cards))
   } catch (error) {
     console.log('saveLibraryCards: ', error)
   }
+}
+
+export const createLibraryCard = (input: LibraryCardInput): LibraryCard => {
+  const card: LibraryCard = {
+    id: crypto.randomUUID(),
+    name: input.name,
+    setup: input.setup,
+    fretboards: _.cloneDeep(input.fretboards),
+    createdAt: Date.now(),
+  }
+  saveLibraryCards([...(fetchLibraryCards() ?? []), card])
+  return card
+}
+
+export const updateLibraryCard = (id: string, patch: LibraryCardPatch): LibraryCard | undefined => {
+  const cards = fetchLibraryCards() ?? []
+  const card = cards.find(c => c.id === id)
+  if (!card) return undefined
+  if (patch.name !== undefined) card.name = patch.name
+  if (patch.fretboards !== undefined) card.fretboards = _.cloneDeep(patch.fretboards)
+  saveLibraryCards(cards)
+  return card
+}
+
+export const deleteLibraryCard = (id: string): void => {
+  saveLibraryCards((fetchLibraryCards() ?? []).filter(card => card.id !== id))
 }
 
 export const fetchChordProgression = (): ChordProgression => {

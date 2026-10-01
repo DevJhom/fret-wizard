@@ -16,9 +16,8 @@ const editingId = ref<string | null>(null)
 const editingName = ref('')
 
 const handleCreate = async () => {
-  const defaultName = `Card ${libraryStore.cards.length + 1}`
-  await libraryStore.createCard(defaultName)
-  const newCard = libraryStore.cards[libraryStore.cards.length - 1]
+  const newCard = await libraryStore.createCard(`Card ${libraryStore.cards.length + 1}`)
+  if (!newCard) return
   editingId.value = newCard.id
   editingName.value = newCard.name
 }

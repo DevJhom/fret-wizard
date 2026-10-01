@@ -118,7 +118,7 @@ const resetChord = () => {
 const saveToLibrary = async () => {
     await libraryStore.ensureLoaded();
     const card = await libraryStore.createCard(`Card ${libraryStore.cards.length + 1}`, props.setup, stack.value);
-    libraryStore.activeCardId = card.id;
+    if (card) libraryStore.activeCardId = card.id;
 }
 
 const loadStack = async () => {
