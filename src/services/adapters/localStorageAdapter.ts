@@ -37,7 +37,7 @@ const themeStorageKey = 'theme'
 const legacyFretboardStorageKey = 'currentFretboard'
 const legacyFretboardListStorageKey = 'fretboardList'
 const libraryCardsStorageKey = 'libraryCards'
-const chordProgressionStorageKey = 'chordProgression'
+export const chordProgressionStorageKey = 'chordProgression'
 
 const fretboardStorageKeys: Record<Setup, string> = {
   [Setup.Scale]: 'scaleCurrentFretboard',
@@ -48,6 +48,14 @@ const fretboardListStorageKeys: Record<Setup, string> = {
   [Setup.Scale]: 'scaleFretboardList',
   [Setup.Chord]: 'chordFretboardList',
 }
+
+// Everything that syncs to an account; cleared after a successful import.
+export const syncedStorageKeys: string[] = [
+  libraryCardsStorageKey,
+  chordProgressionStorageKey,
+  ...Object.values(fretboardStorageKeys),
+  ...Object.values(fretboardListStorageKeys),
+]
 
 const migrateLegacyFretboards = (): void => {
   const legacyFretboard = localStorage.getItem(legacyFretboardStorageKey)
