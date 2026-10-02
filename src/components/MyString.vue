@@ -189,7 +189,7 @@ const openIndex = 11; //equivalent note to the open position
     opacity: 0.25;
 }
 
-@media only screen and (max-width: 1024px) and (orientation: landscape) {
+@media (max-width: $phone) {
     .fret {
         min-width: 1.5rem;
     }

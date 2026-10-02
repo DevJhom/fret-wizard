@@ -100,9 +100,9 @@ const tones = computed(() => {
     gap: 0.5rem;
     height: 44px;
     padding: 0 0.8rem 0 0.4rem;
-    border: 1px solid var(--card-border-color);
+    border: 1px solid transparent;
     border-radius: 22px;
-    background: none;
+    background-color: var(--option-background-color);
     color: inherit;
     cursor: pointer;
 
@@ -120,10 +120,11 @@ const tones = computed(() => {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
+    width: 18px;
+    height: 18px;
     border-radius: 50%;
-    font-size: 0.7rem;
+    font-size: 0.75rem;
+    line-height: 1;
     font-weight: 700;
     color: #141414;
     box-shadow: var(--note-ring);
@@ -143,7 +144,17 @@ const tones = computed(() => {
 
     .degree-dot {
         color: inherit;
-        box-shadow: inset 0 0 0 2px var(--card-border-color);
+        box-shadow: inset 0 0 0 2px $gray-1;
+    }
+}
+
+@media (max-width: $phone) {
+    .pattern-summary {
+        width: 100%;
+    }
+
+    .chord-symbol {
+        font-size: 2.5rem;
     }
 }
 </style>

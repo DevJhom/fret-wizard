@@ -85,8 +85,8 @@ onMounted(() => {
         </div>
         <button type="button" class="add-chord" @click="emit('add')">+ Add {{ setup == Setup.Scale ? 'scale' : 'chord' }}</button>
         <div class="stack-actions">
-            <button type="button" class="stack-action" @click="emit('reset')">Reset</button>
-            <button type="button" class="stack-action" @click="save()">{{ hasSaved ? 'Saved' : 'Save to Library' }}</button>
+            <button type="button" class="stack-action reset-action" @click="emit('reset')">Reset</button>
+            <button type="button" class="stack-action save-action" @click="save()">{{ hasSaved ? 'Saved' : 'Save to Library' }}</button>
         </div>
     </div>
 </template>
@@ -94,6 +94,7 @@ onMounted(() => {
 <style scoped lang="scss">
 .stack-bar {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 0.75rem;
     width: 100%;
@@ -174,12 +175,30 @@ onMounted(() => {
 .stack-action {
     padding: 0 1rem;
     border-radius: 9px;
-    background-color: var(--reset-settings-background-color);
-    color: $black;
     font-size: 0.9rem;
+    font-weight: 600;
 
     &:hover {
-        background-color: $yellow;
+        filter: brightness(1.1);
+    }
+}
+
+.reset-action {
+    background-color: $red-dark;
+    color: #ffffff;
+}
+
+.save-action {
+    background-color: $yellow;
+    color: $black;
+}
+
+// Actions get their own row above the stack
+@media (max-width: $phone) {
+    .stack-actions {
+        order: -1;
+        justify-content: flex-end;
+        width: 100%;
     }
 }
 </style>

@@ -311,7 +311,7 @@ const fretIndicatorIndexes = [3,5,7,9,12,15,17,19,21,24];
 //     margin-top: 70px;
 // }
 
-@media only screen and (max-width: 1024px) and (orientation: landscape) {
+@media (max-width: $phone) {
     .fret-indicator {
         min-width: 1.5rem;
     }
