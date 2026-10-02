@@ -170,6 +170,7 @@ onMounted(async () => {
 
 .selector-wrapper {
     display: flex;
+    flex-wrap: wrap;
     justify-content: center;
     align-items: center;
     gap: 4px;
@@ -187,6 +188,8 @@ onMounted(async () => {
 
 .chord-palette {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 0.75rem;
 }
 
@@ -239,5 +242,11 @@ onMounted(async () => {
 
 .chord-ghost {
     opacity: 0.4;
+}
+
+@media (max-width: $phone) {
+    .progression-page {
+        padding: 1.5rem 1rem;
+    }
 }
 </style>

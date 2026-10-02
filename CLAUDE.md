@@ -38,8 +38,7 @@ DefaultLayout.vue (theme toggle, orientation detection, Scale | Chord | Chord Pr
 │       └── MyString.vue (renders individual strings)
 ├── ChordProgressionPage.vue (diatonic chord palette per key; drag/click chords into a progression)
 │   └── ChordBlock.vue (numeral + chord name block)
-├── LibraryPage.vue (saved fretboard stacks; opening a card loads it into its Scale/Chord page)
-└── RotateMessage.vue (portrait mode notice)
+└── LibraryPage.vue (saved fretboard stacks; opening a card loads it into its Scale/Chord page)
 ```
 
 Scale and Chord pages persist separate fretboard stacks (`scaleCurrentFretboard`/`scaleFretboardList`, `chordCurrentFretboard`/`chordFretboardList`). Legacy `currentFretboard`/`fretboardList` keys are migrated on first read in `localStorageAdapter.ts`. A `LibraryCard` stores `setup` plus a `fretboards` stack; the active card auto-updates when leaving its page. A Shape is one `currentCAGED` entry set to true (all true = All); tones outside it fade. Chord shapes are named from the chord root; Scale shapes keep the tonality-based offset (relative major for minor keys). The Chord page also has a Fingering view (`chordView: 'fingering'`, position in `currentChordPosition`) using `chords.ts` triad fingerings, adapted for minor, for Triad and Power only. The Chord Progression page persists `{ key, tonality, progression: { id, degree }[] }` under `chordProgression`; storing degrees means the progression transposes with the key.
@@ -126,9 +125,9 @@ Variables from `src/assets/scss/variables.scss` are **auto-imported** in all com
 - **Props:** typed via `defineProps<T>()`
 
 ### Responsive Design
-- App detects portrait mode via `window.matchMedia("(orientation: landscape)")` and shows `RotateMessage.vue`
-- Requires landscape orientation for full fretboard functionality
-- Uses Bootstrap breakpoints with custom SCSS variables
+- One shared breakpoint, `$phone` (940px) in `variables.scss`, for phones in either orientation: `@media (max-width: $phone)`
+- Portrait works everywhere. On Scale/Chord pages the neck scrolls sideways inside `.board-scroll`, and a portrait-only hint at the top of the page suggests rotating
+- On phones the page nav (`.nav-tabs`) becomes a left sidebar opened by the menu button in the top bar (`isMenuOpen` in `DefaultLayout.vue`); picking a page, the backdrop or Esc closes it
 - Test both orientations during development
 
 ### Persistence Strategy

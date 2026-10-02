@@ -12,6 +12,8 @@ import StackBar from '@components/StackBar.vue';
 import PatternSummary from '@components/PatternSummary.vue';
 import PatternBuilder from '@components/PatternBuilder.vue';
 import MyFretboard from '@components/MyFretboard.vue';
+import RotatePhone from '@/assets/icons/RotatePhone.vue';
+import { rotateHintDismissed } from '@/lib/rotateHint';
 
 type Shape = keyof CurrentCAGED;
 type LabelMode = 'notes' | 'intervals';
@@ -48,6 +50,10 @@ const fingeringOptions = computed(() => getChordPositionIndexes(chord.value.curr
 const boardCAGED = computed(() => isFingering.value ? defaultData.currentCAGED : chord.value.currentCAGED);
 const chordPositions = computed(() => isFingering.value ? getChordPositions(chord.value.currentPattern, chord.value.currentKey, chord.value.currentChordPosition, chord.value.currentTonality) : undefined);
 const barPositions = computed(() => isFingering.value ? getBarPositions(chord.value.currentPattern, chord.value.currentKey, chord.value.currentChordPosition) : undefined);
+
+const dismissRotateHint = () => {
+    rotateHintDismissed.value = true;
+}
 
 const updateChord = (patch: Partial<FretboardData>) => {
     Object.assign(stack.value[selectedIndex.value], patch);
@@ -145,6 +151,12 @@ onMounted(async () => {
 
 <template>
     <div v-if="chord" class="fretboard-page">
+        <div v-if="!rotateHintDismissed" class="rotate-hint">
+            <RotatePhone class="rotate-icon"/>
+            <span>Rotate your phone for better viewing experience</span>
+            <button type="button" class="rotate-hint-close" aria-label="Dismiss" @click="dismissRotateHint">×</button>
+        </div>
+
         <StackBar
             :chords="stack"
             :selected-index="selectedIndex"
@@ -186,7 +198,7 @@ onMounted(async () => {
                     </div>
                 </template>
 
-                <template v-if="isFingering">
+                <div v-if="isFingering" class="toolbar-group stacked">
                     <span class="toolbar-label">Position</span>
                     <div class="tile-radio">
                         <label v-for="option in fingeringOptions" :key="option.position">
@@ -195,9 +207,9 @@ onMounted(async () => {
                             </input>
                         </label>
                     </div>
-                </template>
+                </div>
 
-                <template v-else>
+                <div v-else class="toolbar-group stacked">
                     <span class="toolbar-label">Shape</span>
                     <div class="tile-radio">
                         <label>
@@ -211,61 +223,71 @@ onMounted(async () => {
                             </input>
                         </label>
                     </div>
-                </template>
+                </div>
 
                 <small v-if="!isScale && !canFinger" class="toolbar-note">Positions are for triads and power chords</small>
 
-                <label for="board-frets" class="toolbar-label ms-auto">Frets</label>
-                <input
-                    id="board-frets"
-                    type="range"
-                    class="fret-slider"
-                    min="12"
-                    max="24"
-                    step="1"
-                    :value="chord.fretAmount"
-                    @input="updateChord({ fretAmount: Number(($event.target as HTMLInputElement).value) })"
-                >
-                <span class="fret-count fw-bold">{{ chord.fretAmount }}</span>
+                <div class="toolbar-group stacked labels-group">
+                    <span class="toolbar-label">Labels</span>
+                    <div class="tile-radio fw-bold">
+                        <label>
+                            <input type="radio" name="board-labels" :checked="labelMode === 'notes'" @change="labelMode = 'notes'">
+                                <div class="label toolbar-option">Notes</div>
+                            </input>
+                        </label>
+                        <label>
+                            <input type="radio" name="board-labels" :checked="labelMode === 'intervals'" @change="labelMode = 'intervals'">
+                                <div class="label toolbar-option">Intervals</div>
+                            </input>
+                        </label>
+                    </div>
+                </div>
 
-                <span class="toolbar-label">Labels</span>
-                <div class="tile-radio fw-bold">
-                    <label>
-                        <input type="radio" name="board-labels" :checked="labelMode === 'notes'" @change="labelMode = 'notes'">
-                            <div class="label toolbar-option">Notes</div>
-                        </input>
-                    </label>
-                    <label>
-                        <input type="radio" name="board-labels" :checked="labelMode === 'intervals'" @change="labelMode = 'intervals'">
-                            <div class="label toolbar-option">Intervals</div>
-                        </input>
-                    </label>
+                <div class="toolbar-group stacked">
+                    <label for="board-frets" class="toolbar-label">Frets</label>
+                    <div class="fret-range">
+                        <span class="fret-min fw-bold">12</span>
+                        <input
+                            id="board-frets"
+                            type="range"
+                            class="fret-slider"
+                            min="12"
+                            max="24"
+                            step="1"
+                            :value="chord.fretAmount"
+                            @input="updateChord({ fretAmount: Number(($event.target as HTMLInputElement).value) })"
+                        >
+                        <span class="fret-count fw-bold">{{ chord.fretAmount }}</span>
+                    </div>
                 </div>
             </div>
 
-            <MyFretboard
-                :fretAmount="chord.fretAmount"
-                :currentPattern="chord.currentPattern"
-                :currentKey="chord.currentKey"
-                :currentTonality="chord.currentTonality"
-                :currentAccidental="chord.currentAccidental"
-                :currentHighlightNotes="chord.currentHighlightNotes"
-                :currentCAGED="boardCAGED"
-                :currentStrings="chord.currentStrings"
-                :E="board.E"
-                :A="board.A"
-                :D="board.D"
-                :G="board.G"
-                :B="board.B"
-                :e="board.e"
-                :chord-positions="chordPositions"
-                :bar-positions="barPositions"
-                fade-outside-shape
-                :root-based-shapes="!isScale"
-                string-toggles
-                :label-mode="labelMode"
-                @toggle-string="onToggleString"
-            />
+            <div class="board-scroll">
+                <MyFretboard
+                    class="board"
+                    :fretAmount="chord.fretAmount"
+                    :currentPattern="chord.currentPattern"
+                    :currentKey="chord.currentKey"
+                    :currentTonality="chord.currentTonality"
+                    :currentAccidental="chord.currentAccidental"
+                    :currentHighlightNotes="chord.currentHighlightNotes"
+                    :currentCAGED="boardCAGED"
+                    :currentStrings="chord.currentStrings"
+                    :E="board.E"
+                    :A="board.A"
+                    :D="board.D"
+                    :G="board.G"
+                    :B="board.B"
+                    :e="board.e"
+                    :chord-positions="chordPositions"
+                    :bar-positions="barPositions"
+                    fade-outside-shape
+                    :root-based-shapes="!isScale"
+                    string-toggles
+                    :label-mode="labelMode"
+                    @toggle-string="onToggleString"
+                />
+            </div>
         </div>
     </div>
 </template>
@@ -287,6 +309,7 @@ onMounted(async () => {
 
 .pattern-editor {
     display: flex;
+    flex-wrap: wrap;
     gap: 2.5rem;
     padding: 1.75rem 2rem;
     text-align: start;
@@ -300,11 +323,85 @@ onMounted(async () => {
     padding: 1.25rem 1.5rem 1.5rem;
 }
 
+// Bottom-aligned so inline controls line up with the buttons under stacked headings
 .board-toolbar {
     display: flex;
-    align-items: center;
+    flex-wrap: wrap;
+    align-items: flex-end;
     gap: 0.75rem;
     width: 100%;
+}
+
+// A heading and its control wrap as one unit
+.toolbar-group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.75rem;
+    min-height: 44px;
+}
+
+// Heading above its buttons
+.toolbar-group.stacked {
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    gap: 0.4rem;
+}
+
+// Scrolls the neck inside the card when it is wider than the screen.
+// Auto margins center it when it fits and fall back to 0 when it doesn't.
+.board-scroll {
+    display: flex;
+    width: 100%;
+    overflow-x: auto;
+    scrollbar-color: var(--card-border-color) transparent;
+}
+
+.board {
+    flex: none;
+    margin-inline: auto;
+}
+
+.rotate-hint {
+    display: none;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0.5rem 0.5rem 1rem;
+    border: 2px dashed var(--card-border-color);
+    border-radius: 12px;
+    font-size: 0.85rem;
+    text-align: start;
+    color: $gray-1;
+}
+
+.rotate-icon {
+    flex: none;
+    width: 20px;
+    height: 20px;
+}
+
+.rotate-hint-close {
+    flex: none;
+    width: 36px;
+    height: 36px;
+    margin-left: auto;
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    background: none;
+    color: inherit;
+    font-size: 1.4rem;
+    line-height: 1;
+    cursor: pointer;
+
+    &:hover {
+        color: var(--accent-text-color);
+    }
+
+    &:focus-visible {
+        outline: 2px solid $yellow;
+    }
 }
 
 .toolbar-label {
@@ -323,10 +420,27 @@ input.fret-slider {
     width: 10rem;
 }
 
+// Slider range: minimum (gray) ── slider ── current count
+.fret-range {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-height: 44px;
+}
+
+.fret-min {
+    color: $gray-1;
+}
+
 .fret-count {
     min-width: 1.5rem;
-    margin-right: 0.75rem;
     color: var(--accent-text-color);
+}
+
+// Pushes Labels + Frets to the right, with extra space between the two
+.labels-group {
+    margin-left: auto;
+    margin-right: 0.75rem;
 }
 
 .view-switch {
@@ -369,5 +483,36 @@ input.fret-slider {
     min-width: 44px;
     height: 44px;
     padding: 0 0.7rem;
+}
+
+@media (max-width: $phone) {
+    .fretboard-page {
+        padding: 0.75rem 1rem 2rem;
+    }
+
+    .pattern-editor {
+        flex-direction: column;
+        gap: 1.25rem;
+        padding: 1rem;
+    }
+
+    .board-card {
+        padding: 1rem;
+    }
+
+    input.fret-slider {
+        width: 7rem;
+    }
+
+    // Wrapped rows read better left-aligned
+    .labels-group {
+        margin-left: 0;
+    }
+}
+
+@media (max-width: $phone) and (orientation: portrait) {
+    .rotate-hint {
+        display: flex;
+    }
 }
 </style>
