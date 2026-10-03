@@ -1,6 +1,7 @@
 import _ from 'lodash'
 import { Setup, Theme, Tonality } from '@data/constants'
 import { FretboardData, defaultDataFor } from '@/lib/fretboardData'
+import type { ChordType } from '@data/progressions'
 
 export interface LibraryCard {
   id: string
@@ -24,6 +25,8 @@ export interface LibraryCardPatch {
 export interface ProgressionChord {
   id: string
   degree: number
+  // Missing on chords saved before chord types existed: treat as 'triad'
+  type?: ChordType
 }
 
 export interface ChordProgression {

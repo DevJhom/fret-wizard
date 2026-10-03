@@ -7,7 +7,8 @@ import type { FretboardData } from '@/lib/fretboardData';
 
 const props = defineProps<{
     chord: FretboardData,
-    setup: Setup
+    setup: Setup,
+    labelMode?: 'notes' | 'intervals'
 }>();
 
 const emit = defineEmits<{
@@ -33,15 +34,21 @@ const isScale = computed(() => props.setup == Setup.Scale);
 const symbol = computed(() => patternTitle(props.chord.currentKey, props.chord.currentTonality, props.chord.currentPattern, isScale.value));
 const fullName = computed(() => patternSubtitle(props.chord.currentKey, props.chord.currentTonality, props.chord.currentPattern, isScale.value));
 
+// The dot shows what the fretboard shows (Labels setting); the text beside it shows the other
 const tones = computed(() => {
     const degrees = degreeInPattern(props.chord.currentPattern, props.chord.currentTonality) ?? [];
-    return degrees.map(degree => ({
-        degree,
-        name: getNoteName(degree, props.chord.currentKey, props.chord.currentAccidental),
-        label: degreeLabel(degree, props.chord.currentPattern),
-        className: degreeClasses[degree],
-        isVisible: props.chord.currentHighlightNotes.includes(degree),
-    }));
+    const showNotes = props.labelMode === 'notes';
+    return degrees.map(degree => {
+        const name = getNoteName(degree, props.chord.currentKey, props.chord.currentAccidental);
+        const interval = degreeLabel(degree, props.chord.currentPattern);
+        return {
+            degree,
+            dotLabel: showNotes ? name : interval,
+            text: showNotes ? interval : name,
+            className: degreeClasses[degree],
+            isVisible: props.chord.currentHighlightNotes.includes(degree),
+        };
+    });
 });
 </script>
 
@@ -60,8 +67,8 @@ const tones = computed(() => {
                 :title="tone.isVisible ? 'Hide on the fretboard' : 'Show on the fretboard'"
                 @click="emit('toggle-tone', tone.degree)"
             >
-                <span class="degree-dot" :class="tone.isVisible ? tone.className : ''">{{ tone.label }}</span>
-                <span class="tone-name">{{ tone.name }}</span>
+                <span class="degree-dot" :class="tone.isVisible ? tone.className : ''">{{ tone.dotLabel }}</span>
+                <span class="tone-name">{{ tone.text }}</span>
             </button>
         </div>
     </div>

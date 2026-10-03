@@ -170,7 +170,7 @@ onMounted(async () => {
         />
 
         <div class="page-card pattern-editor">
-            <PatternSummary :chord="chord" :setup="setup" @toggle-tone="onToggleTone"/>
+            <PatternSummary :chord="chord" :setup="setup" :label-mode="labelMode" @toggle-tone="onToggleTone"/>
             <PatternBuilder
                 :chord="chord"
                 :setup="setup"
