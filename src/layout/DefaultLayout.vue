@@ -13,14 +13,14 @@ import Sun from '@/assets/icons/Sun.vue';
 import Menu from '@/assets/icons/Menu.vue';
 import { useLibraryStore } from '@stores/useLibraryStore';
 import type { LibraryCard } from '@stores/useLibraryStore';
+import { pathForView, viewFromPath } from '@/lib/pageRoute';
+import type { FretboardView, View } from '@/lib/pageRoute';
 
 const libraryStore = useLibraryStore();
 const authStore = useAuthStore();
 const showAccounts = accountsEnabled();
 
 const theme = ref(Theme.dark);
-type FretboardView = 'scale' | 'chord';
-type View = FretboardView | 'progression' | 'library';
 
 const setupForView: Record<FretboardView, Setup> = {
   scale: Setup.Scale,
@@ -32,7 +32,8 @@ const viewForSetup: Record<Setup, FretboardView> = {
   [Setup.Chord]: 'chord',
 };
 
-const currentView = ref<View>('scale');
+// The page lives in the URL path so a refresh reopens it
+const currentView = ref<View>(viewFromPath(window.location.pathname));
 // Phone-only sidebar holding the page nav
 const isMenuOpen = ref(false);
 
@@ -82,18 +83,41 @@ const refreshPage = () => {
   window.location.reload();
 };
 
+// Rewrites the app root or an unknown path without adding a history entry
+const replacePath = (view: View) => {
+  if (window.location.pathname !== pathForView(view)) history.replaceState(history.state, '', pathForView(view));
+}
+
+// Back/Forward switch the page
+const onPopState = () => {
+  const view = viewFromPath(window.location.pathname);
+  if (view === currentView.value) {
+    replacePath(view);
+  } else {
+    switchView(view);
+  }
+}
+
+// Every page switch (nav, opening a Library card) adds a history entry
+watch(currentView, view => {
+  if (window.location.pathname !== pathForView(view)) history.pushState(null, '', pathForView(view));
+});
+
 // A new session means different data: forget the cards; the remounted pages reload.
 watch(() => authStore.sessionVersion, () => {
   libraryStore.reset();
 });
 
 onMounted(async () => {
+  replacePath(currentView.value);
   window.addEventListener('keydown', closeMenuOnEscape);
+  window.addEventListener('popstate', onPopState);
   await getCurrentTheme();
 })
 
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', closeMenuOnEscape);
+  window.removeEventListener('popstate', onPopState);
 })
 </script>
 
