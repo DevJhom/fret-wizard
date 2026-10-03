@@ -1,4 +1,4 @@
-import { Degree, Pattern, Tonality, degreeInPattern, majorKeyToNumber, minorKeyToNumber } from '@data/constants';
+import { Degree, Pattern, Tonality, degreeInPattern, majorKeyToNumber } from '@data/constants';
 import _ from 'lodash';
 
 interface Intervals {
@@ -239,9 +239,8 @@ export const getScale = (tonality: Tonality, pattern: Pattern, key: string) => {
   const data = getBasePattern(tonality, pattern, 'C');
   const tempData = _.cloneDeep(data);
 
-  let keyToNumber = 0;
-  if (tonality == Tonality.MAJOR) keyToNumber = majorKeyToNumber[key];
-  if (tonality == Tonality.MINOR) keyToNumber = minorKeyToNumber[key];
+  // The base pattern is built on C for both tonalities, so shift from C
+  const keyToNumber = majorKeyToNumber[key];
 
   for (let i = 0; i < keyToNumber; i++) {
     const lastValueOfE = tempData.E.pop();
