@@ -4,6 +4,7 @@ import { Degree, Setup, degreeInPattern } from '@data/constants';
 import { getNoteName } from '@data/noteNames';
 import { patternTitle, patternSubtitle, degreeLabel } from '@data/patternNames';
 import type { FretboardData } from '@/lib/fretboardData';
+import { degreeClasses } from '@/lib/degreeClasses';
 
 const props = defineProps<{
     chord: FretboardData,
@@ -14,21 +15,6 @@ const props = defineProps<{
 const emit = defineEmits<{
     (e: 'toggle-tone', degree: Degree): void
 }>();
-
-const degreeClasses: Record<Degree, string> = {
-    [Degree.roots]: 'root-note',
-    [Degree.minorSeconds]: 'minor-second',
-    [Degree.seconds]: 'second',
-    [Degree.minorThirds]: 'minor-third',
-    [Degree.thirds]: 'third',
-    [Degree.fourths]: 'fourth',
-    [Degree.tritones]: 'tritone',
-    [Degree.fifths]: 'fifth',
-    [Degree.minorSixths]: 'minor-sixth',
-    [Degree.sixths]: 'sixth',
-    [Degree.minorSevenths]: 'minor-seventh',
-    [Degree.sevenths]: 'seventh',
-};
 
 const isScale = computed(() => props.setup == Setup.Scale);
 const symbol = computed(() => patternTitle(props.chord.currentKey, props.chord.currentTonality, props.chord.currentPattern, isScale.value));
