@@ -60,16 +60,15 @@ describe('library store', () => {
     expect(library.cards).toEqual([])
   })
 
-  it('reset forgets the cards and the active card, and the next load reads again', async () => {
+  it('reset forgets the cards, and the next load reads again', async () => {
     useAuthStore().status = 'guest'
     const library = useLibraryStore()
-    const card = await library.createCard('Card 1', Setup.Scale)
-    library.activeCardId = card!.id
+    await library.createCard('Card 1', Setup.Scale)
 
     library.reset()
     expect(library.cards).toEqual([])
-    expect(library.activeCardId).toBeNull()
     expect(library.isLoaded).toBe(false)
+    expect('activeCardId' in library.$state).toBe(false)
 
     await library.ensureLoaded()
     expect(library.cards).toHaveLength(1)

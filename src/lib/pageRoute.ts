@@ -12,10 +12,31 @@ const segments: Record<View, string> = {
 
 const base = import.meta.env.BASE_URL;
 
-export const pathForView = (view: View) => `${base}${segments[view]}`;
+export const isFretboardView = (view: View): view is FretboardView => view === 'scale' || view === 'chord';
 
-export const viewFromPath = (path: string): View => {
-  const segment = path.startsWith(base) ? path.slice(base.length).replace(/\/$/, '') : '';
-  const match = (Object.keys(segments) as View[]).find(view => segments[view] === segment);
-  return match ?? 'scale';
+export interface Route {
+  view: View;
+  // The Library card a Scale/Chord page is working on: /fret-wizard/scale/<card-id>
+  cardId: string | null;
 }
+
+export const pathForView = (view: View, cardId: string | null = null) =>
+  `${base}${segments[view]}${cardId && isFretboardView(view) ? `/${encodeURIComponent(cardId)}` : ''}`;
+
+const decode = (text: string) => {
+  try {
+    return decodeURIComponent(text);
+  } catch {
+    return null;
+  }
+}
+
+export const routeFromPath = (path: string): Route => {
+  const rest = path.startsWith(base) ? path.slice(base.length).replace(/\/$/, '') : '';
+  const [segment, cardId, ...extra] = rest.split('/');
+  const view = (Object.keys(segments) as View[]).find(v => segments[v] === segment) ?? 'scale';
+  const hasCard = isFretboardView(view) && segments[view] === segment && !!cardId && extra.length === 0;
+  return { view, cardId: hasCard ? decode(cardId) : null };
+}
+
+export const viewFromPath = (path: string): View => routeFromPath(path).view;

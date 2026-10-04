@@ -10,12 +10,8 @@ export type { LibraryCard }
 export const useLibraryStore = defineStore('library', {
   state: () => ({
     cards: [] as LibraryCard[],
-    activeCardId: null as string | null,
     isLoaded: false,
   }),
-  getters: {
-    activeCard: (state): LibraryCard | undefined => state.cards.find(c => c.id === state.activeCardId),
-  },
   actions: {
     async loadCards() {
       this.cards = (await fetchLibraryCards()) ?? []
@@ -26,7 +22,6 @@ export const useLibraryStore = defineStore('library', {
     },
     reset() {
       this.cards = []
-      this.activeCardId = null
       this.isLoaded = false
     },
     async createCard(name: string, setup: Setup = Setup.Scale, fretboards: FretboardData[] = [defaultDataFor(setup)]): Promise<LibraryCard | undefined> {
@@ -48,7 +43,6 @@ export const useLibraryStore = defineStore('library', {
         return
       }
       this.cards = this.cards.filter(c => c.id !== id)
-      if (this.activeCardId === id) this.activeCardId = null
     },
     async renameCard(id: string, newName: string) {
       await this.updateCard(id, { name: newName })

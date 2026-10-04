@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import Sortable from 'sortablejs';
 import { Setup } from '@data/constants';
 import { patternSymbol } from '@data/patternNames';
@@ -15,7 +15,9 @@ interface SortableEvent {
 const props = defineProps<{
     chords: FretboardData[],
     selectedIndex: number,
-    setup: Setup
+    setup: Setup,
+    cardName?: string,
+    isDirty: boolean
 }>();
 
 const symbolFor = (chord: FretboardData) => patternSymbol(chord.currentKey, chord.currentTonality, chord.currentPattern, props.setup == Setup.Scale);
@@ -25,18 +27,17 @@ const emit = defineEmits<{
     (e: 'remove', index: number): void
     (e: 'add'): void
     (e: 'reorder', oldIndex: number, newIndex: number): void
-    (e: 'reset'): void
     (e: 'save'): void
+    (e: 'save-as-new'): void
+    (e: 'close-card'): void
 }>();
 
 const chipList = ref<HTMLElement | null>(null);
-const hasSaved = ref<boolean>(false);
 
-const save = () => {
-    emit('save');
-    hasSaved.value = true;
-    setTimeout(() => hasSaved.value = false, 1500);
-}
+const saveLabel = computed(() => {
+    if (!props.cardName) return 'Save to Library';
+    return props.isDirty ? 'Save' : 'Saved';
+});
 
 const restoreElementPosition = (list: HTMLElement, item: HTMLElement, index: number) => {
     item.remove();
@@ -85,8 +86,12 @@ onMounted(() => {
         </div>
         <button type="button" class="add-chord" @click="emit('add')">+ Add {{ setup == Setup.Scale ? 'scale' : 'chord' }}</button>
         <div class="stack-actions">
-            <button type="button" class="stack-action reset-action" @click="emit('reset')">Reset</button>
-            <button type="button" class="stack-action save-action" @click="save()">{{ hasSaved ? 'Saved' : 'Save to Library' }}</button>
+            <span v-if="cardName" class="open-card" :title="cardName">
+                <span class="open-card-name">{{ cardName }}</span>
+                <button type="button" class="open-card-close" :aria-label="`Close ${cardName}`" @click="emit('close-card')">×</button>
+            </span>
+            <button v-if="cardName" type="button" class="stack-action save-as-new-action" @click="emit('save-as-new')">Save as new card</button>
+            <button type="button" class="stack-action save-action" :disabled="!!cardName && !isDirty" @click="emit('save')">{{ saveLabel }}</button>
         </div>
     </div>
 </template>
@@ -183,19 +188,67 @@ onMounted(() => {
     }
 }
 
-.reset-action {
-    background-color: $red-dark;
-    color: #ffffff;
-}
-
 .save-action {
     background-color: $yellow;
     color: $black;
 }
 
+.save-action:disabled {
+    opacity: 0.6;
+    cursor: default;
+    filter: none;
+}
+
+.save-as-new-action {
+    background-color: var(--option-background-color);
+}
+
+.open-card {
+    display: inline-flex;
+    align-items: center;
+    max-width: 220px;
+    padding-left: 0.75rem;
+    border: 1px solid var(--card-border-color);
+    border-radius: 9px;
+}
+
+.open-card-name {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.open-card-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 36px;
+    height: 42px;
+    padding: 0;
+    line-height: 1;
+    border: none;
+    background: none;
+    color: var(--muted-text-color);
+    font-size: 1.1rem;
+    cursor: pointer;
+
+    &:hover {
+        color: inherit;
+    }
+
+    &:focus-visible {
+        outline: 2px solid $yellow;
+        outline-offset: 2px;
+    }
+}
+
 // Actions get their own row above the stack
 @media (max-width: $phone) {
     .stack-actions {
+        flex-wrap: wrap;
         order: -1;
         justify-content: flex-end;
         width: 100%;

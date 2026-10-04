@@ -8,6 +8,7 @@ import { getChordPositions, getBarPositions, getChordPositionIndexes, fingeringA
 import { fetchCurrentFretboard, fetchFretboards, saveCurrentFretboard, saveFretboards } from '@/services/customizerService';
 import { defaultData, defaultDataFor, ChordView, CurrentCAGED, CurrentStrings, FretboardData } from '@/lib/fretboardData';
 import { useLibraryStore } from '@stores/useLibraryStore';
+import { cardWithUnsavedDraft, clearWorkspaceCardId, getWorkspaceCardId, resolveCardRoute, sameStack, setWorkspaceCardId } from '@/lib/cardSession';
 import StackBar from '@components/StackBar.vue';
 import PatternSummary from '@components/PatternSummary.vue';
 import PatternBuilder from '@components/PatternBuilder.vue';
@@ -18,7 +19,12 @@ import { rotateHintDismissed } from '@/lib/rotateHint';
 type Shape = keyof CurrentCAGED;
 type LabelMode = 'notes' | 'intervals';
 
-const props = defineProps<{ setup: Setup }>();
+const props = defineProps<{ setup: Setup, cardId?: string | null }>();
+
+const emit = defineEmits<{
+    (e: 'open-card', cardId: string, replace: boolean): void
+    (e: 'close-card', replace: boolean): void
+}>();
 
 const shapes: Shape[] = ['CShape', 'AShape', 'GShape', 'EShape', 'DShape'];
 
@@ -31,6 +37,10 @@ const isLoaded = ref<boolean>(false);
 
 const isScale = computed(() => props.setup == Setup.Scale);
 const chord = computed(() => stack.value[selectedIndex.value]);
+
+// The Library card named in the URL, once the library has loaded
+const openCard = computed(() => props.cardId ? libraryStore.cards.find(c => c.id === props.cardId && c.setup === props.setup) : undefined);
+const isDirty = computed(() => !!openCard.value && !sameStack(stack.value, openCard.value.fretboards));
 
 const board = computed(() => getScale(chord.value.currentTonality, chord.value.currentPattern, chord.value.currentKey));
 
@@ -121,10 +131,53 @@ const resetChord = () => {
     stack.value[selectedIndex.value] = defaultDataFor(props.setup);
 }
 
-const saveToLibrary = async () => {
+const saveCard = async () => {
+    if (openCard.value) {
+        await libraryStore.updateCardFretboards(openCard.value.id, stack.value);
+    } else {
+        await saveAsNewCard();
+    }
+}
+
+const saveAsNewCard = async () => {
     await libraryStore.ensureLoaded();
     const card = await libraryStore.createCard(`Card ${libraryStore.cards.length + 1}`, props.setup, stack.value);
-    if (card) libraryStore.activeCardId = card.id;
+    if (!card) return;
+    setWorkspaceCardId(props.setup, card.id);
+    emit('open-card', card.id, false);
+}
+
+// Keeps the stack as a plain draft; the next Save makes a new card
+const closeCard = () => {
+    clearWorkspaceCardId(props.setup);
+    emit('close-card', false);
+}
+
+// Brings the page in line with the card named in the URL
+const attachCard = async (cardId: string | null | undefined) => {
+    if (!cardId) return;
+    await libraryStore.ensureLoaded();
+    const workspaceCardId = getWorkspaceCardId(props.setup);
+    const action = resolveCardRoute(cardId, props.setup, libraryStore.cards, workspaceCardId);
+    if (action === 'detach') {
+        if (workspaceCardId === cardId) clearWorkspaceCardId(props.setup);
+        emit('close-card', true);
+        return;
+    }
+    if (action === 'keep') return;
+
+    const unsaved = cardWithUnsavedDraft(workspaceCardId, cardId, stack.value, libraryStore.cards);
+    if (unsaved && !window.confirm(`"${unsaved.name}" has unsaved changes. Discard them and open this card?`)) {
+        emit('open-card', unsaved.id, true);
+        return;
+    }
+
+    const card = libraryStore.cards.find(c => c.id === cardId)!;
+    stack.value = card.fretboards.length
+        ? _.cloneDeep(card.fretboards).map(fretboard => ({ ...fretboard, currentSetup: props.setup }))
+        : [defaultDataFor(props.setup)];
+    selectedIndex.value = 0;
+    setWorkspaceCardId(props.setup, cardId);
 }
 
 const loadStack = async () => {
@@ -146,7 +199,11 @@ watch([stack, selectedIndex], () => {
 
 onMounted(async () => {
     await loadStack();
+    await attachCard(props.cardId);
 })
+
+// Back/Forward between cards, or a card just saved, changes the id without remounting the page
+watch(() => props.cardId, cardId => attachCard(cardId));
 </script>
 
 <template>
@@ -161,15 +218,22 @@ onMounted(async () => {
             :chords="stack"
             :selected-index="selectedIndex"
             :setup="setup"
+            :card-name="openCard?.name"
+            :is-dirty="isDirty"
             @select="selectChord"
             @remove="removeChord"
             @add="addChord"
             @reorder="reorderChords"
-            @reset="resetChord"
-            @save="saveToLibrary"
+            @save="saveCard"
+            @save-as-new="saveAsNewCard"
+            @close-card="closeCard"
         />
 
         <div class="page-card pattern-editor">
+            <button type="button" class="reset-button" title="Put this fretboard back to its defaults" @click="resetChord">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+                Reset
+            </button>
             <PatternSummary :chord="chord" :setup="setup" :label-mode="labelMode" @toggle-tone="onToggleTone"/>
             <PatternBuilder
                 :chord="chord"
@@ -308,11 +372,43 @@ onMounted(async () => {
 }
 
 .pattern-editor {
+    position: relative;
     display: flex;
     flex-wrap: wrap;
     gap: 2.5rem;
-    padding: 1.75rem 2rem;
+    // Extra top room keeps the Reset button above the builder's first headings
+    padding: 2.75rem 2rem 1.75rem;
     text-align: start;
+}
+
+// Resets only the selected fretboard, so it lives on the card that edits it
+.reset-button {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.75rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    height: 36px;
+    padding: 0 0.75rem;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    background: none;
+    color: var(--muted-text-color);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:hover {
+        border-color: transparent;
+        background-color: var(--option-background-color);
+        color: inherit;
+    }
+
+    &:focus-visible {
+        outline: 2px solid $yellow;
+        outline-offset: 2px;
+    }
 }
 
 .board-card {
@@ -494,6 +590,13 @@ input.fret-slider {
         flex-direction: column;
         gap: 1.25rem;
         padding: 1rem;
+    }
+
+    // Own row on phones so it never covers a long chord name
+    .reset-button {
+        position: static;
+        align-self: flex-end;
+        margin-bottom: -0.75rem;
     }
 
     .board-card {

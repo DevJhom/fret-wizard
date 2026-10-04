@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
 import { Setup, Theme } from '@data/constants';
-import { fetchCurrentTheme, saveCurrentTheme, fetchFretboards, saveFretboards, saveCurrentFretboard, flushPendingSaves } from '@/services/customizerService';
+import { fetchCurrentTheme, saveCurrentTheme, flushPendingSaves } from '@/services/customizerService';
 import { accountsEnabled } from '@services/apiConfig';
 import AccountMenu from '@components/AccountMenu.vue';
 import { useAuthStore } from '@stores/useAuthStore';
@@ -13,7 +13,8 @@ import Sun from '@/assets/icons/Sun.vue';
 import Menu from '@/assets/icons/Menu.vue';
 import { useLibraryStore } from '@stores/useLibraryStore';
 import type { LibraryCard } from '@stores/useLibraryStore';
-import { pathForView, viewFromPath } from '@/lib/pageRoute';
+import { isFretboardView, pathForView, routeFromPath } from '@/lib/pageRoute';
+import { getWorkspaceCardId } from '@/lib/cardSession';
 import type { FretboardView, View } from '@/lib/pageRoute';
 
 const libraryStore = useLibraryStore();
@@ -32,8 +33,10 @@ const viewForSetup: Record<Setup, FretboardView> = {
   [Setup.Chord]: 'chord',
 };
 
-// The page lives in the URL path so a refresh reopens it
-const currentView = ref<View>(viewFromPath(window.location.pathname));
+// The page and, on Scale/Chord, the open Library card live in the URL path so a refresh reopens them
+const initialRoute = routeFromPath(window.location.pathname);
+const currentView = ref<View>(initialRoute.view);
+const currentCardId = ref<string | null>(initialRoute.cardId);
 // Phone-only sidebar holding the page nav
 const isMenuOpen = ref(false);
 
@@ -44,36 +47,30 @@ const getCurrentTheme = async () => {
   }
 }
 
-const saveActiveCard = async () => {
-  // Debounced API saves must land before the stack is read back.
+// Every page or card switch adds a history entry, unless it corrects the current one
+const navigate = async (view: View, cardId: string | null = null, replace = false) => {
+  isMenuOpen.value = false;
+  // Debounced API saves must land before the next page reads its stack back.
   await flushPendingSaves();
-  if (currentView.value !== 'scale' && currentView.value !== 'chord') return;
-
-  const setup = setupForView[currentView.value];
-  const activeCard = libraryStore.activeCard;
-  if (activeCard && activeCard.setup === setup) {
-    const fretboards = await fetchFretboards(setup);
-    if (fretboards) {
-      await libraryStore.updateCardFretboards(activeCard.id, fretboards);
-    }
+  currentView.value = view;
+  currentCardId.value = isFretboardView(view) ? cardId : null;
+  const path = pathForView(view, currentCardId.value);
+  if (window.location.pathname === path) return;
+  if (replace) {
+    history.replaceState(history.state, '', path);
+  } else {
+    history.pushState(null, '', path);
   }
 }
 
-const onLoadCard = async (card: LibraryCard) => {
-  await saveActiveCard();
-  libraryStore.activeCardId = card.id;
-  await saveFretboards(card.setup, card.fretboards);
-  await saveCurrentFretboard(card.setup, card.fretboards[0]);
-  // The page about to mount reads the stack back, so send it now.
-  await flushPendingSaves();
-  currentView.value = viewForSetup[card.setup];
-}
+// Scale and Chord tabs return to the card that page was last working on
+const switchView = (view: View) => navigate(view, isFretboardView(view) ? getWorkspaceCardId(setupForView[view]) : null);
 
-const switchView = async (view: View) => {
-  isMenuOpen.value = false;
-  await saveActiveCard();
-  currentView.value = view;
-}
+const onLoadCard = (card: LibraryCard) => navigate(viewForSetup[card.setup], card.id);
+
+const onOpenCard = (cardId: string, replace: boolean) => navigate(currentView.value, cardId, replace);
+
+const onCloseCard = (replace: boolean) => navigate(currentView.value, null, replace);
 
 const closeMenuOnEscape = (event: KeyboardEvent) => {
   if (event.key === 'Escape') isMenuOpen.value = false;
@@ -84,24 +81,19 @@ const refreshPage = () => {
 };
 
 // Rewrites the app root or an unknown path without adding a history entry
-const replacePath = (view: View) => {
-  if (window.location.pathname !== pathForView(view)) history.replaceState(history.state, '', pathForView(view));
+const replacePath = () => {
+  const path = pathForView(currentView.value, currentCardId.value);
+  if (window.location.pathname !== path) history.replaceState(history.state, '', path);
 }
 
-// Back/Forward switch the page
-const onPopState = () => {
-  const view = viewFromPath(window.location.pathname);
-  if (view === currentView.value) {
-    replacePath(view);
-  } else {
-    switchView(view);
-  }
+// Back/Forward follow the URL without adding history
+const onPopState = async () => {
+  const route = routeFromPath(window.location.pathname);
+  await flushPendingSaves();
+  currentView.value = route.view;
+  currentCardId.value = route.cardId;
+  replacePath();
 }
-
-// Every page switch (nav, opening a Library card) adds a history entry
-watch(currentView, view => {
-  if (window.location.pathname !== pathForView(view)) history.pushState(null, '', pathForView(view));
-});
 
 // A new session means different data: forget the cards; the remounted pages reload.
 watch(() => authStore.sessionVersion, () => {
@@ -109,7 +101,7 @@ watch(() => authStore.sessionVersion, () => {
 });
 
 onMounted(async () => {
-  replacePath(currentView.value);
+  replacePath();
   window.addEventListener('keydown', closeMenuOnEscape);
   window.addEventListener('popstate', onPopState);
   await getCurrentTheme();
@@ -180,9 +172,9 @@ onBeforeUnmount(() => {
           </div>
         </div>
         <template v-if="authStore.status !== 'restoring'">
-          <LibraryPage v-if="currentView === 'library'" :key="`library-${authStore.sessionVersion}`" @load-card="onLoadCard" @navigate="switchView"/>
+          <LibraryPage v-if="currentView === 'library'" :key="`library-${authStore.sessionVersion}`" @load-card="onLoadCard"/>
           <ChordProgressionPage v-else-if="currentView === 'progression'" :key="`progression-${authStore.sessionVersion}`"/>
-          <FretboardPage v-else :key="`${currentView}-${authStore.sessionVersion}`" :setup="setupForView[currentView]"/>
+          <FretboardPage v-else :key="`${currentView}-${authStore.sessionVersion}`" :setup="setupForView[currentView]" :card-id="currentCardId" @open-card="onOpenCard" @close-card="onCloseCard"/>
         </template>
       </div>
     </div>

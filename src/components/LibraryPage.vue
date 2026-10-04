@@ -6,11 +6,9 @@ import type { LibraryCard } from '@stores/useLibraryStore'
 import LibraryCardItem from '@components/LibraryCardItem.vue'
 import { filterCounts, visibleCards } from '@/lib/libraryView'
 import type { LibraryFilter, LibrarySort } from '@/lib/libraryView'
-import type { View } from '@/lib/pageRoute'
 
 const emit = defineEmits<{
   (e: 'load-card', card: LibraryCard): void
-  (e: 'navigate', view: View): void
 }>()
 
 const libraryStore = useLibraryStore()
@@ -74,13 +72,9 @@ onMounted(async () => {
         <h1 class="library-title">Library</h1>
         <p class="library-summary">{{ summary }}</p>
       </div>
-      <button type="button" class="btn-new" @click="handleCreate">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-        New card
-      </button>
     </div>
 
-    <div v-if="!isEmpty" class="toolbar">
+    <div class="toolbar">
       <label class="search">
         <span class="visually-hidden">Search the library</span>
         <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
@@ -100,7 +94,8 @@ onMounted(async () => {
         </button>
       </div>
       <label class="sort">
-        Sort
+        <span class="visually-hidden">Sort</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 8 4-4 4 4M7 4v16M21 16l-4 4-4-4M17 20V4"/></svg>
         <select v-model="sort" class="sort-select">
           <option value="newest">Newest first</option>
           <option value="oldest">Oldest first</option>
@@ -109,12 +104,18 @@ onMounted(async () => {
       </label>
     </div>
 
+    <div>
+      <button type="button" class="btn-new" @click="handleCreate">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        New card
+      </button>
+    </div>
+
     <div v-if="cards.length" class="card-grid">
       <LibraryCardItem
         v-for="card in cards"
         :key="card.id"
         :card="card"
-        :is-active="card.id === libraryStore.activeCardId"
         :start-renaming="card.id === newCardId"
         @open="emit('load-card', card)"
         @rename="name => handleRename(card.id, name)"
@@ -128,19 +129,8 @@ onMounted(async () => {
     </div>
 
     <section v-if="isEmpty" class="empty-state">
-      <div class="empty-neck" aria-hidden="true">
-        <div v-for="fret in 6" :key="fret" class="empty-fret">
-          <span v-if="fret === 2" class="empty-dot"></span>
-        </div>
-      </div>
-      <div class="empty-copy">
-        <h2 class="empty-title">Save a stack to see it here</h2>
-        <p class="empty-text">Build fretboards on the Scale or Chord page, then use Save to Library. Each card keeps its whole stack, ready to reopen.</p>
-      </div>
-      <div class="empty-actions">
-        <button type="button" class="btn-new" @click="emit('navigate', 'scale')">Go to Scale</button>
-        <button type="button" class="btn-secondary" @click="emit('navigate', 'chord')">Go to Chord</button>
-      </div>
+      <svg class="empty-icon" width="96" height="96" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="14" height="14" rx="2"/><path d="M7 3h11a3 3 0 0 1 3 3v11"/><path d="M7 12h6M7 16h4"/></svg>
+      <p class="empty-text">No cards saved yet</p>
     </section>
   </div>
 </template>
@@ -330,51 +320,15 @@ onMounted(async () => {
   background-color: var(--card-background-color);
 }
 
-.empty-neck {
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  width: 200px;
-  height: 72px;
-  background-color: var(--neck-background-color);
-  background-image: repeating-linear-gradient(to bottom, var(--string-color) 0, var(--string-color) 1px, transparent 1px, transparent 14px);
-  background-position: 0 6px;
-  border-left: 3px solid var(--nut-color);
-}
-
-.empty-fret {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-right: 1px solid var(--fret-wire-color);
-}
-
-.empty-dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  border: 1.5px dashed var(--accent-text-color);
-}
-
-.empty-copy {
-  max-width: 440px;
-}
-
-.empty-title {
-  margin: 0;
-  font-size: 20px;
-  font-weight: 650;
+.empty-icon {
+  color: var(--muted-text-color);
+  opacity: 0.7;
 }
 
 .empty-text {
-  margin: 8px 0 0;
+  margin: 0;
+  font-size: 16px;
   color: var(--muted-text-color);
-}
-
-.empty-actions {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  justify-content: center;
 }
 
 .library-page button:focus-visible,
