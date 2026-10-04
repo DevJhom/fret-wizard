@@ -1,50 +1,61 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+import { Setup } from '@data/constants'
 import { useLibraryStore } from '@stores/useLibraryStore'
 import type { LibraryCard } from '@stores/useLibraryStore'
-import Trash from '@/assets/icons/Trash.vue'
-import Edit from '@/assets/icons/Edit.vue'
-import Done from '@/assets/icons/Done.vue'
+import LibraryCardItem from '@components/LibraryCardItem.vue'
+import { filterCounts, visibleCards } from '@/lib/libraryView'
+import type { LibraryFilter, LibrarySort } from '@/lib/libraryView'
+import type { View } from '@/lib/pageRoute'
 
 const emit = defineEmits<{
   (e: 'load-card', card: LibraryCard): void
+  (e: 'navigate', view: View): void
 }>()
 
 const libraryStore = useLibraryStore()
 
-const editingId = ref<string | null>(null)
-const editingName = ref('')
+const query = ref('')
+const filter = ref<LibraryFilter>('all')
+const sort = ref<LibrarySort>('newest')
+// A card made with "New card" opens in rename mode
+const newCardId = ref<string | null>(null)
+
+const filters: { value: LibraryFilter, label: string }[] = [
+  { value: 'all', label: 'All' },
+  { value: Setup.Scale, label: 'Scales' },
+  { value: Setup.Chord, label: 'Chords' },
+]
+
+const cards = computed(() => visibleCards(libraryStore.cards, filter.value, query.value, sort.value))
+const counts = computed(() => filterCounts(libraryStore.cards))
+const isEmpty = computed(() => libraryStore.isLoaded && libraryStore.cards.length === 0)
+const hasNoResults = computed(() => !isEmpty.value && libraryStore.cards.length > 0 && cards.value.length === 0)
+
+const summary = computed(() => {
+  const count = libraryStore.cards.length
+  return `${count} saved ${count === 1 ? 'card' : 'cards'}`
+})
+
+const noResultsText = computed(() =>
+  query.value.trim() ? `No cards match "${query.value.trim()}"` : 'No cards of this type yet'
+)
+
+const clearFilters = () => {
+  query.value = ''
+  filter.value = 'all'
+}
 
 const handleCreate = async () => {
-  const newCard = await libraryStore.createCard(`Card ${libraryStore.cards.length + 1}`)
-  if (!newCard) return
-  editingId.value = newCard.id
-  editingName.value = newCard.name
+  const card = await libraryStore.createCard(`Card ${libraryStore.cards.length + 1}`)
+  if (!card) return
+  // Make sure the new card is on screen
+  clearFilters()
+  newCardId.value = card.id
 }
 
-const startRename = (card: LibraryCard) => {
-  editingId.value = card.id
-  editingName.value = card.name
-}
-
-const confirmRename = async (id: string) => {
-  const name = editingName.value.trim()
-  if (name) {
-    await libraryStore.renameCard(id, name)
-  }
-  editingId.value = null
-}
-
-const cancelRename = () => {
-  editingId.value = null
-}
-
-const stackSummary = (card: LibraryCard) => {
-  return card.fretboards.map(f => `${f.currentKey} ${f.currentTonality}`).join(' · ')
-}
-
-const patternSummary = (card: LibraryCard) => {
-  return [...new Set(card.fretboards.map(f => f.currentPattern))].join(', ')
+const handleRename = async (id: string, name: string) => {
+  await libraryStore.renameCard(id, name)
 }
 
 const handleDelete = async (id: string) => {
@@ -59,170 +70,346 @@ onMounted(async () => {
 <template>
   <div class="library-page">
     <div class="library-header">
-      <h2>Library</h2>
+      <div>
+        <h1 class="library-title">Library</h1>
+        <p class="library-summary">{{ summary }}</p>
+      </div>
+      <button type="button" class="btn-new" @click="handleCreate">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        New card
+      </button>
     </div>
 
-    <div class="card-grid">
-      <div
-        v-for="card in libraryStore.cards"
+    <div v-if="!isEmpty" class="toolbar">
+      <label class="search">
+        <span class="visually-hidden">Search the library</span>
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input v-model="query" type="search" class="search-input" placeholder="Search by name, key or pattern"/>
+      </label>
+      <div class="filter-group" role="group" aria-label="Filter by type">
+        <button
+          v-for="option in filters"
+          :key="option.value"
+          type="button"
+          class="filter-button"
+          :class="{ 'filter-selected': filter === option.value }"
+          :aria-pressed="filter === option.value"
+          @click="filter = option.value"
+        >
+          {{ option.label }}<span class="filter-count">{{ counts[option.value] }}</span>
+        </button>
+      </div>
+      <label class="sort">
+        Sort
+        <select v-model="sort" class="sort-select">
+          <option value="newest">Newest first</option>
+          <option value="oldest">Oldest first</option>
+          <option value="name">Name A–Z</option>
+        </select>
+      </label>
+    </div>
+
+    <div v-if="cards.length" class="card-grid">
+      <LibraryCardItem
+        v-for="card in cards"
         :key="card.id"
-        class="library-card"
-        @click="emit('load-card', card)"
-      >
-        <div class="card-setup">{{ card.setup }}</div>
-        <div class="card-name">
-          <span v-if="editingId !== card.id">{{ card.name }}</span>
-          <input
-            v-else
-            v-model="editingName"
-            class="input-rename"
-            @keyup.enter="confirmRename(card.id)"
-            @keyup.escape="cancelRename()"
-            @click.stop
-            autofocus
-          />
-        </div>
-        <div class="card-summary" v-if="editingId !== card.id">
-          <div>{{ stackSummary(card) }}</div>
-          <div class="card-pattern">{{ patternSummary(card) }}</div>
-        </div>
-        <div v-if="editingId === card.id" class="action-icon finish-editing" @click.stop="confirmRename(card.id)">
-          <Done />
-        </div>
-        <div class="card-actions" @click.stop>
-          <div v-if="editingId !== card.id" class="action-icon" @click="startRename(card)">
-            <Edit />
-          </div>
-          <div v-if="editingId !== card.id" class="action-icon" @click="handleDelete(card.id)">
-            <Trash />
-          </div>
-        </div>
-      </div>
-
-      <div class="library-card card-new" @click="handleCreate">
-        <h2 class="text-yellow"> + </h2>
-      </div>
+        :card="card"
+        :is-active="card.id === libraryStore.activeCardId"
+        :start-renaming="card.id === newCardId"
+        @open="emit('load-card', card)"
+        @rename="name => handleRename(card.id, name)"
+        @delete="handleDelete(card.id)"
+      />
     </div>
+
+    <div v-if="hasNoResults" class="no-results">
+      <p class="no-results-text">{{ noResultsText }}</p>
+      <button type="button" class="btn-secondary" @click="clearFilters">Clear search and filters</button>
+    </div>
+
+    <section v-if="isEmpty" class="empty-state">
+      <div class="empty-neck" aria-hidden="true">
+        <div v-for="fret in 6" :key="fret" class="empty-fret">
+          <span v-if="fret === 2" class="empty-dot"></span>
+        </div>
+      </div>
+      <div class="empty-copy">
+        <h2 class="empty-title">Save a stack to see it here</h2>
+        <p class="empty-text">Build fretboards on the Scale or Chord page, then use Save to Library. Each card keeps its whole stack, ready to reopen.</p>
+      </div>
+      <div class="empty-actions">
+        <button type="button" class="btn-new" @click="emit('navigate', 'scale')">Go to Scale</button>
+        <button type="button" class="btn-secondary" @click="emit('navigate', 'chord')">Go to Chord</button>
+      </div>
+    </section>
   </div>
 </template>
 
 <style scoped lang="scss">
 .library-page {
-  padding: 1rem 2rem;
   width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  text-align: left;
 }
 
 .library-header {
   display: flex;
-  align-items: center;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-
-  h2 {
-    color: var(--accent-text-color);
-    margin: 0;
-    font-size: 1.2rem;
-  }
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
 }
 
-.card-new {
-  display: flex;
+.library-title {
+  margin: 0;
+  font-size: 32px;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  font-weight: 700;
+}
+
+.library-summary {
+  margin: 6px 0 0;
+  color: var(--muted-text-color);
+}
+
+%btn {
+  height: 44px;
+  padding: 0 18px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  font-size: 14px;
+  font-weight: 600;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-style: dashed;
+  gap: 8px;
 }
 
-.input-rename {
+.btn-new {
+  @extend %btn;
+  background-color: var(--accent-text-color);
+  color: var(--accent-contrast-color);
+
+  &:hover {
+    border-color: transparent;
+    filter: brightness(1.08);
+  }
+}
+
+.btn-secondary {
+  @extend %btn;
+  background-color: var(--card-background-color);
+  border-color: var(--card-border-color);
+  color: inherit;
+
+  &:hover {
+    border-color: var(--accent-text-color);
+  }
+}
+
+.toolbar {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.search {
+  position: relative;
+  flex: 1 1 280px;
+  max-width: 420px;
+  display: flex;
+  align-items: center;
+}
+
+.search-icon {
+  position: absolute;
+  left: 14px;
+  color: var(--muted-text-color);
+}
+
+.search-input,
+.sort-select {
+  height: 44px;
+  border-radius: 10px;
+  border: 1px solid var(--card-border-color);
   background-color: var(--card-background-color);
   color: inherit;
-  border: 1px solid $gray-1;
-  border-radius: 6px;
-  padding: 0.4em 0.6em;
-  font-size: 0.85rem;
-  outline: none;
+  font-size: 14px;
+}
 
-  &:focus {
-    border-color: $yellow;
+.search-input {
+  width: 100%;
+  padding: 0 14px 0 40px;
+  box-sizing: border-box;
+}
+
+.sort-select {
+  padding: 0 12px;
+}
+
+.filter-group {
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  border-radius: 12px;
+  background-color: var(--option-background-color);
+}
+
+.filter-button {
+  height: 40px;
+  padding: 0 14px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background-color: transparent;
+  color: var(--muted-text-color);
+  font-size: 14px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  &:hover {
+    border-color: transparent;
+    color: inherit;
   }
+}
+
+.filter-selected {
+  background-color: var(--card-background-color);
+  color: inherit;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.filter-count {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted-text-color);
+}
+
+.sort {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted-text-color);
 }
 
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr));
+  gap: 20px;
 }
 
-.library-card {
-  position: relative;
+.no-results,
+.empty-state {
   display: flex;
   flex-direction: column;
-  min-height: 120px;
-  background-color: var(--card-background-color);
-  border: 1px solid var(--card-border-color);
-  box-shadow: var(--card-shadow);
-  border-radius: 8px;
-  padding: 1rem 1rem 0.5rem 1rem;
-  cursor: pointer;
-  transition: border-color 0.2s;
-
-  &:hover {
-    border-color: $yellow;
-  }
-}
-
-.finish-editing {
-  position: absolute;
-  top: -14px;
-  right: -14px;
-}
-
-.card-name {
-  font-weight: 600;
-  font-size: 1rem;
-  margin-bottom: 0.5rem;
-  color: var(--accent-text-color);
-}
-
-.card-setup {
-  align-self: flex-start;
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: $black;
-  background-color: $yellow;
-  border-radius: 6px;
-  padding: 0.1rem 0.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.card-pattern {
-  margin-top: 0.25rem;
-  font-style: italic;
-}
-
-.card-summary {
-  font-size: 0.8rem;
-  color: $gray-1;
-  margin-bottom: 0.75rem;
-}
-
-.card-actions {
-  display: flex;
-  gap: 0.5rem;
-  justify-content: flex-end;
-  margin-top: auto;
-}
-
-.action-icon {
-  display: flex;
   align-items: center;
-  cursor: pointer;
+  gap: 16px;
+  padding: 64px 16px;
+  border: 1px dashed var(--card-border-color);
+  border-radius: 14px;
+  text-align: center;
+}
+
+.no-results-text {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
 }
 
 .empty-state {
-  color: $gray-1;
-  font-size: 0.9rem;
-  margin-top: 2rem;
+  background-color: var(--card-background-color);
+}
+
+.empty-neck {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  width: 200px;
+  height: 72px;
+  background-color: var(--neck-background-color);
+  background-image: repeating-linear-gradient(to bottom, var(--string-color) 0, var(--string-color) 1px, transparent 1px, transparent 14px);
+  background-position: 0 6px;
+  border-left: 3px solid var(--nut-color);
+}
+
+.empty-fret {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-right: 1px solid var(--fret-wire-color);
+}
+
+.empty-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 1.5px dashed var(--accent-text-color);
+}
+
+.empty-copy {
+  max-width: 440px;
+}
+
+.empty-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 650;
+}
+
+.empty-text {
+  margin: 8px 0 0;
+  color: var(--muted-text-color);
+}
+
+.empty-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.library-page button:focus-visible,
+.search-input:focus-visible,
+.sort-select:focus-visible {
+  outline: 2px solid var(--accent-text-color);
+  outline-offset: 2px;
+}
+
+@media (max-width: $phone) {
+  .library-page {
+    padding: 1.25rem 1rem;
+  }
+
+  .library-title {
+    font-size: 26px;
+  }
+
+  .search {
+    max-width: none;
+    flex-basis: 100%;
+  }
+
+  .filter-group {
+    flex: 1 1 auto;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .filter-button {
+    justify-content: center;
+  }
+
+  .sort {
+    margin-left: 0;
+  }
 }
 </style>
