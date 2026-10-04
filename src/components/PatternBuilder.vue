@@ -71,7 +71,7 @@ const types = computed(() => isScale.value ? scaleTypes : chordTypes);
         </div>
 
         <div class="builder-field">
-            <span class="builder-label">{{ isScale ? 'Scale' : 'Type' }}</span>
+            <span class="builder-label">{{ isScale ? 'Scale' : 'Chord' }}</span>
             <div class="option-row">
                 <label v-for="type in types" :key="type.pattern" class="custom-radio">
                     <input type="radio" name="chord-type" :value="type.pattern" :checked="chord.currentPattern == type.pattern" @change="emit('change-pattern', type.pattern)">
@@ -101,7 +101,7 @@ const types = computed(() => isScale.value ? scaleTypes : chordTypes);
 </template>
 
 <style scoped lang="scss">
-// Each field is a heading above its options: Key | Accidental, then Scale/Type | Quality
+// Each field is a heading above its options: Key | Accidental, then Scale/Chord | Quality
 .pattern-builder {
     display: grid;
     grid-template-columns: auto auto;

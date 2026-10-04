@@ -137,7 +137,7 @@ onBeforeUnmount(() => {
             <Menu/>
           </button>
           <span class="logo" @click="refreshPage()">
-            FRETWIZARD
+            Fret<span class="logo-accent">Wizard</span>
           </span>
           <div class="menu-backdrop" :class="{ 'is-open': isMenuOpen }" @click="isMenuOpen = false"></div>
           <nav id="page-nav" class="nav-tabs switch-radio" :class="{ 'is-open': isMenuOpen }" aria-label="Pages">
@@ -207,24 +207,46 @@ onBeforeUnmount(() => {
   display: flex;
   align-items: center;
   gap: 1rem;
+  border-bottom: 1px solid var(--card-border-color);
 }
 
 .logo {
   text-align: start;
   padding: 1rem;
-  font-size: 1rem;
-  font-weight: bold;
-  color: var(--accent-text-color);
+  font-size: 1.375rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
   cursor: pointer;
 }
 
+// "Fret" takes the theme's text color; "Wizard" the accent
+.logo-accent {
+  font-size: inherit;
+  color: var(--accent-text-color);
+}
+
+// Separate rounded tabs: muted until hovered, yellow when active
 .nav-tabs {
   display: flex;
+  gap: 4px;
   border: none;
 
+  label,
+  label:first-child,
+  label:last-child {
+    width: auto;
+    padding: 0;
+    border-radius: 8px;
+    background: none;
+  }
+
   .label {
-    padding: 0 0.5rem;
+    padding: 0.5rem 0.875rem;
+    border-radius: 8px;
+    color: var(--muted-text-color);
+    font-weight: 500;
     white-space: nowrap;
+    transition: background-color 0.15s ease, color 0.15s ease;
 
     // Invisible bold copy reserves the bold width, so tabs don't shift when the active one changes
     &::after {
@@ -233,12 +255,19 @@ onBeforeUnmount(() => {
       height: 0;
       overflow: hidden;
       visibility: hidden;
-      font-weight: 700;
+      font-weight: 600;
     }
   }
 
+  label:hover .label {
+    background-color: var(--option-background-color);
+    color: inherit;
+  }
+
   input:checked + .label {
-    font-weight: 700;
+    background-color: $yellow;
+    color: $black;
+    font-weight: 600;
   }
 }
 
@@ -290,6 +319,7 @@ onBeforeUnmount(() => {
 
   .logo {
     padding-left: 0.25rem;
+    font-size: 1.2rem;
   }
 
   .menu-backdrop {

@@ -251,7 +251,9 @@ const fretIndicatorIndexes = [3,5,7,9,12,15,17,19,21,24];
     text-decoration: line-through;
 }
 
+// Containing block for MyString's absolute open-position note, so it scrolls with the neck.
 .fret-start {
+    position: relative;
     border-left: 3px solid var(--nut-color);
 }
 

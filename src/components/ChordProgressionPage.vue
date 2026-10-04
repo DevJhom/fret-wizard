@@ -147,7 +147,7 @@ onMounted(async () => {
                 </div>
 
                 <div class="builder-field full-row">
-                    <span class="builder-label">Chord Type</span>
+                    <span class="builder-label">Chord</span>
                     <div class="option-row">
                         <label v-for="option in chordTypes" :key="option.type" class="custom-radio">
                             <input type="radio" name="progression-chord-type" v-model="currentType" :value="option.type">
@@ -255,7 +255,7 @@ onMounted(async () => {
     color: $gray-1;
 }
 
-// Heading above its options: Quality | Key on one row, Chord Type below
+// Heading above its options: Quality | Key on one row, Chord below
 .progression-builder {
     display: grid;
     grid-template-columns: auto auto;

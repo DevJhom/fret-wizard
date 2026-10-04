@@ -146,7 +146,7 @@ onMounted(() => {
     min-width: 56px;
     padding: 0 1rem;
     font-size: 1.05rem;
-    font-weight: 700;
+    font-weight: 500;
 }
 
 .chip-remove {
