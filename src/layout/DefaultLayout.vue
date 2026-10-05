@@ -155,7 +155,6 @@ onBeforeUnmount(() => {
             </label>
           </nav>
           <div class="top-bar-actions">
-            <AccountMenu v-if="showAccounts"/>
             <div class="switch-theme switch-radio">
               <label>
                 <input type="radio" name="theme" :value="Theme.dark" v-model="theme" @change="saveCurrentTheme(theme)">
@@ -169,6 +168,7 @@ onBeforeUnmount(() => {
                 </input>
               </label>
             </div>
+            <AccountMenu v-if="showAccounts"/>
           </div>
         </div>
         <template v-if="authStore.status !== 'restoring'">

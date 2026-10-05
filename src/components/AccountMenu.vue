@@ -17,7 +17,7 @@ const showAuth = ref(false)
       <span class="account-name">{{ authStore.user.username }}</span>
       <button type="button" class="account-button" @click="authStore.logout()">Log out</button>
     </template>
-    <button v-else-if="authStore.status === 'guest'" type="button" class="account-button" @click="showAuth = true">Sign in</button>
+    <button v-else-if="authStore.status === 'guest'" type="button" class="account-button" @click="showAuth = true">Login</button>
     <AuthModal v-if="showAuth" @close="showAuth = false"/>
   </div>
 </template>

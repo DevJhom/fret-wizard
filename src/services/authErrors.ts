@@ -13,7 +13,7 @@ export const describeAuthError = (error: unknown): AuthErrorView => {
       return { message: '', fields: Object.fromEntries(error.details.map(detail => [detail.path, detail.message])) }
     }
     if (error.status === 409) return { message: 'An account with this email already exists', fields: {} }
-    // The server says "Invalid email or password" for logins and "Google sign-in failed" for Google.
+    // The server says "Invalid email or password" for logins and "Google login failed" for Google.
     if (error.status === 401) return { message: error.message, fields: {} }
     if (error.status === 429) return { message: 'Too many attempts. Try again in a minute.', fields: {} }
   }

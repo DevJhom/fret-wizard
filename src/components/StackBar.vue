@@ -64,27 +64,29 @@ onMounted(() => {
 
 <template>
     <div class="stack-bar">
-        <span class="stack-label">Stack</span>
-        <div ref="chipList" class="stack-chips">
-            <div
-                v-for="(chord, index) in chords"
-                :key="`${index}-${chord.currentKey}-${chord.currentTonality}-${chord.currentPattern}`"
-                class="stack-chip"
-                :class="{ 'selected-chip': index == props.selectedIndex }"
-            >
-                <button type="button" class="chip-select" :aria-pressed="index == props.selectedIndex" @click="emit('select', index)">
-                    {{ symbolFor(chord) }}
-                </button>
-                <button
-                    v-if="index == props.selectedIndex && chords.length > 1"
-                    type="button"
-                    class="chip-remove"
-                    :aria-label="`Remove ${symbolFor(chord)}`"
-                    @click="emit('remove', index)"
-                >×</button>
+        <!-- Folder tabs: the selected one joins the card below -->
+        <div class="stack-tabs">
+            <div ref="chipList" class="stack-chips">
+                <div
+                    v-for="(chord, index) in chords"
+                    :key="`${index}-${chord.currentKey}-${chord.currentTonality}-${chord.currentPattern}`"
+                    class="stack-chip"
+                    :class="{ 'selected-chip': index == props.selectedIndex }"
+                >
+                    <button type="button" class="chip-select" :aria-pressed="index == props.selectedIndex" @click="emit('select', index)">
+                        {{ symbolFor(chord) }}
+                    </button>
+                    <button
+                        v-if="index == props.selectedIndex && chords.length > 1"
+                        type="button"
+                        class="chip-remove"
+                        :aria-label="`Remove ${symbolFor(chord)}`"
+                        @click="emit('remove', index)"
+                    >×</button>
+                </div>
             </div>
+            <button type="button" class="add-chord" @click="emit('add')">+ Add {{ setup == Setup.Scale ? 'scale' : 'chord' }}</button>
         </div>
-        <button type="button" class="add-chord" @click="emit('add')">+ Add {{ setup == Setup.Scale ? 'scale' : 'chord' }}</button>
         <div class="stack-actions">
             <span v-if="cardName" class="open-card" :title="cardName">
                 <span class="open-card-name">{{ cardName }}</span>
@@ -97,36 +99,52 @@ onMounted(() => {
 </template>
 
 <style scoped lang="scss">
+// Sits directly on top of the fretboard card; tabs are bottom-aligned so they touch it
 .stack-bar {
+    position: relative;
+    z-index: 1;
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
+    align-items: flex-end;
     gap: 0.75rem;
     width: 100%;
 }
 
-.stack-label {
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: $gray-1;
+// One row of tabs that scrolls sideways when full, so the tabs always stay on the card's edge
+.stack-tabs {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: flex-end;
+    gap: 0.25rem;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
 }
 
 .stack-chips {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: 0.25rem;
 }
 
 .stack-chip {
     display: flex;
+    flex: none;
     align-items: center;
-    border-radius: 10px;
-    background-color: var(--switch-input-background-color);
+    border: 1px solid var(--stack-tab-border);
+    border-bottom: none;
+    border-radius: 12px 12px 0 0;
+    background-color: var(--stack-tab-background);
+    color: var(--muted-text-color);
+    transition: background-color 0.15s ease, color 0.15s ease;
+
+    &:hover {
+        color: inherit;
+    }
 }
 
-.selected-chip {
+// The whole selected tab is yellow
+.selected-chip,
+.selected-chip:hover {
+    border-color: $yellow;
     background-color: $yellow;
     color: $black;
 }
@@ -143,38 +161,62 @@ onMounted(() => {
 
     &:focus-visible {
         outline: 2px solid $yellow;
-        outline-offset: 2px;
+        outline-offset: -2px;
     }
+}
+
+// Yellow focus ring would vanish on the yellow tab
+.selected-chip button:focus-visible {
+    outline-color: $black;
 }
 
 .chip-select {
     min-width: 56px;
-    padding: 0 1rem;
+    padding: 0 1.1rem;
     font-size: 1.05rem;
     font-weight: 500;
+    white-space: nowrap;
+}
+
+.selected-chip .chip-select {
+    font-weight: 600;
 }
 
 .chip-remove {
     width: 32px;
     margin-left: -0.6rem;
     font-size: 1.1rem;
+    color: inherit;
+    opacity: 0.7;
+
+    &:hover {
+        opacity: 1;
+    }
 }
 
+// A standalone dashed button, centered on the tabs and clear of the card
 .add-chord {
+    flex: none;
+    align-self: center;
+    height: 36px;
+    margin-left: 0.5rem;
     padding: 0 1rem;
     border: 1px dashed var(--card-border-color);
     border-radius: 10px;
     color: $gray-1;
+    white-space: nowrap;
 
     &:hover {
         border-color: $yellow;
+        color: inherit;
     }
 }
 
 .stack-actions {
     display: flex;
+    flex: none;
     gap: 0.5rem;
-    margin-left: auto;
+    margin-bottom: 0.5rem;
 }
 
 .stack-action {
@@ -185,6 +227,10 @@ onMounted(() => {
 
     &:hover {
         filter: brightness(1.1);
+    }
+
+    &:focus-visible {
+        outline-offset: 2px;
     }
 }
 
@@ -245,13 +291,18 @@ onMounted(() => {
     }
 }
 
-// Actions get their own row above the stack
+// Actions get their own row above the tabs
 @media (max-width: $phone) {
+    .stack-bar {
+        flex-wrap: wrap;
+    }
+
     .stack-actions {
         flex-wrap: wrap;
         order: -1;
         justify-content: flex-end;
         width: 100%;
+        margin-bottom: 0;
     }
 }
 </style>

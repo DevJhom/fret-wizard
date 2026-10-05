@@ -11,8 +11,8 @@ describe('describeAuthError', () => {
   it('shows the server message for 401s', () => {
     expect(describeAuthError(new ApiError(401, 'UNAUTHORIZED', 'Invalid email or password')))
       .toEqual({ message: 'Invalid email or password', fields: {} })
-    expect(describeAuthError(new ApiError(401, 'UNAUTHORIZED', 'Google sign-in failed')))
-      .toEqual({ message: 'Google sign-in failed', fields: {} })
+    expect(describeAuthError(new ApiError(401, 'UNAUTHORIZED', 'Google login failed')))
+      .toEqual({ message: 'Google login failed', fields: {} })
   })
 
   it('puts validation messages beside their fields', () => {

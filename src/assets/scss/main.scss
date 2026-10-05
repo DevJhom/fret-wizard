@@ -95,6 +95,10 @@ button:focus-visible {
   --reset-settings-background-color: #696d6f;
   --muted-text-color: #a39b90;
   --accent-soft-color: rgba(250, 174, 37, 0.14);
+  --auth-brand-background: linear-gradient(145deg, rgba(250, 174, 37, 0.45), rgba(250, 174, 37, 0.24));
+  --auth-tagline-color: #d8d1c7;
+  --stack-tab-background: #1f2021;
+  --stack-tab-border: transparent;
   --accent-strong-text-color: #{$yellow};
   --accent-contrast-color: #191a1b;
   --danger-color: #{$red-dark};
@@ -128,6 +132,10 @@ button:focus-visible {
   --reset-settings-background-color: #efebe4;
   --muted-text-color: #6b6359;
   --accent-soft-color: rgba(160, 98, 10, 0.12);
+  --auth-brand-background: rgba(160, 98, 10, 0.12);
+  --auth-tagline-color: #6b6359;
+  --stack-tab-background: #f1ede6;
+  --stack-tab-border: #ebe6dd;
   --accent-strong-text-color: #7f4d06;
   --accent-contrast-color: #ffffff;
   --danger-color: #b4232f;

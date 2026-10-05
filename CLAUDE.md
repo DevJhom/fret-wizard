@@ -11,7 +11,7 @@
 
 **Demo:** https://devjhom.github.io/fret-wizard/
 
-**Tech Stack:** Vue 3, TypeScript, Vite 5, Pinia, Bootstrap 5, SCSS, SortableJS, Vitest, GitHub Pages; backend: `../fretWizard-service` (Express + Prisma + SQL Server)
+**Tech Stack:** Vue 3, TypeScript, Vite 5, Pinia, Bootstrap 5, SCSS, SortableJS, Vitest, GitHub Pages; backend: `../fretWizard-service` (Express + Prisma + PostgreSQL)
 
 ## Development Commands
 

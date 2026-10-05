@@ -35,21 +35,23 @@ onMounted(() => {
     class="modal d-block"
     role="dialog"
     aria-modal="true"
-    aria-labelledby="new-card-title"
+    aria-label="New card"
     @click.self="emit('close')"
     @keydown.esc="emit('close')"
   >
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content new-card">
-        <div class="new-card-header">
-          <h2 id="new-card-title" class="new-card-title">New card</h2>
-          <button type="button" class="new-card-close" aria-label="Close" @click="emit('close')">×</button>
-        </div>
+        <button type="button" class="new-card-close" aria-label="Close" @click="emit('close')">×</button>
 
         <form class="new-card-form" novalidate @submit.prevent="submit">
+          <label class="new-card-field">
+            <span>Card Name</span>
+            <input ref="nameInput" v-model="name" class="new-card-input" maxlength="80">
+          </label>
+
           <div class="new-card-field">
-            <span id="new-card-type">Type</span>
-            <div class="tile-radio fw-bold" role="radiogroup" aria-labelledby="new-card-type">
+            <span id="new-card-type">I want to create</span>
+            <div class="setup-switch fw-bold" role="radiogroup" aria-labelledby="new-card-type">
               <label>
                 <input v-model="setup" type="radio" name="new-card-setup" :value="Setup.Scale">
                 <div class="label">Scale</div>
@@ -60,11 +62,6 @@ onMounted(() => {
               </label>
             </div>
           </div>
-
-          <label class="new-card-field">
-            <span>Title</span>
-            <input ref="nameInput" v-model="name" class="new-card-input" maxlength="80">
-          </label>
 
           <div class="new-card-actions">
             <button type="button" class="btn-cancel" @click="emit('close')">Cancel</button>
@@ -85,7 +82,8 @@ onMounted(() => {
 
 .new-card {
   gap: 1rem;
-  padding: 1.5rem;
+  // Extra top room keeps Card Name below the close button
+  padding: 3rem 1.5rem 1.5rem;
   text-align: start;
   color: inherit;
   background-color: var(--card-background-color);
@@ -94,19 +92,11 @@ onMounted(() => {
   box-shadow: var(--card-shadow);
 }
 
-.new-card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.new-card-title {
-  margin: 0;
-  font-size: 1.2rem;
-  color: var(--accent-text-color);
-}
-
+// Pinned to the card's top-right corner
 .new-card-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 1rem;
   border: none;
   background: none;
   color: inherit;
@@ -128,16 +118,53 @@ onMounted(() => {
   font-weight: 600;
 }
 
-.tile-radio label {
-  flex: 1;
-}
-
-.tile-radio .label {
+// Two separate tiles: the selected one is yellow, the other dashed
+.setup-switch {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 44px;
-  font-size: 0.95rem;
+  gap: 0.75rem;
+
+  label {
+    position: relative;
+    flex: 1;
+    cursor: pointer;
+  }
+
+  // Visually hidden but still reachable by keyboard
+  input {
+    position: absolute;
+    width: 0;
+    height: 0;
+    opacity: 0;
+  }
+
+  .label {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    // Large tiles, about 2.3:1 at the default modal width
+    height: 96px;
+    border: 1px dashed var(--card-border-color);
+    border-radius: 10px;
+    color: var(--muted-text-color);
+    font-size: 1.1rem;
+    transition: border-color 0.15s ease, color 0.15s ease;
+  }
+
+  label:hover .label {
+    border-color: $yellow;
+    color: inherit;
+  }
+
+  input:checked + .label {
+    border: 1px solid $yellow;
+    background-color: $yellow;
+    color: $black;
+  }
+
+  input:focus-visible + .label {
+    outline: 2px solid $yellow;
+    outline-offset: 2px;
+  }
 }
 
 .new-card-input {
@@ -155,10 +182,14 @@ onMounted(() => {
   }
 }
 
+// Separator runs edge to edge across the card
 .new-card-actions {
   display: flex;
   justify-content: flex-end;
   gap: 0.5rem;
+  margin: 0.5rem -1.5rem 0;
+  padding: 1.25rem 1.5rem 0;
+  border-top: 1px solid var(--card-border-color);
 }
 
 .btn-cancel,

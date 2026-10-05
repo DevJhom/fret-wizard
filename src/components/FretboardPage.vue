@@ -214,143 +214,148 @@ watch(() => props.cardId, cardId => attachCard(cardId));
             <button type="button" class="rotate-hint-close" aria-label="Dismiss" @click="dismissRotateHint">×</button>
         </div>
 
-        <StackBar
-            :chords="stack"
-            :selected-index="selectedIndex"
-            :setup="setup"
-            :card-name="openCard?.name"
-            :is-dirty="isDirty"
-            @select="selectChord"
-            @remove="removeChord"
-            @add="addChord"
-            @reorder="reorderChords"
-            @save="saveCard"
-            @save-as-new="saveAsNewCard"
-            @close-card="closeCard"
-        />
-
-        <div class="page-card pattern-editor">
-            <button type="button" class="reset-button" title="Put this fretboard back to its defaults" @click="resetChord">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
-                Reset
-            </button>
-            <PatternSummary :chord="chord" :setup="setup" :label-mode="labelMode" @toggle-tone="onToggleTone"/>
-            <PatternBuilder
-                :chord="chord"
+        <!-- The stack tabs sit on the card like folder tabs -->
+        <div class="stack-folder">
+            <StackBar
+                :chords="stack"
+                :selected-index="selectedIndex"
                 :setup="setup"
-                @change-root="onChangeRoot"
-                @change-tonality="onChangeTonality"
-                @change-pattern="onChangePattern"
-                @change-accidental="onChangeAccidental"
+                :card-name="openCard?.name"
+                :is-dirty="isDirty"
+                @select="selectChord"
+                @remove="removeChord"
+                @add="addChord"
+                @reorder="reorderChords"
+                @save="saveCard"
+                @save-as-new="saveAsNewCard"
+                @close-card="closeCard"
             />
-        </div>
 
-        <div class="page-card board-card">
-            <div class="board-toolbar">
-                <template v-if="!isScale">
-                    <div class="switch-radio view-switch fw-bold">
-                        <label>
-                            <input type="radio" name="chord-view" :checked="!isFingering" @change="updateChord({ chordView: 'shapes' })">
-                                <div class="label view-option">Shapes</div>
-                            </input>
-                        </label>
-                        <label :class="{ 'is-disabled': !canFinger }" :title="canFinger ? '' : 'Positions are for triads and power chords'">
-                            <input type="radio" name="chord-view" :disabled="!canFinger" :checked="isFingering" @change="updateChord({ chordView: 'fingering' })">
-                                <div class="label view-option">Position</div>
-                            </input>
-                        </label>
-                    </div>
-                </template>
-
-                <div v-if="isFingering" class="toolbar-group stacked">
-                    <span class="toolbar-label">Position</span>
-                    <div class="tile-radio">
-                        <label v-for="option in fingeringOptions" :key="option.position">
-                            <input type="radio" name="chord-fingering" :checked="chord.currentChordPosition === option.position" @change="updateChord({ currentChordPosition: option.position })">
-                                <div class="label toolbar-option fw-bold">{{ option.label }}</div>
-                            </input>
-                        </label>
-                    </div>
+            <div class="page-card fretboard-card">
+                <div class="pattern-editor">
+                    <button type="button" class="reset-button" title="Put this fretboard back to its defaults" @click="resetChord">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
+                        Reset
+                    </button>
+                    <PatternSummary :chord="chord" :setup="setup" :label-mode="labelMode" @toggle-tone="onToggleTone"/>
+                    <PatternBuilder
+                        :chord="chord"
+                        :setup="setup"
+                        @change-root="onChangeRoot"
+                        @change-tonality="onChangeTonality"
+                        @change-pattern="onChangePattern"
+                        @change-accidental="onChangeAccidental"
+                    />
                 </div>
 
-                <div v-else class="toolbar-group stacked">
-                    <span class="toolbar-label">Shape</span>
-                    <div class="tile-radio">
-                        <label>
-                            <input type="radio" name="board-shape" :checked="selectedShape === 'All'" @change="onChangeShape('All')">
-                                <div class="label toolbar-option fw-bold">All</div>
-                            </input>
-                        </label>
-                        <label v-for="shape in shapes" :key="shape">
-                            <input type="radio" name="board-shape" :checked="selectedShape === shape" @change="onChangeShape(shape)">
-                                <div class="label toolbar-option fw-bold">{{ shape[0] }}</div>
-                            </input>
-                        </label>
+                <div class="board-section">
+                    <div class="board-scroll">
+                        <MyFretboard
+                            class="board"
+                            :fretAmount="chord.fretAmount"
+                            :currentPattern="chord.currentPattern"
+                            :currentKey="chord.currentKey"
+                            :currentTonality="chord.currentTonality"
+                            :currentAccidental="chord.currentAccidental"
+                            :currentHighlightNotes="chord.currentHighlightNotes"
+                            :currentCAGED="boardCAGED"
+                            :currentStrings="chord.currentStrings"
+                            :E="board.E"
+                            :A="board.A"
+                            :D="board.D"
+                            :G="board.G"
+                            :B="board.B"
+                            :e="board.e"
+                            :chord-positions="chordPositions"
+                            :bar-positions="barPositions"
+                            fade-outside-shape
+                            :root-based-shapes="!isScale"
+                            string-toggles
+                            :label-mode="labelMode"
+                            @toggle-string="onToggleString"
+                        />
+                    </div>
+
+                    <div class="board-toolbar">
+                        <template v-if="!isScale">
+                            <div class="switch-radio view-switch fw-bold">
+                                <label>
+                                    <input type="radio" name="chord-view" :checked="!isFingering" @change="updateChord({ chordView: 'shapes' })">
+                                        <div class="label view-option">Shapes</div>
+                                    </input>
+                                </label>
+                                <label :class="{ 'is-disabled': !canFinger }" :title="canFinger ? '' : 'Positions are for triads and power chords'">
+                                    <input type="radio" name="chord-view" :disabled="!canFinger" :checked="isFingering" @change="updateChord({ chordView: 'fingering' })">
+                                        <div class="label view-option">Position</div>
+                                    </input>
+                                </label>
+                            </div>
+                        </template>
+
+                        <div v-if="isFingering" class="toolbar-group stacked">
+                            <span class="toolbar-label">Position</span>
+                            <div class="tile-radio">
+                                <label v-for="option in fingeringOptions" :key="option.position">
+                                    <input type="radio" name="chord-fingering" :checked="chord.currentChordPosition === option.position" @change="updateChord({ currentChordPosition: option.position })">
+                                        <div class="label toolbar-option fw-bold">{{ option.label }}</div>
+                                    </input>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div v-else class="toolbar-group stacked">
+                            <span class="toolbar-label">Shape</span>
+                            <div class="tile-radio">
+                                <label>
+                                    <input type="radio" name="board-shape" :checked="selectedShape === 'All'" @change="onChangeShape('All')">
+                                        <div class="label toolbar-option fw-bold">All</div>
+                                    </input>
+                                </label>
+                                <label v-for="shape in shapes" :key="shape">
+                                    <input type="radio" name="board-shape" :checked="selectedShape === shape" @change="onChangeShape(shape)">
+                                        <div class="label toolbar-option fw-bold">{{ shape[0] }}</div>
+                                    </input>
+                                </label>
+                            </div>
+                        </div>
+
+                        <small v-if="!isScale && !canFinger" class="toolbar-note">Positions are for triads and power chords</small>
+
+                        <div class="toolbar-group stacked labels-group">
+                            <span class="toolbar-label">Labels</span>
+                            <div class="tile-radio fw-bold">
+                                <label>
+                                    <input type="radio" name="board-labels" :checked="labelMode === 'notes'" @change="labelMode = 'notes'">
+                                        <div class="label toolbar-option">Notes</div>
+                                    </input>
+                                </label>
+                                <label>
+                                    <input type="radio" name="board-labels" :checked="labelMode === 'intervals'" @change="labelMode = 'intervals'">
+                                        <div class="label toolbar-option">Intervals</div>
+                                    </input>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="toolbar-group stacked">
+                            <label for="board-frets" class="toolbar-label">Frets</label>
+                            <div class="fret-range">
+                                <span class="fret-min fw-bold">12</span>
+                                <input
+                                    id="board-frets"
+                                    type="range"
+                                    class="fret-slider"
+                                    min="12"
+                                    max="24"
+                                    step="1"
+                                    :value="chord.fretAmount"
+                                    @input="updateChord({ fretAmount: Number(($event.target as HTMLInputElement).value) })"
+                                >
+                                <span class="fret-count fw-bold">{{ chord.fretAmount }}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-
-                <small v-if="!isScale && !canFinger" class="toolbar-note">Positions are for triads and power chords</small>
-
-                <div class="toolbar-group stacked labels-group">
-                    <span class="toolbar-label">Labels</span>
-                    <div class="tile-radio fw-bold">
-                        <label>
-                            <input type="radio" name="board-labels" :checked="labelMode === 'notes'" @change="labelMode = 'notes'">
-                                <div class="label toolbar-option">Notes</div>
-                            </input>
-                        </label>
-                        <label>
-                            <input type="radio" name="board-labels" :checked="labelMode === 'intervals'" @change="labelMode = 'intervals'">
-                                <div class="label toolbar-option">Intervals</div>
-                            </input>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="toolbar-group stacked">
-                    <label for="board-frets" class="toolbar-label">Frets</label>
-                    <div class="fret-range">
-                        <span class="fret-min fw-bold">12</span>
-                        <input
-                            id="board-frets"
-                            type="range"
-                            class="fret-slider"
-                            min="12"
-                            max="24"
-                            step="1"
-                            :value="chord.fretAmount"
-                            @input="updateChord({ fretAmount: Number(($event.target as HTMLInputElement).value) })"
-                        >
-                        <span class="fret-count fw-bold">{{ chord.fretAmount }}</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="board-scroll">
-                <MyFretboard
-                    class="board"
-                    :fretAmount="chord.fretAmount"
-                    :currentPattern="chord.currentPattern"
-                    :currentKey="chord.currentKey"
-                    :currentTonality="chord.currentTonality"
-                    :currentAccidental="chord.currentAccidental"
-                    :currentHighlightNotes="chord.currentHighlightNotes"
-                    :currentCAGED="boardCAGED"
-                    :currentStrings="chord.currentStrings"
-                    :E="board.E"
-                    :A="board.A"
-                    :D="board.D"
-                    :G="board.G"
-                    :B="board.B"
-                    :e="board.e"
-                    :chord-positions="chordPositions"
-                    :bar-positions="barPositions"
-                    fade-outside-shape
-                    :root-based-shapes="!isScale"
-                    string-toggles
-                    :label-mode="labelMode"
-                    @toggle-string="onToggleString"
-                />
             </div>
         </div>
     </div>
@@ -365,8 +370,15 @@ watch(() => props.cardId, cardId => attachCard(cardId));
     padding: 1rem 2rem 3rem;
 }
 
+// Stack tabs and the card, with no gap so the selected tab joins the card
+.stack-folder {
+    display: flex;
+    flex-direction: column;
+}
+
+// The first tab sits on the top-left corner, so that corner is square
 .page-card {
-    border-radius: 14px;
+    border-radius: 0 14px 14px 14px;
     background-color: var(--fretboard-background-color);
     box-shadow: var(--fretboard-shadow);
 }
@@ -411,12 +423,14 @@ watch(() => props.cardId, cardId => attachCard(cardId));
     }
 }
 
-.board-card {
+// Fretboard with its controls underneath, divided from the editor above
+.board-section {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 1rem;
-    padding: 1.25rem 1.5rem 1.5rem;
+    gap: 1.25rem;
+    padding: 1.5rem 1.5rem 1.5rem;
+    border-top: 1px solid var(--card-border-color);
 }
 
 // Bottom-aligned so inline controls line up with the buttons under stacked headings
@@ -599,7 +613,7 @@ input.fret-slider {
         margin-bottom: -0.75rem;
     }
 
-    .board-card {
+    .board-section {
         padding: 1rem;
     }
 

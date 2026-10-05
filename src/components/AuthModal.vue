@@ -22,6 +22,10 @@ const formError = ref('')
 const fieldErrors = ref<Record<string, string>>({})
 const isSubmitting = ref(false)
 const googleUnavailable = ref(false)
+// The backend has no password reset yet, so the link only explains that
+const showResetNote = ref(false)
+// UI only for now: sessions are always remembered (refresh token in localStorage)
+const rememberMe = ref(true)
 const usernameInput = ref<HTMLInputElement | null>(null)
 const emailInput = ref<HTMLInputElement | null>(null)
 const googleButton = ref<HTMLElement | null>(null)
@@ -35,6 +39,7 @@ const focusFirstField = () => {
 const resetErrors = () => {
   formError.value = ''
   fieldErrors.value = {}
+  showResetNote.value = false
 }
 
 const showError = (error: unknown) => {
@@ -100,58 +105,77 @@ onMounted(async () => {
     @click.self="emit('close')"
     @keydown.esc="emit('close')"
   >
-    <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
       <div class="modal-content auth-card">
-        <div class="auth-header">
-          <h2 id="auth-title" class="auth-title">{{ isSignup ? 'Create an account' : 'Sign in' }}</h2>
-          <button type="button" class="auth-close" aria-label="Close" @click="emit('close')">×</button>
+        <button type="button" class="auth-close" aria-label="Close" @click="emit('close')">×</button>
+
+        <div class="auth-brand">
+          <span class="auth-logo">Fret<span class="auth-logo-accent">Wizard</span></span>
+          <span class="auth-tagline">Your interactive fretboard</span>
         </div>
 
-        <div class="auth-tabs switch-radio fw-bold">
-          <label>
-            <input type="radio" name="auth-mode" :checked="!isSignup" @change="switchMode('login')">
-            <div class="label px-3">Log in</div>
-          </label>
-          <label>
-            <input type="radio" name="auth-mode" :checked="isSignup" @change="switchMode('signup')">
-            <div class="label px-3">Sign up</div>
-          </label>
+        <div class="auth-main">
+          <h2 id="auth-title" class="auth-title">{{ isSignup ? 'Create an account' : 'Login' }}</h2>
+
+          <form class="auth-form" novalidate @submit.prevent="submit">
+            <label v-if="isSignup" class="auth-field">
+              <span>Username</span>
+              <input ref="usernameInput" v-model="username" class="auth-input" autocomplete="nickname" maxlength="100">
+              <small v-if="fieldErrors.username" class="auth-field-error">{{ fieldErrors.username }}</small>
+            </label>
+            <label class="auth-field">
+              <span>Email</span>
+              <input ref="emailInput" v-model="email" class="auth-input" type="email" autocomplete="email">
+              <small v-if="fieldErrors.email" class="auth-field-error">{{ fieldErrors.email }}</small>
+            </label>
+            <label class="auth-field">
+              <span>Password</span>
+              <input
+                v-model="password"
+                class="auth-input"
+                type="password"
+                :autocomplete="isSignup ? 'new-password' : 'current-password'"
+              >
+              <small v-if="fieldErrors.password" class="auth-field-error">{{ fieldErrors.password }}</small>
+            </label>
+
+            <div v-if="!isSignup" class="auth-options">
+              <div class="auth-options-row">
+                <label class="auth-remember">
+                  <input v-model="rememberMe" type="checkbox">
+                  <span>Remember me</span>
+                </label>
+                <button type="button" class="auth-link" @click="showResetNote = true">Forgot password?</button>
+              </div>
+              <small v-if="showResetNote" class="auth-note" role="status">
+                Password reset isn't available yet.
+              </small>
+            </div>
+
+            <p v-if="formError" class="auth-error" role="alert">{{ formError }}</p>
+
+            <button type="submit" class="auth-submit" :disabled="isSubmitting">
+              {{ isSubmitting ? 'Please wait…' : isSignup ? 'Create account' : 'Log in' }}
+            </button>
+
+            <p class="auth-switch">
+              <template v-if="isSignup">
+                Already have an account?
+                <button type="button" class="auth-link" @click="switchMode('login')">Log in</button>
+              </template>
+              <template v-else>
+                Don't have an account?
+                <button type="button" class="auth-link" @click="switchMode('signup')">Sign up</button>
+              </template>
+            </p>
+          </form>
+
+          <template v-if="clientId">
+            <div class="auth-divider"><span>or</span></div>
+            <div ref="googleButton" class="google-button"></div>
+            <small v-if="googleUnavailable" class="auth-field-error">Google login is unavailable right now.</small>
+          </template>
         </div>
-
-        <form class="auth-form" novalidate @submit.prevent="submit">
-          <label v-if="isSignup" class="auth-field">
-            <span>Display name</span>
-            <input ref="usernameInput" v-model="username" class="auth-input" autocomplete="nickname" maxlength="100">
-            <small v-if="fieldErrors.username" class="auth-field-error">{{ fieldErrors.username }}</small>
-          </label>
-          <label class="auth-field">
-            <span>Email</span>
-            <input ref="emailInput" v-model="email" class="auth-input" type="email" autocomplete="email">
-            <small v-if="fieldErrors.email" class="auth-field-error">{{ fieldErrors.email }}</small>
-          </label>
-          <label class="auth-field">
-            <span>Password</span>
-            <input
-              v-model="password"
-              class="auth-input"
-              type="password"
-              :autocomplete="isSignup ? 'new-password' : 'current-password'"
-            >
-            <small v-if="fieldErrors.password" class="auth-field-error">{{ fieldErrors.password }}</small>
-          </label>
-
-          <p v-if="formError" class="auth-error" role="alert">{{ formError }}</p>
-
-          <button type="submit" class="auth-submit" :disabled="isSubmitting">
-            {{ isSubmitting ? 'Please wait…' : isSignup ? 'Create account' : 'Log in' }}
-          </button>
-        </form>
-
-        <template v-if="clientId">
-          <div class="auth-divider"><span>or</span></div>
-          <div ref="googleButton" class="google-button"></div>
-          <small v-if="googleUnavailable" class="auth-field-error">Google sign-in is unavailable right now.</small>
-        </template>
       </div>
     </div>
   </div>
@@ -162,9 +186,11 @@ onMounted(async () => {
   opacity: 0.6;
 }
 
+// Brand panel on the left, form on the right
 .auth-card {
-  gap: 1rem;
-  padding: 1.5rem;
+  flex-direction: row;
+  overflow: hidden;
+  min-height: 480px;
   text-align: start;
   color: inherit;
   background-color: var(--card-background-color);
@@ -173,10 +199,43 @@ onMounted(async () => {
   box-shadow: var(--card-shadow);
 }
 
-.auth-header {
+.auth-brand {
   display: flex;
+  flex: 1;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 2rem;
+  text-align: center;
+  background: var(--auth-brand-background);
+  border-right: 1px solid var(--card-border-color);
+}
+
+// Same wordmark as the top bar logo, larger
+.auth-logo {
+  font-size: 2.25rem;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+.auth-logo-accent {
+  font-size: inherit;
+  color: var(--accent-text-color);
+}
+
+.auth-tagline {
+  color: var(--auth-tagline-color);
+  font-size: 1rem;
+}
+
+.auth-main {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1rem;
+  padding: 2rem;
 }
 
 .auth-title {
@@ -185,16 +244,17 @@ onMounted(async () => {
   color: var(--accent-text-color);
 }
 
+// Pinned to the card's top-right corner
 .auth-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 1rem;
+  z-index: 1;
   border: none;
   background: none;
   color: inherit;
   font-size: 1.5rem;
   line-height: 1;
-}
-
-.auth-tabs {
-  display: flex;
 }
 
 .auth-form {
@@ -222,6 +282,70 @@ onMounted(async () => {
   &:focus {
     border-color: $yellow;
   }
+}
+
+.auth-options {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+  margin-top: -0.25rem;
+}
+
+// Remember me on the left, Forgot password on the right
+.auth-options-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  align-self: stretch;
+  gap: 1rem;
+}
+
+.auth-remember {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+
+  input {
+    width: 1rem;
+    height: 1rem;
+    margin: 0;
+    accent-color: $yellow;
+    cursor: pointer;
+  }
+}
+
+.auth-switch {
+  margin: 0;
+  font-size: 0.85rem;
+  text-align: center;
+  color: var(--muted-text-color);
+}
+
+// Text-style button used by Forgot password and the Log in / Sign up switch
+.auth-link {
+  padding: 0;
+  border: none;
+  background: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent-text-color);
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $yellow;
+    outline-offset: 2px;
+  }
+}
+
+.auth-note {
+  color: var(--muted-text-color);
 }
 
 .auth-field-error,
@@ -267,5 +391,33 @@ onMounted(async () => {
   display: flex;
   justify-content: center;
   min-height: 44px;
+}
+
+// Phones: brand panel stacks above the form as a compact header
+@media (max-width: $phone) {
+  .auth-card {
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .auth-brand {
+    flex: none;
+    gap: 0.25rem;
+    padding: 1.25rem;
+    border-right: none;
+    border-bottom: 1px solid var(--card-border-color);
+  }
+
+  .auth-logo {
+    font-size: 1.5rem;
+  }
+
+  .auth-tagline {
+    font-size: 0.85rem;
+  }
+
+  .auth-main {
+    padding: 1.5rem;
+  }
 }
 </style>

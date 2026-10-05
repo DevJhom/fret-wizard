@@ -4,7 +4,7 @@ let scriptLoading: Promise<void> | null = null
 let initializedClientId: string | null = null
 let credentialHandler: (credential: string) => void = () => {}
 
-// Loaded on demand, the first time the sign-in modal opens.
+// Loaded on demand, the first time the login modal opens.
 const loadScript = (): Promise<void> => {
   if (window.google?.accounts?.id) return Promise.resolve()
   if (!scriptLoading) {
