@@ -39,8 +39,9 @@ DefaultLayout.vue (theme toggle, orientation detection, Scale | Chord | Chord Pr
 ├── ChordProgressionPage.vue (diatonic chord palette per key; drag/click chords into a progression)
 │   └── ChordBlock.vue (numeral + chord name block)
 └── LibraryPage.vue (saved fretboard stacks: search, Scales/Chords filter, sort; opening a card loads it into its Scale/Chord page)
-    └── LibraryCardItem.vue (badge, rename, delete confirm, one chip per fretboard)
-        └── FretboardPreview.vue (frets 0–12 from `boardPreview()` in `@data/boardPreview`)
+    ├── LibraryCardItem.vue (badge, rename, delete confirm, one chip per fretboard)
+    │   └── FretboardPreview.vue (frets 0–12 from `boardPreview()` in `@data/boardPreview`)
+    └── NewCardModal.vue ("New card": pick Scale/Chord and a title before the card is created)
 ```
 
 The current page lives in the URL path (`/fret-wizard/scale`, `/chord`, `/chord-progression`, `/library`; `src/lib/pageRoute.ts`, `history.pushState`), so a refresh reopens it and Back/Forward switch pages; there is no vue-router. A Scale/Chord page opened from a Library card carries the card id (`/fret-wizard/scale/<card-id>`). `src/lib/cardSession.ts` remembers per page (localStorage `scaleWorkspaceCardId` / `chordWorkspaceCardId`) which card the stack came from, so a refresh keeps unsaved edits and the Scale/Chord tabs return to that card. GitHub Pages has no server routing, so the `spa-fallback` plugin in `vite.config.ts` copies `index.html` to `404.html` on build: a refresh loads the app with HTTP status 404, which is expected. Scale and Chord pages persist separate fretboard stacks (`scaleCurrentFretboard`/`scaleFretboardList`, `chordCurrentFretboard`/`chordFretboardList`). Legacy `currentFretboard`/`fretboardList` keys are migrated on first read in `localStorageAdapter.ts`. A `LibraryCard` stores `setup` plus a `fretboards` stack. A card changes only when Save is pressed on its page ("Save as new card" forks it; × closes it). Opening another card over unsaved edits asks first. A Shape is one `currentCAGED` entry set to true (all true = All); tones outside it fade. Chord shapes are named from the chord root; Scale shapes keep the tonality-based offset (relative major for minor keys). The Chord page also has a Fingering view (`chordView: 'fingering'`, position in `currentChordPosition`) using `chords.ts` triad fingerings, adapted for minor, for Triad and Power only. The Chord Progression page persists `{ key, tonality, progression: { id, degree, type }[] }` under `chordProgression`; storing degrees means the progression transposes with the key. `type` is the chord type (`'triad' | 'seventh' | 'power'`, `diatonicChords()` in `progressions.ts`): the Chord selector picks the palette, and each chord keeps the type it was added with. A missing `type` (older saves) means triad.
@@ -78,7 +79,6 @@ Located in `src/components/data/`:
 | `src/App.vue` | Root component, imports DefaultLayout |
 | `vite.config.ts` | Path aliases, GitHub Pages base path (`/fret-wizard/`), SCSS auto-import, Vite plugins |
 | `tsconfig.json` | CompilerOptions for path aliases and Vue 3 |
-| `database/all-scales.json` | Central music theory database (served by json-server) |
 | `src/assets/scss/variables.scss` | Global color, spacing, font variables (interval-specific colors) |
 | `src/assets/scss/main.scss` | Root styles, dark/light theme definitions |
 

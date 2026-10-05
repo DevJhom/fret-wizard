@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref } from 'vue';
+import { computed, nextTick, ref } from 'vue';
 import { Setup } from '@data/constants';
 import FretboardPreview from '@components/FretboardPreview.vue';
 import { cardMeta, fretboardLabel } from '@/lib/libraryView';
@@ -7,8 +7,7 @@ import type { FretboardData } from '@/lib/fretboardData';
 import type { LibraryCard } from '@stores/useLibraryStore';
 
 const props = defineProps<{
-    card: LibraryCard,
-    startRenaming?: boolean
+    card: LibraryCard
 }>();
 
 const emit = defineEmits<{
@@ -66,10 +65,6 @@ const askDelete = async () => {
 const cancelDelete = () => {
     isConfirmingDelete.value = false;
 };
-
-onMounted(() => {
-    if (props.startRenaming) startRename();
-});
 </script>
 
 <template>

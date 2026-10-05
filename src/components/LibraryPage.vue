@@ -4,6 +4,7 @@ import { Setup } from '@data/constants'
 import { useLibraryStore } from '@stores/useLibraryStore'
 import type { LibraryCard } from '@stores/useLibraryStore'
 import LibraryCardItem from '@components/LibraryCardItem.vue'
+import NewCardModal from '@components/NewCardModal.vue'
 import { filterCounts, visibleCards } from '@/lib/libraryView'
 import type { LibraryFilter, LibrarySort } from '@/lib/libraryView'
 
@@ -16,8 +17,8 @@ const libraryStore = useLibraryStore()
 const query = ref('')
 const filter = ref<LibraryFilter>('all')
 const sort = ref<LibrarySort>('newest')
-// A card made with "New card" opens in rename mode
-const newCardId = ref<string | null>(null)
+const isCreateOpen = ref(false)
+const isCreating = ref(false)
 
 const filters: { value: LibraryFilter, label: string }[] = [
   { value: 'all', label: 'All' },
@@ -29,6 +30,8 @@ const cards = computed(() => visibleCards(libraryStore.cards, filter.value, quer
 const counts = computed(() => filterCounts(libraryStore.cards))
 const isEmpty = computed(() => libraryStore.isLoaded && libraryStore.cards.length === 0)
 const hasNoResults = computed(() => !isEmpty.value && libraryStore.cards.length > 0 && cards.value.length === 0)
+// The modal starts on the type being filtered for
+const defaultSetup = computed(() => (filter.value === 'all' ? Setup.Scale : filter.value))
 
 const summary = computed(() => {
   const count = libraryStore.cards.length
@@ -44,12 +47,17 @@ const clearFilters = () => {
   filter.value = 'all'
 }
 
-const handleCreate = async () => {
-  const card = await libraryStore.createCard(`Card ${libraryStore.cards.length + 1}`)
-  if (!card) return
-  // Make sure the new card is on screen
-  clearFilters()
-  newCardId.value = card.id
+const handleCreate = async (name: string, setup: Setup) => {
+  isCreating.value = true
+  try {
+    const card = await libraryStore.createCard(name, setup)
+    if (!card) return
+    // Make sure the new card is on screen
+    clearFilters()
+    isCreateOpen.value = false
+  } finally {
+    isCreating.value = false
+  }
 }
 
 const handleRename = async (id: string, name: string) => {
@@ -105,7 +113,7 @@ onMounted(async () => {
     </div>
 
     <div>
-      <button type="button" class="btn-new" @click="handleCreate">
+      <button type="button" class="btn-new" @click="isCreateOpen = true">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
         New card
       </button>
@@ -116,7 +124,6 @@ onMounted(async () => {
         v-for="card in cards"
         :key="card.id"
         :card="card"
-        :start-renaming="card.id === newCardId"
         @open="emit('load-card', card)"
         @rename="name => handleRename(card.id, name)"
         @delete="handleDelete(card.id)"
@@ -132,6 +139,15 @@ onMounted(async () => {
       <svg class="empty-icon" width="96" height="96" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="14" height="14" rx="2"/><path d="M7 3h11a3 3 0 0 1 3 3v11"/><path d="M7 12h6M7 16h4"/></svg>
       <p class="empty-text">No cards saved yet</p>
     </section>
+
+    <NewCardModal
+      v-if="isCreateOpen"
+      :default-name="`Card ${libraryStore.cards.length + 1}`"
+      :default-setup="defaultSetup"
+      :is-creating="isCreating"
+      @close="isCreateOpen = false"
+      @create="handleCreate"
+    />
   </div>
 </template>
 

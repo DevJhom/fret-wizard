@@ -1586,14 +1586,12 @@ Expected: both pass. Paste the summary lines into the phase report.
 Per the user's preference, Claude does not drive a browser unless asked. Give the user this list to check with `npm run dev`:
 
 1. With cards saved, each card shows a badge, name, meta, preview and chips. Clicking a chip changes the preview.
-2. "Open in Scale" or "Open in Chord" loads the card. The card shows "Active · auto-saves" when you return.
-3. Rename: Enter saves, Esc cancels, and a blank name keeps the old one.
-4. Delete asks first. Cancel keeps the card; Delete removes it.
-5. Search for `Bb`, `minor` and part of a name. The filter counts are right. Each sort order works.
-6. "New card" adds a card in rename mode, even while a search is active.
-7. With no cards, the empty state shows, and Go to Scale / Go to Chord switch pages.
-8. Phone width (portrait and landscape): the toolbar wraps, the cards fill the width with no sideways scroll, and buttons are easy to tap.
-9. Light theme: text and buttons are readable.
+2. Rename: Enter saves, Esc cancels, and a blank name keeps the old one.
+3. Delete asks first. Cancel keeps the card; Delete removes it.
+4. Search for `Bb`, `minor` and part of a name. The filter counts are right. Each sort order works.
+5. With no cards, the empty state shows, and Go to Scale / Go to Chord switch pages.
+6. Phone width (portrait and landscape): the toolbar wraps, the cards fill the width with no sideways scroll, and buttons are easy to tap.
+7. Light theme: text and buttons are readable.
 
 - [ ] **Step 4: Commit**
 
