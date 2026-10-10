@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue';
+import { ref, onMounted } from 'vue';
 import Sortable from 'sortablejs';
 import { Setup } from '@data/constants';
 import { patternSymbol } from '@data/patternNames';
 import type { FretboardData } from '@/lib/fretboardData';
+import SaveMenu from '@components/SaveMenu.vue';
 
 interface SortableEvent {
     item: HTMLElement;
@@ -17,27 +18,23 @@ const props = defineProps<{
     selectedIndex: number,
     setup: Setup,
     cardName?: string,
-    isDirty: boolean
+    isDirty: boolean,
+    isStackView: boolean
 }>();
 
 const symbolFor = (chord: FretboardData) => patternSymbol(chord.currentKey, chord.currentTonality, chord.currentPattern, props.setup == Setup.Scale);
 
 const emit = defineEmits<{
     (e: 'select', index: number): void
-    (e: 'remove', index: number): void
     (e: 'add'): void
+    (e: 'remove', index: number): void
     (e: 'reorder', oldIndex: number, newIndex: number): void
     (e: 'save'): void
     (e: 'save-as-new'): void
-    (e: 'close-card'): void
+    (e: 'toggle-stack-view'): void
 }>();
 
 const chipList = ref<HTMLElement | null>(null);
-
-const saveLabel = computed(() => {
-    if (!props.cardName) return 'Save to Library';
-    return props.isDirty ? 'Save' : 'Saved';
-});
 
 const restoreElementPosition = (list: HTMLElement, item: HTMLElement, index: number) => {
     item.remove();
@@ -63,10 +60,10 @@ onMounted(() => {
 </script>
 
 <template>
-    <div class="stack-bar">
-        <!-- Folder tabs: the selected one joins the card below -->
+    <div class="stack-bar" :class="{ 'is-stack-view': isStackView }">
+        <!-- Folder tabs: the selected one joins the card below. Stack View lists every fretboard instead -->
         <div class="stack-tabs">
-            <div ref="chipList" class="stack-chips">
+            <div v-show="!isStackView" ref="chipList" class="stack-chips">
                 <div
                     v-for="(chord, index) in chords"
                     :key="`${index}-${chord.currentKey}-${chord.currentTonality}-${chord.currentPattern}`"
@@ -76,24 +73,25 @@ onMounted(() => {
                     <button type="button" class="chip-select" :aria-pressed="index == props.selectedIndex" @click="emit('select', index)">
                         {{ symbolFor(chord) }}
                     </button>
-                    <button
-                        v-if="index == props.selectedIndex && chords.length > 1"
-                        type="button"
-                        class="chip-remove"
-                        :aria-label="`Remove ${symbolFor(chord)}`"
-                        @click="emit('remove', index)"
-                    >×</button>
+                    <!-- The last fretboard can't be removed -->
+                    <button v-if="chords.length > 1" type="button" class="chip-remove" :aria-label="`Remove ${symbolFor(chord)}`" title="Remove from the stack" @click="emit('remove', index)">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
+                    </button>
                 </div>
             </div>
-            <button type="button" class="add-chord" @click="emit('add')">+ Add {{ setup == Setup.Scale ? 'scale' : 'chord' }}</button>
+            <button type="button" class="add-chord" @click="emit('add')">+ Add {{ setup == Setup.Scale ? 'Scale' : 'Chord' }}</button>
         </div>
         <div class="stack-actions">
-            <span v-if="cardName" class="open-card" :title="cardName">
-                <span class="open-card-name">{{ cardName }}</span>
-                <button type="button" class="open-card-close" :aria-label="`Close ${cardName}`" @click="emit('close-card')">×</button>
-            </span>
-            <button v-if="cardName" type="button" class="stack-action save-as-new-action" @click="emit('save-as-new')">Save as new card</button>
-            <button type="button" class="stack-action save-action" :disabled="!!cardName && !isDirty" @click="emit('save')">{{ saveLabel }}</button>
+            <!-- Names the view a click switches to, so it is never shown as pressed -->
+            <button v-if="isStackView" type="button" class="stack-action view-action" title="Show one fretboard at a time, picked by its tab" @click="emit('toggle-stack-view')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9V7a2 2 0 0 1 2-2h4l2 3h8a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                Default View
+            </button>
+            <button v-else type="button" class="stack-action view-action" title="Show every fretboard in the stack, collapsed" @click="emit('toggle-stack-view')">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="6" rx="1.5"/><rect x="3" y="14" width="18" height="6" rx="1.5"/></svg>
+                Stack View
+            </button>
+            <SaveMenu :card-name="cardName" :is-dirty="isDirty" @save="emit('save')" @save-as-new="emit('save-as-new')"/>
         </div>
     </div>
 </template>
@@ -182,12 +180,19 @@ onMounted(() => {
     font-weight: 600;
 }
 
+// Less room on the right when the × follows the name
+.chip-select:not(:last-child) {
+    padding-right: 0.3rem;
+}
+
+// Quiet until hovered, so the name stays the main thing on the tab
 .chip-remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     width: 32px;
-    margin-left: -0.6rem;
-    font-size: 1.1rem;
-    color: inherit;
-    opacity: 0.7;
+    padding: 0;
+    opacity: 0.6;
 
     &:hover {
         opacity: 1;
@@ -234,60 +239,23 @@ onMounted(() => {
     }
 }
 
-.save-action {
-    background-color: $yellow;
-    color: $black;
-}
-
-.save-action:disabled {
-    opacity: 0.6;
-    cursor: default;
-    filter: none;
-}
-
-.save-as-new-action {
+.view-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
     background-color: var(--option-background-color);
 }
 
-.open-card {
-    display: inline-flex;
+// No tabs to join a card: the bar is a plain row above the list
+.is-stack-view {
     align-items: center;
-    max-width: 220px;
-    padding-left: 0.75rem;
-    border: 1px solid var(--card-border-color);
-    border-radius: 9px;
-}
 
-.open-card-name {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-size: 0.9rem;
-    font-weight: 600;
-}
-
-.open-card-close {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    width: 36px;
-    height: 42px;
-    padding: 0;
-    line-height: 1;
-    border: none;
-    background: none;
-    color: var(--muted-text-color);
-    font-size: 1.1rem;
-    cursor: pointer;
-
-    &:hover {
-        color: inherit;
+    .add-chord {
+        margin-left: 0;
     }
 
-    &:focus-visible {
-        outline: 2px solid $yellow;
-        outline-offset: 2px;
+    .stack-actions {
+        margin-bottom: 0;
     }
 }
 

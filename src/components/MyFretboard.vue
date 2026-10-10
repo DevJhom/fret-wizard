@@ -18,6 +18,7 @@ const props = defineProps<{
     rootBasedShapes?: boolean,
     labelMode?: 'notes' | 'intervals',
     stringToggles?: boolean,
+    shapeNames?: boolean,
     chordPositions?: ChordPositions,
     barPositions?: ChordPositions,
     E: string[],
@@ -202,7 +203,7 @@ const fretIndicatorIndexes = [3,5,7,9,12,15,17,19,21,24];
             </div>
 
             <!-- CAGED Names -->
-            <div v-if="!stringToggles" class="CAGED-name-container text-start">
+            <div v-if="shapeNames" class="CAGED-name-container text-start">
                 <div v-for="(_, index) in e" :key="index" class="d-inline-block CAGED-box" :class="{'fret': index < fretAmount}" style="border-right: none;">
                     <div v-if="index < fretAmount">
                         <!-- to be refactored -->

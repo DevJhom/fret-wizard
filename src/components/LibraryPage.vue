@@ -105,8 +105,8 @@ onMounted(async () => {
         <span class="visually-hidden">Sort</span>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 8 4-4 4 4M7 4v16M21 16l-4 4-4-4M17 20V4"/></svg>
         <select v-model="sort" class="sort-select">
-          <option value="newest">Newest first</option>
-          <option value="oldest">Oldest first</option>
+          <option value="newest">Newest First</option>
+          <option value="oldest">Oldest First</option>
           <option value="name">Name A–Z</option>
         </select>
       </label>
@@ -115,7 +115,7 @@ onMounted(async () => {
     <div>
       <button type="button" class="btn-new" @click="isCreateOpen = true">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-        New card
+        New Card
       </button>
     </div>
 
@@ -132,7 +132,7 @@ onMounted(async () => {
 
     <div v-if="hasNoResults" class="no-results">
       <p class="no-results-text">{{ noResultsText }}</p>
-      <button type="button" class="btn-secondary" @click="clearFilters">Clear search and filters</button>
+      <button type="button" class="btn-secondary" @click="clearFilters">Clear Search and Filters</button>
     </div>
 
     <section v-if="isEmpty" class="empty-state">

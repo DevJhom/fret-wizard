@@ -21,6 +21,8 @@ describe('fretboardLabel', () => {
     expect(fretboardLabel(fb(Setup.Scale, 'A', Tonality.MINOR, Pattern.Pentatonic), Setup.Scale)).toBe('Am Pentatonic')
     expect(fretboardLabel(fb(Setup.Chord, 'G', Tonality.MAJOR, Pattern.Seventh), Setup.Chord)).toBe('Gmaj7')
     expect(fretboardLabel(fb(Setup.Chord, 'E', Tonality.MAJOR, Pattern.Power), Setup.Chord)).toBe('E5')
+    expect(fretboardLabel(fb(Setup.Chord, 'C', Tonality.MAJOR, Pattern.Triad), Setup.Chord)).toBe('Cmaj')
+    expect(fretboardLabel(fb(Setup.Chord, 'C', Tonality.MINOR, Pattern.Triad), Setup.Chord)).toBe('Cm')
   })
 })
 

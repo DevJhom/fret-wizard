@@ -61,7 +61,7 @@ const chordSymbol = (key: string, tonality: Tonality, pattern: Pattern) => {
     case Pattern.Add11: return key + (minor ? "m(add11)" : "add11");
     case Pattern.Add13: return key + (minor ? "m(add13)" : "add13");
     case Pattern.Power: return key + "5";
-    default: return key + (minor ? "m" : "");
+    default: return key + (minor ? "m" : "maj");
   }
 }
 

@@ -15,9 +15,9 @@ const showAuth = ref(false)
     </span>
     <template v-if="authStore.isAuthenticated && authStore.user">
       <span class="account-name">{{ authStore.user.username }}</span>
-      <button type="button" class="account-button" @click="authStore.logout()">Log out</button>
+      <button type="button" class="account-button" @click="authStore.logout()">Log Out</button>
     </template>
-    <button v-else-if="authStore.status === 'guest'" type="button" class="account-button" @click="showAuth = true">Login</button>
+    <button v-else-if="authStore.status === 'guest'" type="button" class="account-button login-button" @click="showAuth = true">Login</button>
     <AuthModal v-if="showAuth" @close="showAuth = false"/>
   </div>
 </template>
@@ -46,6 +46,16 @@ const showAuth = ref(false)
   &:hover {
     color: $black;
     background-color: $yellow;
+  }
+}
+
+// Login is the call to action for guests, so it is yellow from the start
+.login-button {
+  color: $black;
+  background-color: $yellow;
+
+  &:hover {
+    filter: brightness(1.1);
   }
 }
 

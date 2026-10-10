@@ -117,7 +117,7 @@ onMounted(async () => {
         </div>
 
         <div class="auth-main">
-          <h2 id="auth-title" class="auth-title">{{ isSignup ? 'Create an account' : 'Login' }}</h2>
+          <h2 id="auth-title" class="auth-title">{{ isSignup ? 'Create an Account' : 'Login' }}</h2>
 
           <form class="auth-form" novalidate @submit.prevent="submit">
             <label v-if="isSignup" class="auth-field">
@@ -145,9 +145,9 @@ onMounted(async () => {
               <div class="auth-options-row">
                 <label class="auth-remember">
                   <input v-model="rememberMe" type="checkbox">
-                  <span>Remember me</span>
+                  <span>Remember Me</span>
                 </label>
-                <button type="button" class="auth-link" @click="showResetNote = true">Forgot password?</button>
+                <button type="button" class="auth-link" @click="showResetNote = true">Forgot Password?</button>
               </div>
               <small v-if="showResetNote" class="auth-note" role="status">
                 Password reset isn't available yet.
@@ -157,17 +157,17 @@ onMounted(async () => {
             <p v-if="formError" class="auth-error" role="alert">{{ formError }}</p>
 
             <button type="submit" class="auth-submit" :disabled="isSubmitting">
-              {{ isSubmitting ? 'Please wait…' : isSignup ? 'Create account' : 'Log in' }}
+              {{ isSubmitting ? 'Please wait…' : isSignup ? 'Create Account' : 'Log In' }}
             </button>
 
             <p class="auth-switch">
               <template v-if="isSignup">
                 Already have an account?
-                <button type="button" class="auth-link" @click="switchMode('login')">Log in</button>
+                <button type="button" class="auth-link" @click="switchMode('login')">Log In</button>
               </template>
               <template v-else>
                 Don't have an account?
-                <button type="button" class="auth-link" @click="switchMode('signup')">Sign up</button>
+                <button type="button" class="auth-link" @click="switchMode('signup')">Sign Up</button>
               </template>
             </p>
           </form>

@@ -40,7 +40,7 @@ onMounted(() => {
   >
     <div class="modal-dialog modal-dialog-centered">
       <div class="modal-content new-card">
-        <h2 id="new-card-title" class="new-card-title">New card</h2>
+        <h2 id="new-card-title" class="new-card-title">New Card</h2>
 
         <form class="new-card-form" novalidate @submit.prevent="submit">
           <label class="new-card-field">
