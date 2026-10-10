@@ -110,8 +110,10 @@ onMounted(async () => {
         <button type="button" class="auth-close" aria-label="Close" @click="emit('close')">×</button>
 
         <div class="auth-brand">
-          <span class="auth-logo">Fret<span class="auth-logo-accent">Wizard</span></span>
-          <span class="auth-tagline">Your interactive fretboard</span>
+          <div class="auth-plate">
+            <span class="auth-logo">Fret<span class="auth-logo-accent">Wizard</span></span>
+            <span class="auth-tagline">Your interactive fretboard</span>
+          </div>
         </div>
 
         <div class="auth-main">
@@ -205,17 +207,28 @@ onMounted(async () => {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
   padding: 2rem;
   text-align: center;
-  background: var(--auth-brand-background);
+  background-color: $yellow;
   border-right: 1px solid var(--card-border-color);
+}
+
+// Card-colored plate behind the wordmark and tagline so the yellow doesn't swallow them
+.auth-plate {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 3rem 2.25rem;
+  border-radius: 12px;
+  background-color: var(--card-background-color);
 }
 
 // Same wordmark as the top bar logo, larger
 .auth-logo {
   font-size: 2.25rem;
   font-weight: 700;
+  line-height: 1.2;
   letter-spacing: -0.015em;
 }
 
@@ -225,7 +238,7 @@ onMounted(async () => {
 }
 
 .auth-tagline {
-  color: var(--auth-tagline-color);
+  color: var(--muted-text-color);
   font-size: 1rem;
 }
 
@@ -402,10 +415,20 @@ onMounted(async () => {
 
   .auth-brand {
     flex: none;
-    gap: 0.25rem;
     padding: 1.25rem;
     border-right: none;
     border-bottom: 1px solid var(--card-border-color);
+  }
+
+  // The close button sits over the brand panel here
+  .auth-close {
+    color: $black;
+  }
+
+  .auth-plate {
+    gap: 0.1rem;
+    padding: 1.5rem 1.75rem;
+    border-radius: 10px;
   }
 
   .auth-logo {

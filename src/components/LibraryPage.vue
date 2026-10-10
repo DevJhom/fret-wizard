@@ -136,13 +136,12 @@ onMounted(async () => {
     </div>
 
     <section v-if="isEmpty" class="empty-state">
-      <svg class="empty-icon" width="96" height="96" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="7" width="14" height="14" rx="2"/><path d="M7 3h11a3 3 0 0 1 3 3v11"/><path d="M7 12h6M7 16h4"/></svg>
+      <svg class="empty-icon" width="96" height="96" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5.25" y="3" width="13.5" height="18" rx="2"/><path d="M9 9h6M9 13h4"/></svg>
       <p class="empty-text">No cards saved yet</p>
     </section>
 
     <NewCardModal
       v-if="isCreateOpen"
-      :default-name="`Card ${libraryStore.cards.length + 1}`"
       :default-setup="defaultSetup"
       :is-creating="isCreating"
       @close="isCreateOpen = false"
