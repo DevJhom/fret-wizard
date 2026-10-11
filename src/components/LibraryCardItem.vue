@@ -13,6 +13,7 @@ const props = defineProps<{
 const emit = defineEmits<{
     (e: 'open'): void,
     (e: 'rename', name: string): void,
+    (e: 'toggle-favorite'): void,
     (e: 'delete'): void
 }>();
 
@@ -121,6 +122,10 @@ const cancelDelete = () => {
 
         <div class="card-footer">
             <div v-if="!isConfirmingDelete" class="footer-row footer-open">
+                <button type="button" class="btn-favorite" :class="{ 'is-favorite': card.isFavorite }" :aria-pressed="!!card.isFavorite" :aria-label="`Favorite ${card.name}`" @click="emit('toggle-favorite')">
+                    <svg width="20" height="20" viewBox="0 0 24 24" :fill="card.isFavorite ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+                    Favorite
+                </button>
                 <button type="button" class="btn-open" @click="emit('open')">
                     Open in {{ card.setup }}
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
@@ -342,8 +347,27 @@ const cancelDelete = () => {
     color: $green;
 }
 
+// Pulled left so the heart lines up with the card's padding, like the corner actions
+.btn-favorite {
+    @extend %btn;
+    padding: 0 10px;
+    margin-left: -10px;
+    background-color: transparent;
+    color: var(--muted-text-color);
+
+    &:hover {
+        background-color: var(--option-background-color);
+        border-color: transparent;
+        color: inherit;
+    }
+}
+
+.btn-favorite.is-favorite svg {
+    color: $red;
+}
+
 .footer-open {
-    justify-content: flex-end;
+    justify-content: space-between;
 }
 
 .library-card button:focus-visible,

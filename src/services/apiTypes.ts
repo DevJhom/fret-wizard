@@ -32,7 +32,7 @@ export interface ApiErrorBody {
 }
 
 export interface ImportRequest {
-  libraryCards?: { name: string; setup: Setup; fretboards: FretboardData[] }[]
+  libraryCards?: { name: string; setup: Setup; fretboards: FretboardData[]; isFavorite?: boolean }[]
   workspaces?: {
     scale?: { fretboards: FretboardData[] }
     chord?: { fretboards: FretboardData[] }

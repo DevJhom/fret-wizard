@@ -77,6 +77,18 @@ describe('visibleCards', () => {
     expect(visibleCards(named, 'all', '', 'name').map(c => c.name)).toEqual(['Card 2', 'card 3', 'Card 10'])
   })
 
+  it('shows only favorites when asked, together with the type filter and the search', () => {
+    const favoriteScale = { ...bluesInA, isFavorite: true }
+    const favoriteChord = { ...sharpChords, isFavorite: true }
+    const unfavorited = { ...flatMinor, id: 'unfavorited', isFavorite: false }
+    const cards = [favoriteScale, flatMinor, favoriteChord, unfavorited]
+
+    expect(visibleCards(cards, 'all', '', 'newest', true)).toEqual([favoriteScale, favoriteChord])
+    expect(visibleCards(cards, Setup.Chord, '', 'newest', true)).toEqual([favoriteChord])
+    expect(visibleCards(cards, 'all', 'blues', 'newest', true)).toEqual([favoriteScale])
+    expect(visibleCards(cards, 'all', '', 'newest', false)).toHaveLength(4)
+  })
+
   it('does not reorder the array it was given', () => {
     const input = [...all]
     visibleCards(input, 'all', '', 'name')

@@ -34,6 +34,17 @@ describe('guest data', () => {
     expect(collectGuestData()?.libraryCards).toEqual([{ name: 'Old card', setup: Setup.Scale, fretboards: [data] }])
   })
 
+  it('keeps the favorite state of each card', () => {
+    const fretboards = [defaultDataFor(Setup.Scale)]
+    save('libraryCards', [
+      { id: 'a', name: 'Loved', setup: Setup.Scale, fretboards, isFavorite: true, createdAt: 1 },
+      { id: 'b', name: 'Unloved', setup: Setup.Scale, fretboards, isFavorite: false, createdAt: 2 },
+      { id: 'c', name: 'Older save', setup: Setup.Scale, fretboards, createdAt: 3 },
+    ])
+
+    expect(collectGuestData()?.libraryCards?.map(card => card.isFavorite === true)).toEqual([true, false, false])
+  })
+
   it('picks up the legacy currentFretboard/fretboardList keys', () => {
     const scale = { ...defaultDataFor(Setup.Scale), currentKey: 'F' }
     const chord = { ...defaultDataFor(Setup.Chord), currentKey: 'B' }

@@ -23,7 +23,8 @@ const props = defineProps<{
     rootBasedShapes?: boolean,
     labelMode?: 'notes' | 'intervals',
     chordPositions?: number[],
-    barPositions?: number[]
+    barPositions?: number[],
+    inlayFrets?: number[]
 }>();
 
 const { roots, minorSeconds, seconds, minorThirds, thirds, fourths, tritones, fifths, minorSixths, sixths, minorSevenths, sevenths } = Degree;
@@ -122,6 +123,7 @@ const openIndex = 11; //equivalent note to the open position
         </label>
     </div>
     <div v-for="(_, index) in stringData" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount, 'shape-band': showShapeBand && index < fretAmount && isInShape(index)}" :style="{ 'border-right': isLastString ? 'none' : '' }">
+        <span v-if="inlayFrets?.includes(index + 1) && index < fretAmount" class="inlay" aria-hidden="true"></span>
         <div v-if="barPositions?.includes(index + 1) && index < fretAmount" class="bar"></div>
         <label v-if="index < fretAmount" class="notes">
             <input type="checkbox" v-model="stringData[index]"/>
@@ -173,6 +175,19 @@ const openIndex = 11; //equivalent note to the open position
 
 .shape-band {
     background-color: var(--shape-band-color);
+}
+
+// Sits in the gap under this string; comes before the notes in the DOM, so they draw over it
+.inlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    background-color: var(--inlay-color);
+    pointer-events: none;
 }
 
 .bar {

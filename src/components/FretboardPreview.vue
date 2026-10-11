@@ -13,9 +13,6 @@ const props = defineProps<{
 const strings = computed(() => boardPreview(props.fretboard));
 
 const dotClass = (degree: Degree | null) => (degree ? degreeClasses[degree] : '');
-
-// Inlay dots under the neck: one at 3, 5, 7, 9; two at 12
-const inlayCount = (fret: number) => (fret === 12 ? 2 : [3, 5, 7, 9].includes(fret) ? 1 : 0);
 </script>
 
 <template>
@@ -30,22 +27,12 @@ const inlayCount = (fret: number) => (fret === 12 ? 2 : [3, 5, 7, 9].includes(fr
                 </div>
             </div>
         </div>
-        <div class="inlays" aria-hidden="true">
-            <div class="open"></div>
-            <div class="inlay-frets">
-                <div v-for="fret in PREVIEW_FRETS" :key="fret" class="inlay">
-                    <span v-for="n in inlayCount(fret)" :key="n" class="inlay-dot"></span>
-                </div>
-            </div>
-        </div>
     </div>
 </template>
 
 <style scoped lang="scss">
 .preview {
-    padding: 10px 10px 4px;
-    border-radius: 10px;
-    border: 1px solid var(--card-border-color);
+    padding: 10px;
 }
 
 .preview-string {
@@ -76,26 +63,57 @@ const inlayCount = (fret: number) => (fret === 12 ? 2 : [3, 5, 7, 9].includes(fr
     height: 2px;
 }
 
+// The neck runs from the e string to the E string, as on the main fretboard:
+// nothing is drawn above the first string or below the last
+.string-e {
+    --neck-top: 6px;
+}
+
+.string-E {
+    --neck-bottom: 5px;
+}
+
+// Open notes sit against the nut, as on the main fretboard
 .open {
     flex: 0 0 16px;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-end;
 }
 
 .frets {
+    position: relative;
     flex: 1;
     display: flex;
-    background-color: var(--neck-background-color);
-    border-left: 3px solid var(--nut-color);
+    padding-left: 3px;
+
+    // Neck and nut
+    &::before {
+        content: "";
+        position: absolute;
+        inset: var(--neck-top, 0) 0 var(--neck-bottom, 0) 0;
+        background-color: var(--neck-background-color);
+        border-left: 3px solid var(--nut-color);
+    }
 }
 
 .fret {
+    position: relative;
     flex: 1 1 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-right: 1px solid var(--fret-wire-color);
+
+    // Fret wire
+    &::after {
+        content: "";
+        position: absolute;
+        top: var(--neck-top, 0);
+        bottom: var(--neck-bottom, 0);
+        right: 0;
+        width: 1px;
+        background-color: var(--fret-wire-color);
+    }
 }
 
 .dot {
@@ -110,32 +128,5 @@ const inlayCount = (fret: number) => (fret === 12 ? 2 : [3, 5, 7, 9].includes(fr
 .open-dot {
     width: 7px;
     height: 7px;
-}
-
-.inlays {
-    display: flex;
-    height: 12px;
-    align-items: center;
-}
-
-.inlay-frets {
-    flex: 1;
-    display: flex;
-    padding-left: 3px;
-}
-
-.inlay {
-    flex: 1 1 0;
-    display: flex;
-    justify-content: center;
-    gap: 3px;
-}
-
-.inlay-dot {
-    width: 4px;
-    height: 4px;
-    border-radius: 50%;
-    background-color: var(--muted-text-color);
-    font-size: 0;
 }
 </style>

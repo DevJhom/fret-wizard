@@ -161,7 +161,7 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', closeOnOutside
 .save-toggle {
     display: inline-flex;
     justify-content: center;
-    width: 40px;
+    width: 30px;
     padding: 0;
     border-left: 1px solid $gray-1;
     border-radius: 0 9px 9px 0;

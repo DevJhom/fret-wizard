@@ -36,6 +36,10 @@ const emit = defineEmits<{
 const fretIndicator = new Array(24);
 const fretIndicatorIndexes = [3,5,7,9,12,15,17,19,21,24];
 
+// Inlay dots on the neck: one between G and D, two at the octaves (between B and G, and D and A)
+const doubleInlayFrets = [12, 24];
+const singleInlayFrets = fretIndicatorIndexes.filter(fret => !doubleInlayFrets.includes(fret));
+
 </script>
 
 <template>
@@ -86,6 +90,7 @@ const fretIndicatorIndexes = [3,5,7,9,12,15,17,19,21,24];
                         :string-data="B"
                         :chord-positions="chordPositions?.B"
                         :bar-positions="barPositions?.B"
+                        :inlay-frets="doubleInlayFrets"
                         :fret-amount="fretAmount"
                         :current-key="currentKey"
                         :current-tonality="currentTonality"
@@ -109,6 +114,7 @@ const fretIndicatorIndexes = [3,5,7,9,12,15,17,19,21,24];
                         :string-data="G"
                         :chord-positions="chordPositions?.G"
                         :bar-positions="barPositions?.G"
+                        :inlay-frets="singleInlayFrets"
                         :fret-amount="fretAmount"
                         :current-key="currentKey"
                         :current-tonality="currentTonality"
@@ -123,14 +129,6 @@ const fretIndicatorIndexes = [3,5,7,9,12,15,17,19,21,24];
                     />
                 </div>
             </div>
-            <!-- Fret Dots (To be implemented later) -->
-            <!-- <div class="fret-dot d-flex text-nowrap w-75">
-                <div class="d-inline-block string-name"></div>
-                <div v-for="(_, index) in D" :key="index" class="d-inline-block border-0" :class="{'fret': index < fretAmount}">
-                    <span v-if="[2,4,6,8,14,16,18,20].includes(index)">*</span>
-                    <span v-else-if="[11,23].includes(index)">**</span>
-                </div>
-            </div> -->
             <div class="d-flex text-nowrap w-75">
                 <button v-if="stringToggles" type="button" class="string-name string-toggle" :class="{ 'string-hidden': !currentStrings.D }" :aria-pressed="currentStrings.D" :aria-label="`${currentStrings.D ? 'Hide' : 'Show'} D string`" @click="emit('toggle-string', 'D')">D</button>
                 <div v-else class="d-inline-block string-name">D</div>
@@ -140,6 +138,7 @@ const fretIndicatorIndexes = [3,5,7,9,12,15,17,19,21,24];
                         :string-data="D"
                         :chord-positions="chordPositions?.D"
                         :bar-positions="barPositions?.D"
+                        :inlay-frets="doubleInlayFrets"
                         :fret-amount="fretAmount"
                         :current-key="currentKey"
                         :current-tonality="currentTonality"
@@ -218,9 +217,11 @@ const fretIndicatorIndexes = [3,5,7,9,12,15,17,19,21,24];
 </template>
 
 <style scoped lang="scss">
-// Keeps the note labels' z-index inside the fretboard, so menus that open over it stay on top
+// Keeps the note labels' z-index inside the fretboard, so menus that open over it stay on top.
+// Centers notes and fret numbers in their fret, whatever alignment the surrounding card uses.
 .fretboard {
     isolation: isolate;
+    text-align: center;
 }
 
 .fret-indicator {
@@ -310,14 +311,6 @@ const fretIndicatorIndexes = [3,5,7,9,12,15,17,19,21,24];
     text-overflow: string;
     font-size: 12px;
 }
-
-// .fret-dot {
-//     position: absolute;
-//     justify-content: center;
-//     align-items: center;
-//     width: 100%;
-//     margin-top: 70px;
-// }
 
 @media (max-width: $phone) {
     .fret-indicator {

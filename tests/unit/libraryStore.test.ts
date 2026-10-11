@@ -5,7 +5,7 @@ import { defaultDataFor } from '@/lib/fretboardData'
 import { useAuthStore } from '@stores/useAuthStore'
 import { useLibraryStore } from '@stores/useLibraryStore'
 import { clearTokens } from '@services/session'
-import { enableAccounts, jsonResponse, routeFetch } from './support'
+import { enableAccounts, jsonResponse, requestBody, routeFetch } from './support'
 
 const storedCards = () => JSON.parse(localStorage.getItem('libraryCards') ?? 'null')
 
@@ -46,6 +46,39 @@ describe('library store', () => {
     await expect(library.createCard('Card 1', Setup.Scale)).resolves.toEqual(serverCard)
     expect(library.cards).toEqual([serverCard])
     expect(localStorage.getItem('libraryCards')).toBeNull()
+  })
+
+  it('toggles a favorite in localStorage for guests', async () => {
+    useAuthStore().status = 'guest'
+    const library = useLibraryStore()
+    const card = await library.createCard('Card 1', Setup.Scale)
+
+    await library.toggleFavorite(card!.id)
+    expect(library.cards[0].isFavorite).toBe(true)
+    expect(storedCards()[0].isFavorite).toBe(true)
+
+    await library.toggleFavorite(card!.id)
+    expect(library.cards[0].isFavorite).toBe(false)
+    expect(storedCards()[0].isFavorite).toBe(false)
+  })
+
+  it('sends the new favorite state to the API when signed in', async () => {
+    useAuthStore().status = 'authenticated'
+    const serverCard = { id: 'server-id', name: 'Card 1', setup: Setup.Scale, fretboards: [defaultDataFor(Setup.Scale)], isFavorite: false, createdAt: 5 }
+    const patches: unknown[] = []
+    routeFetch({
+      'GET /library-cards': () => jsonResponse(200, [serverCard]),
+      'PATCH /library-cards/server-id': init => {
+        patches.push(requestBody(init))
+        return jsonResponse(200, { ...serverCard, isFavorite: true })
+      },
+    })
+    const library = useLibraryStore()
+    await library.loadCards()
+
+    await library.toggleFavorite('server-id')
+    expect(patches).toEqual([{ isFavorite: true }])
+    expect(library.cards[0].isFavorite).toBe(true)
   })
 
   it('returns undefined and changes nothing when the API rejects a new card', async () => {

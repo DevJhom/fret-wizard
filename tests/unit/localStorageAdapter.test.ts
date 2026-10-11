@@ -26,6 +26,16 @@ describe('local library cards', () => {
     expect(fetchLibraryCards()).toEqual([{ ...card, name: 'Shapes', fretboards: stack }])
   })
 
+  it('favorites and unfavorites a card', () => {
+    const card = createLibraryCard({ name: 'Card 1', setup: Setup.Scale, fretboards: [defaultDataFor(Setup.Scale)] })
+
+    expect(updateLibraryCard(card.id, { isFavorite: true })?.isFavorite).toBe(true)
+    expect(fetchLibraryCards()).toEqual([{ ...card, isFavorite: true }])
+
+    expect(updateLibraryCard(card.id, { isFavorite: false })?.isFavorite).toBe(false)
+    expect(fetchLibraryCards()?.[0].isFavorite).toBe(false)
+  })
+
   it('returns undefined when updating a card that does not exist', () => {
     createLibraryCard({ name: 'Card 1', setup: Setup.Scale, fretboards: [defaultDataFor(Setup.Scale)] })
     const before = localStorage.getItem('libraryCards')

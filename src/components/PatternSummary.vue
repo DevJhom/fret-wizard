@@ -78,7 +78,7 @@ const tones = computed(() => {
 
 .chord-full-name {
     margin: 0.4rem 0 1rem;
-    color: $gray-1;
+    color: var(--accent-text-color);
 }
 
 .tone-list {

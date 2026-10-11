@@ -38,6 +38,7 @@ export const collectGuestData = (): ImportRequest | null => {
       name: cardName(card.name),
       setup: card.setup,
       fretboards: card.fretboards.map(fretboard => withDefaults(fretboard, card.setup)),
+      ...(card.isFavorite && { isFavorite: true }),
     }))
   }
   if (scale?.length || chord?.length) {

@@ -44,9 +44,9 @@ const compare: Record<LibrarySort, (a: LibraryCard, b: LibraryCard) => number> =
   name: (a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base', numeric: true }),
 };
 
-export const visibleCards = (cards: LibraryCard[], filter: LibraryFilter, query: string, sort: LibrarySort) =>
+export const visibleCards = (cards: LibraryCard[], filter: LibraryFilter, query: string, sort: LibrarySort, favoritesOnly = false) =>
   cards
-    .filter(c => (filter === 'all' || c.setup === filter) && matchesQuery(c, query))
+    .filter(c => (filter === 'all' || c.setup === filter) && (!favoritesOnly || c.isFavorite) && matchesQuery(c, query))
     .sort(compare[sort]);
 
 // "Oct 2" this year, "Mar 3, 2025" otherwise

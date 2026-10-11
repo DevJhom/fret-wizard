@@ -8,6 +8,8 @@ export interface LibraryCard {
   name: string
   setup: Setup
   fretboards: FretboardData[]
+  // Missing on cards saved before favorites existed: treat as false
+  isFavorite?: boolean
   createdAt: number
 }
 
@@ -20,6 +22,7 @@ export interface LibraryCardInput {
 export interface LibraryCardPatch {
   name?: string
   fretboards?: FretboardData[]
+  isFavorite?: boolean
 }
 
 export interface ProgressionChord {
@@ -186,6 +189,7 @@ export const updateLibraryCard = (id: string, patch: LibraryCardPatch): LibraryC
   if (!card) return undefined
   if (patch.name !== undefined) card.name = patch.name
   if (patch.fretboards !== undefined) card.fretboards = _.cloneDeep(patch.fretboards)
+  if (patch.isFavorite !== undefined) card.isFavorite = patch.isFavorite
   saveLibraryCards(cards)
   return card
 }

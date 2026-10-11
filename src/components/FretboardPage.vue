@@ -493,7 +493,8 @@ watch(() => props.cardId, cardId => attachCard(cardId));
     position: relative;
     display: flex;
     flex-wrap: wrap;
-    gap: 2.5rem;
+    // Row gap only: it applies when the builder wraps below the summary
+    gap: 2.5rem 0;
     // Extra top room keeps the Reset button above the builder's first headings
     padding: 2.75rem 2rem 1.75rem;
     text-align: start;

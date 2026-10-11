@@ -17,6 +17,7 @@ const libraryStore = useLibraryStore()
 const query = ref('')
 const filter = ref<LibraryFilter>('all')
 const sort = ref<LibrarySort>('newest')
+const favoritesOnly = ref(false)
 const isCreateOpen = ref(false)
 const isCreating = ref(false)
 
@@ -26,8 +27,9 @@ const filters: { value: LibraryFilter, label: string }[] = [
   { value: Setup.Chord, label: 'Chords' },
 ]
 
-const cards = computed(() => visibleCards(libraryStore.cards, filter.value, query.value, sort.value))
+const cards = computed(() => visibleCards(libraryStore.cards, filter.value, query.value, sort.value, favoritesOnly.value))
 const counts = computed(() => filterCounts(libraryStore.cards))
+const favoriteCount = computed(() => libraryStore.cards.filter(card => card.isFavorite).length)
 const isEmpty = computed(() => libraryStore.isLoaded && libraryStore.cards.length === 0)
 const hasNoResults = computed(() => !isEmpty.value && libraryStore.cards.length > 0 && cards.value.length === 0)
 // The modal starts on the type being filtered for
@@ -38,13 +40,16 @@ const summary = computed(() => {
   return `${count} saved ${count === 1 ? 'card' : 'cards'}`
 })
 
-const noResultsText = computed(() =>
-  query.value.trim() ? `No cards match "${query.value.trim()}"` : 'No cards of this type yet'
-)
+const noResultsText = computed(() => {
+  if (query.value.trim()) return `No cards match "${query.value.trim()}"`
+  if (!favoritesOnly.value) return 'No cards of this type yet'
+  return filter.value === 'all' ? 'No favorite cards yet' : 'No favorite cards of this type yet'
+})
 
 const clearFilters = () => {
   query.value = ''
   filter.value = 'all'
+  favoritesOnly.value = false
 }
 
 const handleCreate = async (name: string, setup: Setup) => {
@@ -101,6 +106,23 @@ onMounted(async () => {
           {{ option.label }}<span class="filter-count">{{ counts[option.value] }}</span>
         </button>
       </div>
+      <button
+        type="button"
+        class="favorites-toggle"
+        :class="{ 'favorites-selected': favoritesOnly }"
+        :aria-pressed="favoritesOnly"
+        @click="favoritesOnly = !favoritesOnly"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" :fill="favoritesOnly ? 'currentColor' : 'none'" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z"/></svg>
+        Favorites<span class="filter-count">{{ favoriteCount }}</span>
+      </button>
+    </div>
+
+    <div class="actions">
+      <button type="button" class="btn-new" @click="isCreateOpen = true">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        New Card
+      </button>
       <label class="sort">
         <span class="visually-hidden">Sort</span>
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 8 4-4 4 4M7 4v16M21 16l-4 4-4-4M17 20V4"/></svg>
@@ -112,13 +134,6 @@ onMounted(async () => {
       </label>
     </div>
 
-    <div>
-      <button type="button" class="btn-new" @click="isCreateOpen = true">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-        New Card
-      </button>
-    </div>
-
     <div v-if="cards.length" class="card-grid">
       <LibraryCardItem
         v-for="card in cards"
@@ -126,6 +141,7 @@ onMounted(async () => {
         :card="card"
         @open="emit('load-card', card)"
         @rename="name => handleRename(card.id, name)"
+        @toggle-favorite="libraryStore.toggleFavorite(card.id)"
         @delete="handleDelete(card.id)"
       />
     </div>
@@ -261,6 +277,7 @@ onMounted(async () => {
 }
 
 .filter-group {
+  margin-left: auto;
   display: flex;
   gap: 2px;
   padding: 2px;
@@ -299,8 +316,35 @@ onMounted(async () => {
   color: var(--muted-text-color);
 }
 
+.favorites-toggle {
+  @extend %btn;
+  padding: 0 14px;
+  background-color: var(--card-background-color);
+  border-color: var(--card-border-color);
+  color: var(--muted-text-color);
+
+  &:hover {
+    border-color: var(--accent-text-color);
+    color: inherit;
+  }
+}
+
+.favorites-selected,
+.favorites-selected:hover {
+  background-color: var(--accent-soft-color);
+  border-color: var(--accent-text-color);
+  color: var(--accent-strong-text-color);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
 .sort {
-  margin-left: auto;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -375,10 +419,6 @@ onMounted(async () => {
 
   .filter-button {
     justify-content: center;
-  }
-
-  .sort {
-    margin-left: 0;
   }
 }
 </style>

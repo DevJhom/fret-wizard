@@ -47,6 +47,10 @@ export const useLibraryStore = defineStore('library', {
     async renameCard(id: string, newName: string) {
       await this.updateCard(id, { name: newName })
     },
+    async toggleFavorite(id: string) {
+      const card = this.cards.find(c => c.id === id)
+      if (card) await this.updateCard(id, { isFavorite: !card.isFavorite })
+    },
     async updateCardFretboards(id: string, fretboards: FretboardData[]) {
       await this.ensureLoaded()
       await this.updateCard(id, { fretboards: _.cloneDeep(fretboards) })
