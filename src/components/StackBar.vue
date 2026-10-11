@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, watch, onMounted, onBeforeUnmount } from 'vue';
 import Sortable from 'sortablejs';
 import { Setup } from '@data/constants';
 import { patternSymbol } from '@data/patternNames';
@@ -36,6 +36,57 @@ const emit = defineEmits<{
 
 const chipList = ref<HTMLElement | null>(null);
 
+// Same width as the fade in the styles below
+const TAB_FADE = 40;
+
+const isClippedStart = ref(false);
+const isClippedEnd = ref(false);
+
+const updateFades = () => {
+    const list = chipList.value;
+    if (!list) return;
+    isClippedStart.value = list.scrollLeft > 1;
+    isClippedEnd.value = list.scrollLeft + list.clientWidth < list.scrollWidth - 1;
+}
+
+// Scrolls only the tab row, so the page never jumps the way scrollIntoView can
+const revealSelectedTab = () => {
+    const list = chipList.value;
+    const tab = list?.children[props.selectedIndex];
+    if (!list || !tab || !list.clientWidth) return;
+    const listRect = list.getBoundingClientRect();
+    const tabRect = tab.getBoundingClientRect();
+    const before = tabRect.left - listRect.left - TAB_FADE;
+    const after = tabRect.right - listRect.right + TAB_FADE;
+    if (before < 0) {
+        list.scrollBy({ left: before, behavior: 'smooth' });
+    } else if (after > 0) {
+        list.scrollBy({ left: after, behavior: 'smooth' });
+    }
+}
+
+const syncTabs = () => {
+    revealSelectedTab();
+    updateFades();
+}
+
+// A mouse wheel has no sideways scroll; at either end the page scrolls as usual
+const scrollTabsWithWheel = (event: WheelEvent) => {
+    const list = chipList.value;
+    if (!list || event.shiftKey || Math.abs(event.deltaX) >= Math.abs(event.deltaY)) return;
+    const delta = event.deltaMode == WheelEvent.DOM_DELTA_PIXEL ? event.deltaY : event.deltaY * 40;
+    const max = list.scrollWidth - list.clientWidth;
+    const next = Math.min(Math.max(list.scrollLeft + delta, 0), max);
+    if (Math.abs(next - list.scrollLeft) < 1) return;
+    event.preventDefault();
+    list.scrollLeft = next;
+}
+
+// Also fires when the row comes back from Stack View
+const tabsResizeObserver = new ResizeObserver(syncTabs);
+
+watch([() => props.selectedIndex, () => props.chords.map(symbolFor).join('|')], syncTabs, { flush: 'post' });
+
 const restoreElementPosition = (list: HTMLElement, item: HTMLElement, index: number) => {
     item.remove();
     const next = list.children[index];
@@ -56,14 +107,24 @@ onMounted(() => {
             emit('reorder', oldIndex, newIndex);
         },
     });
+    tabsResizeObserver.observe(chipList.value!);
 })
+
+onBeforeUnmount(() => tabsResizeObserver.disconnect());
 </script>
 
 <template>
     <div class="stack-bar" :class="{ 'is-stack-view': isStackView }">
         <!-- Folder tabs: the selected one joins the card below. Stack View lists every fretboard instead -->
         <div class="stack-tabs">
-            <div v-show="!isStackView" ref="chipList" class="stack-chips">
+            <div
+                v-show="!isStackView"
+                ref="chipList"
+                class="stack-chips"
+                :class="{ 'clipped-start': isClippedStart, 'clipped-end': isClippedEnd }"
+                @scroll.passive="updateFades"
+                @wheel="scrollTabsWithWheel"
+            >
                 <div
                     v-for="(chord, index) in chords"
                     :key="`${index}-${chord.currentKey}-${chord.currentTonality}-${chord.currentPattern}`"
@@ -102,25 +163,40 @@ onMounted(() => {
     position: relative;
     z-index: 1;
     display: flex;
+    flex-wrap: wrap;
     align-items: flex-end;
     gap: 0.75rem;
     width: 100%;
 }
 
-// One row of tabs that scrolls sideways when full, so the tabs always stay on the card's edge
+// The tabs and Add: Add follows the last tab until the row is full, then stays put at its end
 .stack-tabs {
     display: flex;
     flex: 1 1 auto;
     align-items: flex-end;
     gap: 0.25rem;
     min-width: 0;
-    overflow-x: auto;
-    scrollbar-width: none;
 }
 
+// One row of tabs that scrolls sideways when full, so the tabs always stay on the card's edge
 .stack-chips {
+    --fade-start: 0px;
+    --fade-end: 0px;
     display: flex;
+    flex: 0 1 auto;
     gap: 0.25rem;
+    min-width: 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    mask-image: linear-gradient(to right, transparent, #000 var(--fade-start), #000 calc(100% - var(--fade-end)), transparent);
+}
+
+.clipped-start {
+    --fade-start: 40px;
+}
+
+.clipped-end {
+    --fade-end: 40px;
 }
 
 .stack-chip {
@@ -220,8 +296,10 @@ onMounted(() => {
 .stack-actions {
     display: flex;
     flex: none;
+    order: -1;
+    justify-content: flex-end;
     gap: 0.5rem;
-    margin-bottom: 0.5rem;
+    width: 100%;
 }
 
 .stack-action {
@@ -248,6 +326,7 @@ onMounted(() => {
 
 // No tabs to join a card: the bar is a plain row above the list
 .is-stack-view {
+    flex-wrap: nowrap;
     align-items: center;
 
     .add-chord {
@@ -255,22 +334,23 @@ onMounted(() => {
     }
 
     .stack-actions {
-        margin-bottom: 0;
+        order: 0;
+        width: auto;
     }
 }
 
-// Actions get their own row above the tabs
 @media (max-width: $phone) {
-    .stack-bar {
+    .stack-actions {
         flex-wrap: wrap;
     }
 
-    .stack-actions {
+    .is-stack-view {
         flex-wrap: wrap;
-        order: -1;
-        justify-content: flex-end;
-        width: 100%;
-        margin-bottom: 0;
+
+        .stack-actions {
+            order: -1;
+            width: 100%;
+        }
     }
 }
 </style>

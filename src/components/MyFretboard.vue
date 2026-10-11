@@ -40,7 +40,7 @@ const fretIndicatorIndexes = [3,5,7,9,12,15,17,19,21,24];
 
 <template>
         <!-- FRETBOARD -->
-        <div>
+        <div class="fretboard">
             <!-- Fret Indicator -->
             <div class="d-flex w-75">
                 <div class="d-inline-block string-name"></div>
@@ -218,6 +218,11 @@ const fretIndicatorIndexes = [3,5,7,9,12,15,17,19,21,24];
 </template>
 
 <style scoped lang="scss">
+// Keeps the note labels' z-index inside the fretboard, so menus that open over it stay on top
+.fretboard {
+    isolation: isolate;
+}
+
 .fret-indicator {
     min-width: 2rem;
     height: 30px;
