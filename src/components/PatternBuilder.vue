@@ -27,10 +27,10 @@ const scaleTypes = [
 const chordTypes = [
     { pattern: Pattern.Triad, label: 'Triad' },
     { pattern: Pattern.Seventh, label: '7th' },
-    { pattern: Pattern.Dominant, label: 'Dom 7' },
-    { pattern: Pattern.Add9, label: 'add9' },
-    { pattern: Pattern.Add11, label: 'add11' },
-    { pattern: Pattern.Add13, label: 'add13' },
+    { pattern: Pattern.Dominant, label: 'Dom7' },
+    { pattern: Pattern.Add9, label: 'Add9' },
+    { pattern: Pattern.Add11, label: 'Add11' },
+    { pattern: Pattern.Add13, label: 'Add13' },
     { pattern: Pattern.Power, label: 'Power' },
 ];
 

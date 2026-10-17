@@ -95,7 +95,7 @@ export const patternTitle = (key: string, tonality: Tonality, pattern: Pattern, 
 
 export const patternSubtitle = (key: string, tonality: Tonality, pattern: Pattern, isScale: boolean) => {
   if (!isScale) return chordFullName(key, tonality, pattern);
-  return scaleFullNames[pattern] ?? "Triad arpeggio";
+  return scaleFullNames[pattern] ?? "Triad";
 }
 
 export const degreeLabel = (degree: Degree, pattern: Pattern) => {
