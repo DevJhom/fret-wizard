@@ -64,6 +64,9 @@ export const degreeToNumber: { [key: string]: number} = {
   "sevenths": 11
 }
 
+export const degreeBySemitone: Degree[] = [];
+Object.values(Degree).forEach(degree => { degreeBySemitone[degreeToNumber[degree]] = degree; });
+
 export const majorSharpAllNotes = ["C", "C♯", "D", "D♯", "E", "F", "F♯", "G", "G♯", "A", "A♯", "B"];
 export const majorFlatAllNotes = ["C", "D♭", "D", "E♭", "E", "F", "G♭", "G", "A♭", "A", "B♭", "B"];
 

@@ -36,9 +36,10 @@ DefaultLayout.vue (theme toggle, orientation detection, Scale | Chord | Chord Pr
 │   ├── StackRow.vue (Stack View: one collapsed fretboard: drag handle, name, neck, Edit, Remove)
 │   ├── PatternSummary.vue (title, subtitle, tone chips that show/hide degrees)
 │   ├── PatternBuilder.vue (Root + ♯/♭, Quality, Chord/Scale)
-│   └── PatternBoard.vue (one `FretboardData` drawn as a neck; used by the editor and by StackRow)
-│       └── MyFretboard.vue (shape fading, string toggles, note/interval labels, optional fingering + barre)
-│           └── MyString.vue (renders individual strings)
+│   ├── PatternBoard.vue (one `FretboardData` drawn as a neck; used by the editor and by StackRow)
+│   │   └── MyFretboard.vue (shape fading, string toggles, note/interval labels)
+│   │       └── MyString.vue (renders individual strings)
+│   └── VerticalChord.vue (Chord page: one position as a vertical chord diagram, in SVG with the neck's sizes and colors; the editor card shows every position under the neck)
 ├── ChordProgressionPage.vue (diatonic chord palette per key; drag/click chords into a progression)
 │   └── ChordBlock.vue (numeral + chord name block)
 └── LibraryPage.vue (saved fretboard stacks: search, Scales/Chords filter, Favorites toggle, sort; opening a card loads it into its Scale/Chord page)
@@ -47,7 +48,7 @@ DefaultLayout.vue (theme toggle, orientation detection, Scale | Chord | Chord Pr
     └── NewCardModal.vue ("New Card": pick Scale/Chord and a title before the card is created)
 ```
 
-The current page lives in the URL path (`/fret-wizard/scale`, `/chord`, `/chord-progression`, `/library`; `src/lib/pageRoute.ts`, `history.pushState`), so a refresh reopens it and Back/Forward switch pages; there is no vue-router. A Scale/Chord page opened from a Library card carries the card id (`/fret-wizard/scale/<card-id>`). `src/lib/cardSession.ts` remembers per page (localStorage `scaleWorkspaceCardId` / `chordWorkspaceCardId`) which card the stack came from, so a refresh keeps unsaved edits and the Scale/Chord tabs return to that card. Scale/Chord pages have two views: the Default view (tabs plus the selected fretboard's editor card) and Stack View, which lists every fretboard of the stack collapsed to its name and neck (`StackRow`). One button in the bar switches between them and is labelled with the view it switches to ("Stack View" / "Default View"), so it is never shown as pressed. In Stack View, Edit opens the editor card in place of that row and Done collapses it again (`isEditing` in `FretboardPage.vue`, not persisted); each row also has Remove, and rows are reordered by dragging their handle. A fretboard is removed with the × on its tab, the trash button next to Reset on the editor card, or the trash button on its Stack View row; none of them shows when the stack has one fretboard. Both views render through one list with a slot per fretboard: the Default view fills only the selected slot. `src/lib/stackView.ts` remembers the view per page in this browser only (localStorage `scaleStackView` / `chordStackView`). GitHub Pages has no server routing, so the `spa-fallback` plugin in `vite.config.ts` copies `index.html` to `404.html` on build: a refresh loads the app with HTTP status 404, which is expected. Scale and Chord pages persist separate fretboard stacks (`scaleCurrentFretboard`/`scaleFretboardList`, `chordCurrentFretboard`/`chordFretboardList`). Legacy `currentFretboard`/`fretboardList` keys are migrated on first read in `localStorageAdapter.ts`. A `LibraryCard` stores `setup` plus a `fretboards` stack, and `isFavorite` (toggled by the heart on its Library card; missing on older guest saves means false). A card changes only when "Save to Library" is pressed on its page; "Save as a New Card" in the same button's menu forks it. The bar does not name the open card (the Save button's tooltip does) and has no way to close it: the page stays on its card until another card is opened or the card is deleted. Opening another card over unsaved edits asks first. A Shape is one `currentCAGED` entry set to true (all true = All); tones outside it fade. Chord shapes are named from the chord root; Scale shapes keep the tonality-based offset (relative major for minor keys). The Chord page also has a Fingering view (`chordView: 'fingering'`, position in `currentChordPosition`) using `chords.ts` triad fingerings, adapted for minor, for Triad and Power only. The Chord Progression page persists `{ key, tonality, progression: { id, degree, type }[] }` under `chordProgression`; storing degrees means the progression transposes with the key. `type` is the chord type (`'triad' | 'seventh' | 'power'`, `diatonicChords()` in `progressions.ts`): the Chord selector picks the palette, and each chord keeps the type it was added with. A missing `type` (older saves) means triad.
+The current page lives in the URL path (`/fret-wizard/scale`, `/chord`, `/chord-progression`, `/library`; `src/lib/pageRoute.ts`, `history.pushState`), so a refresh reopens it and Back/Forward switch pages; there is no vue-router. A Scale/Chord page opened from a Library card carries the card id (`/fret-wizard/scale/<card-id>`). `src/lib/cardSession.ts` remembers per page (localStorage `scaleWorkspaceCardId` / `chordWorkspaceCardId`) which card the stack came from, so a refresh keeps unsaved edits and the Scale/Chord tabs return to that card. Scale/Chord pages have two views: the Default view (tabs plus the selected fretboard's editor card) and Stack View, which lists every fretboard of the stack collapsed to its name and neck (`StackRow`). One button in the bar switches between them and is labelled with the view it switches to ("Stack View" / "Default View"), so it is never shown as pressed. In Stack View, Edit opens the editor card in place of that row and Done collapses it again (`isEditing` in `FretboardPage.vue`, not persisted); each row also has Remove, and rows are reordered by dragging their handle. A fretboard is removed with the × on its tab, the trash button next to Reset on the editor card, or the trash button on its Stack View row; none of them shows when the stack has one fretboard. Both views render through one list with a slot per fretboard: the Default view fills only the selected slot. `src/lib/stackView.ts` remembers the view per page in this browser only (localStorage `scaleStackView` / `chordStackView`). GitHub Pages has no server routing, so the `spa-fallback` plugin in `vite.config.ts` copies `index.html` to `404.html` on build: a refresh loads the app with HTTP status 404, which is expected. Scale and Chord pages persist separate fretboard stacks (`scaleCurrentFretboard`/`scaleFretboardList`, `chordCurrentFretboard`/`chordFretboardList`). Legacy `currentFretboard`/`fretboardList` keys are migrated on first read in `localStorageAdapter.ts`. A `LibraryCard` stores `setup` plus a `fretboards` stack, and `isFavorite` (toggled by the heart on its Library card; missing on older guest saves means false). A card changes only when "Save to Library" is pressed on its page; "Save as a New Card" in the same button's menu forks it. The bar does not name the open card (the Save button's tooltip does) and has no way to close it: the page stays on its card until another card is opened or the card is deleted. Opening another card over unsaved edits asks first. A Shape is one `currentCAGED` entry set to true (all true = All); tones outside it fade. Chord shapes are named from the chord root; Scale shapes keep the tonality-based offset (relative major for minor keys). Below the neck, in a section of its own, the Chord page's editor card shows every position of the chord side by side as vertical chord diagrams (`VerticalChord`, from `chordVoicings()` in `chords.ts`: up to five CAGED shapes per chord type and tonality, each an open chord moved to the root; a scale pattern shows a note instead). The diagrams follow the tone chips, the string toggles and the Notes/Intervals labels; Stack View rows show the neck only. Each diagram is a radio tile bound to the same `currentCAGED` as the Shape buttons, so picking one shows its CAGED shape on the neck (and "All" in the toolbar clears it). They replaced the old Position view, so `chordView` and `currentChordPosition` are no longer read, but stay on `FretboardData` because saves and the backend's validation still carry them. The Chord Progression page persists `{ key, tonality, progression: { id, degree, type }[] }` under `chordProgression`; storing degrees means the progression transposes with the key. `type` is the chord type (`'triad' | 'seventh' | 'power'`, `diatonicChords()` in `progressions.ts`): the Chord selector picks the palette, and each chord keeps the type it was added with. A missing `type` (older saves) means triad.
 
 ### Service Layer
 - **`customizerService.ts`** — the one entry point for persistence. Signed-in users go through `adapters/apiAdapter.ts`, guests through `adapters/localStorageAdapter.ts`; the theme always stays local. Library writes are per card (`createLibraryCard`, `updateLibraryCard`, `deleteLibraryCard`).
@@ -58,18 +59,18 @@ The current page lives in the URL path (`/fret-wizard/scale`, `/chord`, `/chord-
 - **`authApi.ts`, `authErrors.ts`, `googleIdentity.ts`** — auth endpoints, form error messages, Google button.
 
 ### Data Layer (Music Theory)
-Located in `src/components/data/`:
+Located in `src/lib/music-theory/` (alias `@data`):
 - **`constants.ts`** — Enums (Pattern, Tonality, Setup, Accidental, Degree), note arrays for all key/tonality/accidental combos, degree-to-pattern lookup tables, key-to-number mappings
 - **`intervals.ts`** — Fret positions for each interval/degree on each string, accounts for 3 octaves per string. Functions: `getRoots()`, `getSeconds()`, `getThirds()`, etc.
 - **`noteNames.ts`** — Note naming and enharmonic equivalents (C♯ vs D♭). Functions: `getNoteName()`, `findRelativeMajor()`, `findRelativeMinor()`
-- **`CAGED.ts`** — CAGED system shape definitions with pre-defined fret ranges. Functions: `isCAGED()` checks if fret matches active shapes
+- **`CAGED.ts`** — CAGED system shape definitions, written in C and repeating every 12 frets: each shape is a 4-fret block on every string, plus a few of its notes a fret outside it. Functions: `isInCAGEDBlock()` for the highlighted band, `isCAGED()` for whether a note is in the active shapes (block or just outside; notes outside fade)
 - **`patternNames.ts`** — Titles, subtitles and stack-chip labels for chords and scales (`patternTitle()`, `patternSubtitle()`, `patternSymbol()`), degree labels (`degreeLabel()`), `isQualityLocked()` for Dominant/Power/Chromatic
-- **`chords.ts`** — Triad fingerings (C, A, G shapes) and barre positions for the Chord page's Fingering view. Functions: `getChordPositions()` (minor-aware), `getBarPositions()`, `fingeringAvailable()`
+- **`chords.ts`** — Chord shapes for the Chord page's chord diagrams, written in C as tabs per chord type and tonality. Functions: `chordVoicings()` (one playable voicing per shape for a `FretboardData`: frets placed in the lowest 5-fret window, muting hidden tones and strings, with its barre and first fret), `fingeringAvailable()`
 - **`progressions.ts`** — Diatonic chords per key with correct letter spelling. Functions: `progressionKeys()`, `diatonicChords()`, `relativeProgressionKey()`
 - **`boardPreview.ts`** — Lit degree per string for frets 0–12 of one fretboard (visible tones and strings only). Used by the Library card preview
 
 ### State
-- **`src/lib/fretboardData.ts`** — `FretboardData` (one fretboard: key, tonality, pattern, accidental, visible tones, CAGED, strings, frets, chord position/view) plus `defaultDataFor(setup)` and `isFingeringView()` (is this the Chord page's Position view)
+- **`src/lib/fretboardData.ts`** — `FretboardData` (one fretboard: key, tonality, pattern, accidental, visible tones, CAGED, strings, frets, and the unused chord position/view) plus `defaultDataFor(setup)`
 - **`FretboardPage.vue`** owns its stack (`FretboardData[]`) and saves it to storage on every change; there is no global pattern store
 - **`src/stores/useLibraryStore.ts`** — Library cards and the active card
 - **`src/stores/useAuthStore.ts`** — session status (`restoring` / `guest` / `authenticated`), the user, and `sessionVersion`. DefaultLayout keys the pages on `sessionVersion` so they remount and reload when the session changes; the status turns `authenticated` only after guest data has been imported.
@@ -91,7 +92,7 @@ Located in `src/components/data/`:
 Configured in `vite.config.ts` and `tsconfig.json`. **Always use aliases in imports:**
 - `@/` → `src/`
 - `@components/` → `src/components/`
-- `@data/` → `src/components/data/`
+- `@data/` → `src/lib/music-theory/`
 - `@stores/` → `src/stores/`
 - `@services/` → `src/services/`
 - `@assets/` → `src/assets/`
@@ -99,7 +100,7 @@ Configured in `vite.config.ts` and `tsconfig.json`. **Always use aliases in impo
 - `@images/` → `src/assets/images/`
 
 ✅ `import { MAJOR_SCALE } from '@data/intervals'`
-❌ `import { MAJOR_SCALE } from '../../components/data/intervals'`
+❌ `import { MAJOR_SCALE } from '../../lib/music-theory/intervals'`
 
 ### Composition API & `<script setup>`
 All components use Vue 3 Composition API with `<script setup lang="ts">` syntax. **Do not use Options API.**
@@ -149,15 +150,16 @@ SortableJS is used for reordering multiple fretboards: the tabs in `StackBar.vue
 - Key transposition via array rotation (shifting notes based on key number)
 - Base patterns are built on C for both major and minor, then shifted by `majorKeyToNumber` (`getScale()`)
 - 6 strings (E, A, D, G, B, e) with standard tuning, up to 24 frets
-- Fret indicators at positions 3, 5, 7, 9, 12, 15, 17, 19, 21, 24
+- Fret indicators at positions 3, 5, 7, 9, 12, 15, 17, 19, 21, 24 (`FRET_MARKERS` in `src/lib/fretMarkers.ts`, shared by the neck and the chord diagrams)
 - Inlay dots on the neck at the same frets (`inlayFrets` on `MyString.vue`): one between the G and D strings, two at 12 and 24 (between B and G, and D and A)
+- The chord diagrams (`VerticalChord.vue`) copy the neck's design: string thicknesses, 25px string spacing, 32px frets, 3px nut, 18px notes with 12px labels, 12px open-string notes against the nut, inlays and fret numbers. Keep the two in step when the neck's look changes. `--note-ring-color` is `--note-ring` as an SVG stroke color
 - Notes rendered as colored dots based on interval type
 - Accidental support for both sharp (♯) and flat (♭) notation
 
 ## Common Development Patterns
 
 ### Adding a New Pattern Type
-1. Define the pattern in `src/components/data/intervals.ts` or `chords.ts`
+1. Define the pattern in `src/lib/music-theory/intervals.ts` or `chords.ts`
 2. Add enum value in `constants.ts` if needed
 3. Update the music database `database/all-scales.json`
 4. Add it to the type/scale list in `PatternBuilder.vue` and its names in `patternNames.ts`
@@ -192,7 +194,7 @@ await libraryStore.createCard('Card 1', Setup.Chord, fretboards)
 
 6. **GitHub Pages base path** — The app is deployed to `/fret-wizard/`, not root. Relative asset paths must account for this. Vite config already handles this.
 
-7. **Data layer separation** — Keep music theory logic in `src/components/data/`. Don't mix interval/chord calculations with UI rendering code.
+7. **Data layer separation** — Keep music theory logic in `src/lib/music-theory/`. Don't mix interval/chord calculations with UI rendering code.
 
 ## Guidelines for AI Assistance
 
@@ -200,6 +202,6 @@ await libraryStore.createCard('Card 1', Setup.Chord, fretboards)
 - Use path aliases consistently — never relative paths
 - Test responsiveness — check portrait mode alongside landscape
 - Update LocalStorage keys carefully — breaking changes affect existing users
-- Preserve the data layer abstraction — music theory logic stays in `src/components/data/`
+- Preserve the data layer abstraction — music theory logic stays in `src/lib/music-theory/`
 - When adding new patterns/chords, follow the full flow: data definition → constants → store → sidebar → fretboard
 - Multiple fretboards can exist simultaneously — test changes with both single and multiple fretboards

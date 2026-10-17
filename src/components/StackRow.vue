@@ -121,8 +121,10 @@ const fullName = computed(() => isScale.value ? `${title.value} ${subtitle.value
     scrollbar-color: var(--card-border-color) transparent;
 }
 
+// Auto margins centre it and still let it scroll from fret 0 when it overflows
 .board {
     flex: none;
+    margin-inline: auto;
 }
 
 // Sits at the top of the row instead of centring against the neck

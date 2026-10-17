@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { CurrentStrings, CurrentCAGED } from '@/lib/fretboardData';
-import { isCAGED } from '@data/CAGED';
+import { isCAGED, isInCAGEDBlock } from '@data/CAGED';
 import { Accidental, Tonality, Degree, Pattern } from '@data/constants';
 import { getRoots, getMinorSeconds, getSeconds, getMinorThirds, getThirds, getFourths, getTritones, getFifths, getSixths, getSevenths, getMinorSixths, getMinorSevenths } from '@data/intervals';
 import { getNoteName } from '@data/noteNames';
@@ -22,8 +22,6 @@ const props = defineProps<{
     fadeOutsideShape?: boolean,
     rootBasedShapes?: boolean,
     labelMode?: 'notes' | 'intervals',
-    chordPositions?: number[],
-    barPositions?: number[],
     inlayFrets?: number[]
 }>();
 
@@ -66,9 +64,14 @@ const currentHighlightCAGED = computed(() => {
     return Object.keys(props.currentCAGED).filter(key => props.currentCAGED[key]);
 })
 
+const shapeTonality = computed(() => props.rootBasedShapes ? Tonality.MAJOR : props.currentTonality);
+
 const isInShape = (index: number) => {
-    const tonality = props.rootBasedShapes ? Tonality.MAJOR : props.currentTonality;
-    return isCAGED(index, props.stringName, props.currentKey, tonality, currentHighlightCAGED.value);
+    return isCAGED(index, props.stringName, props.currentKey, shapeTonality.value, currentHighlightCAGED.value);
+}
+
+const isInShapeBlock = (index: number) => {
+    return isInCAGEDBlock(index, props.currentKey, shapeTonality.value, currentHighlightCAGED.value);
 }
 
 const isOutsideShape = (index: number) => {
@@ -87,7 +90,6 @@ const isNoteActive = (index: number, noteName: Degree, noteIntervals: number[]) 
         isNoteHighlighted &&
         isInIntervals &&
         (props.fadeOutsideShape || isInShape(index)) &&
-        (!props.chordPositions || props.chordPositions.includes(index + 1)) &&
         isStringActive.value
     );
 }
@@ -122,9 +124,8 @@ const openIndex = 11; //equivalent note to the open position
             </div>
         </label>
     </div>
-    <div v-for="(_, index) in stringData" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount, 'shape-band': showShapeBand && index < fretAmount && isInShape(index)}" :style="{ 'border-right': isLastString ? 'none' : '' }">
+    <div v-for="(_, index) in stringData" :key="index" class="d-inline-block" :class="{'fret': index < fretAmount, 'shape-band': showShapeBand && index < fretAmount && isInShapeBlock(index)}" :style="{ 'border-right': isLastString ? 'none' : '' }">
         <span v-if="inlayFrets?.includes(index + 1) && index < fretAmount" class="inlay" aria-hidden="true"></span>
-        <div v-if="barPositions?.includes(index + 1) && index < fretAmount" class="bar"></div>
         <label v-if="index < fretAmount" class="notes">
             <input type="checkbox" v-model="stringData[index]"/>
             <div class="checkbox__checkmark" 
@@ -188,16 +189,6 @@ const openIndex = 11; //equivalent note to the open position
     transform: translate(-50%, -50%);
     background-color: var(--inlay-color);
     pointer-events: none;
-}
-
-.bar {
-    position: absolute;
-    height: 110%;
-    width: 8px;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: var(--string-color);
 }
 
 .outside-shape {

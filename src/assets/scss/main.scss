@@ -72,6 +72,8 @@ button:focus-visible {
   background-color: #191a1b;
   --note-background-color: #393937;
   --note-ring: none;
+  // --note-ring as a stroke color, for the chord diagrams' SVG dots
+  --note-ring-color: transparent;
   --toggle-off-color: #393937;
   --range-track-color: #393937;
   --accent-text-color: #{$yellow};
@@ -108,6 +110,7 @@ button:focus-visible {
   background-color: #fafafa;
   --note-background-color: #393937;
   --note-ring: inset 0 0 0 1px rgba(58, 38, 8, 0.28);
+  --note-ring-color: rgba(58, 38, 8, 0.28);
   --toggle-off-color: #e7e2d9;
   --range-track-color: #e7e2d9;
   --accent-text-color: #a0620a;

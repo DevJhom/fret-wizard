@@ -1,5 +1,4 @@
 import { Tonality, Accidental, Setup, Pattern, Degree, degreeInPattern } from '@data/constants';
-import { fingeringAvailable } from '@data/chords';
 
 export interface CurrentStrings {
   E: boolean;
@@ -30,6 +29,7 @@ export interface FretboardData {
   currentHighlightNotes: string[];
   currentCAGED: CurrentCAGED;
   currentStrings: CurrentStrings;
+  // Unused since the Position view was removed; kept because saves and the API still carry them
   currentChordPosition: number;
   chordView?: ChordView;
 }
@@ -68,7 +68,3 @@ export const defaultDataFor = (setup: Setup): FretboardData => ({
   currentPattern: defaultPatternFor(setup),
   currentHighlightNotes: degreeInPattern(defaultPatternFor(setup), Tonality.MAJOR)
 });
-
-// The Chord page's Position view; only triads and power chords have fingerings
-export const isFingeringView = (fretboard: FretboardData, setup: Setup): boolean =>
-  setup == Setup.Chord && fingeringAvailable(fretboard.currentPattern) && fretboard.chordView === 'fingering';

@@ -4,9 +4,9 @@ import _ from 'lodash';
 import Sortable from 'sortablejs';
 import { Accidental, Degree, Pattern, Setup, Tonality, degreeInPattern, majorSharpAllNotes, majorFlatAllNotes } from '@data/constants';
 import { isQualityLocked } from '@data/patternNames';
-import { getChordPositionIndexes, fingeringAvailable } from '@data/chords';
+import { chordVoicings, ChordVoicing } from '@data/chords';
 import { fetchCurrentFretboard, fetchFretboards, saveCurrentFretboard, saveFretboards } from '@/services/customizerService';
-import { defaultDataFor, isFingeringView, ChordView, CurrentCAGED, CurrentStrings, FretboardData } from '@/lib/fretboardData';
+import { defaultDataFor, CurrentCAGED, CurrentStrings, FretboardData } from '@/lib/fretboardData';
 import { useLibraryStore } from '@stores/useLibraryStore';
 import { cardWithUnsavedDraft, clearWorkspaceCardId, getWorkspaceCardId, resolveCardRoute, sameStack, setWorkspaceCardId } from '@/lib/cardSession';
 import { getStackView, setStackView } from '@/lib/stackView';
@@ -15,6 +15,7 @@ import StackRow from '@components/StackRow.vue';
 import PatternSummary from '@components/PatternSummary.vue';
 import PatternBuilder from '@components/PatternBuilder.vue';
 import PatternBoard from '@components/PatternBoard.vue';
+import VerticalChord from '@components/VerticalChord.vue';
 import RotatePhone from '@/assets/icons/RotatePhone.vue';
 import { rotateHintDismissed } from '@/lib/rotateHint';
 
@@ -56,18 +57,14 @@ const chord = computed(() => stack.value[selectedIndex.value]);
 const openCard = computed(() => props.cardId ? libraryStore.cards.find(c => c.id === props.cardId && c.setup === props.setup) : undefined);
 const isDirty = computed(() => !!openCard.value && !sameStack(stack.value, openCard.value.fretboards));
 
-const canFinger = computed(() => !isScale.value && fingeringAvailable(chord.value.currentPattern));
-const isFingering = computed(() => isFingeringView(chord.value, props.setup));
+const voicings = computed(() => chordVoicings(chord.value));
 
 const selectedShape = computed<Shape | 'All'>(() => {
     const active = shapes.filter(shape => chord.value.currentCAGED[shape]);
     return active.length === 1 ? active[0] : 'All';
 });
 
-const fingeringOptions = computed(() => getChordPositionIndexes(chord.value.currentPattern, chord.value.currentKey).map(position => ({
-    position,
-    label: String(position + 1),
-})));
+const diagramShape = (voicing: ChordVoicing) => `${voicing.shape}Shape` as Shape;
 
 const dismissRotateHint = () => {
     rotateHintDismissed.value = true;
@@ -89,8 +86,7 @@ const onChangeTonality = (tonality: Tonality) => {
 
 const onChangePattern = (pattern: Pattern) => {
     const tonality = isQualityLocked(pattern) ? Tonality.MAJOR : chord.value.currentTonality;
-    const chordView: ChordView | undefined = fingeringAvailable(pattern) ? chord.value.chordView : 'shapes';
-    updateChord({ currentPattern: pattern, currentTonality: tonality, currentHighlightNotes: allTones(pattern, tonality), chordView });
+    updateChord({ currentPattern: pattern, currentTonality: tonality, currentHighlightNotes: allTones(pattern, tonality) });
 }
 
 const onChangeAccidental = (accidental: Accidental) => {
@@ -355,33 +351,7 @@ watch(() => props.cardId, cardId => attachCard(cardId));
                             </div>
 
                             <div class="board-toolbar">
-                                <template v-if="!isScale">
-                                    <div class="switch-radio view-switch fw-bold">
-                                        <label>
-                                            <input type="radio" name="chord-view" :checked="!isFingering" @change="updateChord({ chordView: 'shapes' })">
-                                                <div class="label view-option">Shapes</div>
-                                            </input>
-                                        </label>
-                                        <label :class="{ 'is-disabled': !canFinger }" :title="canFinger ? '' : 'Positions are for triads and power chords'">
-                                            <input type="radio" name="chord-view" :disabled="!canFinger" :checked="isFingering" @change="updateChord({ chordView: 'fingering' })">
-                                                <div class="label view-option">Position</div>
-                                            </input>
-                                        </label>
-                                    </div>
-                                </template>
-
-                                <div v-if="isFingering" class="toolbar-group stacked">
-                                    <span class="toolbar-label">Position</span>
-                                    <div class="tile-radio">
-                                        <label v-for="option in fingeringOptions" :key="option.position">
-                                            <input type="radio" name="chord-fingering" :checked="chord.currentChordPosition === option.position" @change="updateChord({ currentChordPosition: option.position })">
-                                                <div class="label toolbar-option fw-bold">{{ option.label }}</div>
-                                            </input>
-                                        </label>
-                                    </div>
-                                </div>
-
-                                <div v-else class="toolbar-group stacked">
+                                <div class="toolbar-group stacked">
                                     <span class="toolbar-label">Shape</span>
                                     <div class="tile-radio">
                                         <label>
@@ -392,24 +362,6 @@ watch(() => props.cardId, cardId => attachCard(cardId));
                                         <label v-for="shape in shapes" :key="shape">
                                             <input type="radio" name="board-shape" :checked="selectedShape === shape" @change="onChangeShape(shape)">
                                                 <div class="label toolbar-option fw-bold">{{ shape[0] }}</div>
-                                            </input>
-                                        </label>
-                                    </div>
-                                </div>
-
-                                <small v-if="!isScale && !canFinger" class="toolbar-note">Positions are for triads and power chords</small>
-
-                                <div class="toolbar-group stacked labels-group">
-                                    <span class="toolbar-label">Labels</span>
-                                    <div class="tile-radio fw-bold">
-                                        <label>
-                                            <input type="radio" name="board-labels" :checked="labelMode === 'notes'" @change="labelMode = 'notes'">
-                                                <div class="label toolbar-option">Notes</div>
-                                            </input>
-                                        </label>
-                                        <label>
-                                            <input type="radio" name="board-labels" :checked="labelMode === 'intervals'" @change="labelMode = 'intervals'">
-                                                <div class="label toolbar-option">Intervals</div>
                                             </input>
                                         </label>
                                     </div>
@@ -432,7 +384,33 @@ watch(() => props.cardId, cardId => attachCard(cardId));
                                         <span class="fret-count fw-bold">{{ chord.fretAmount }}</span>
                                     </div>
                                 </div>
+
+                                <div class="toolbar-group stacked labels-group">
+                                    <span class="toolbar-label">Labels</span>
+                                    <div class="tile-radio fw-bold">
+                                        <label>
+                                            <input type="radio" name="board-labels" :checked="labelMode === 'notes'" @change="labelMode = 'notes'">
+                                                <div class="label toolbar-option">Notes</div>
+                                            </input>
+                                        </label>
+                                        <label>
+                                            <input type="radio" name="board-labels" :checked="labelMode === 'intervals'" @change="labelMode = 'intervals'">
+                                                <div class="label toolbar-option">Intervals</div>
+                                            </input>
+                                        </label>
+                                    </div>
+                                </div>
                             </div>
+                        </div>
+
+                        <div v-if="!isScale" class="chord-section">
+                            <div v-if="voicings.length" class="chord-diagrams">
+                                <label v-for="voicing in voicings" :key="voicing.shape" class="chord-option" :title="`Show the ${voicing.shape} shape on the fretboard`">
+                                    <input type="radio" name="diagram-shape" :checked="selectedShape === diagramShape(voicing)" @change="onChangeShape(diagramShape(voicing))">
+                                    <VerticalChord :voicing="voicing" :chord="chord" :label-mode="labelMode"/>
+                                </label>
+                            </div>
+                            <p v-else class="chord-note">No chord diagrams for this pattern</p>
                         </div>
                     </div>
                     <StackRow
@@ -573,11 +551,12 @@ watch(() => props.cardId, cardId => attachCard(cardId));
     border-top: 1px solid var(--card-border-color);
 }
 
+// Equal side columns keep the Frets slider centred.
 // Bottom-aligned so inline controls line up with the buttons under stacked headings
 .board-toolbar {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: end;
     gap: 0.75rem;
     width: 100%;
 }
@@ -611,6 +590,55 @@ watch(() => props.cardId, cardId => attachCard(cardId));
 .board {
     flex: none;
     margin-inline: auto;
+}
+
+.chord-section {
+    padding: 1.5rem;
+    border-top: 1px solid var(--card-border-color);
+}
+
+.chord-diagrams {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem 1.5rem;
+}
+
+.chord-option {
+    cursor: pointer;
+
+    input {
+        position: absolute;
+        width: 0;
+        height: 0;
+        opacity: 0;
+    }
+
+    .vertical-chord {
+        padding: 0.75rem 0.75rem 0.5rem;
+        border: 3px solid transparent;
+        border-radius: 12px;
+        background-color: var(--option-background-color);
+    }
+
+    &:hover .vertical-chord,
+    input:checked + .vertical-chord {
+        border-color: $yellow;
+    }
+
+    input:checked + .vertical-chord :deep(.chord-caption) {
+        color: var(--accent-text-color);
+    }
+
+    input:focus-visible + .vertical-chord {
+        outline: 2px solid $yellow;
+        outline-offset: 2px;
+    }
+}
+
+.chord-note {
+    margin: 0;
+    color: $gray-1;
 }
 
 .rotate-hint {
@@ -662,10 +690,6 @@ watch(() => props.cardId, cardId => attachCard(cardId));
     color: $gray-1;
 }
 
-.toolbar-note {
-    color: $gray-1;
-}
-
 input.fret-slider {
     width: 10rem;
 }
@@ -687,43 +711,8 @@ input.fret-slider {
     color: var(--accent-text-color);
 }
 
-// Pushes Labels + Frets to the right, with extra space between the two
 .labels-group {
-    margin-left: auto;
-    margin-right: 0.75rem;
-}
-
-.view-switch {
-    display: flex;
-}
-
-.view-switch label {
-    background-color: var(--option-background-color);
-}
-
-.view-switch input {
-    display: inline;
-    position: absolute;
-    width: 0;
-    height: 0;
-    opacity: 0;
-}
-
-.view-switch input:focus-visible + .label {
-    outline: 2px solid $yellow;
-    outline-offset: 2px;
-}
-
-.view-option {
-    display: flex;
-    align-items: center;
-    height: 38px;
-    padding: 0 0.9rem;
-}
-
-.is-disabled {
-    opacity: 0.4;
-    cursor: not-allowed;
+    justify-self: end;
 }
 
 .toolbar-option {
@@ -753,17 +742,34 @@ input.fret-slider {
         margin-bottom: -0.75rem;
     }
 
-    .board-section {
+    .board-section,
+    .chord-section {
         padding: 1rem;
+    }
+
+    .chord-diagrams {
+        column-gap: 1rem;
+    }
+
+    // A fixed half-row width, so a diagram alone on the last row matches the others
+    .chord-option {
+        flex: 0 0 calc(50% - 0.5rem);
+        min-width: 9rem;
+        max-width: 11.75rem;
+    }
+
+    .chord-option .vertical-chord {
+        padding: 0.5rem 0.375rem 0.375rem;
+    }
+
+    // Too narrow for three columns, so the groups wrap
+    .board-toolbar {
+        display: flex;
+        flex-wrap: wrap;
     }
 
     input.fret-slider {
         width: 7rem;
-    }
-
-    // Wrapped rows read better left-aligned
-    .labels-group {
-        margin-left: 0;
     }
 }
 

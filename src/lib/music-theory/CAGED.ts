@@ -2,84 +2,59 @@ import { CurrentCAGED } from '@/lib/fretboardData';
 import { majorKeyToNumber, minorKeyToNumber } from '@data/constants';
 import { Tonality } from '@data/constants';
 
-const CShapePositions = [-1,0,1,2, 11,12,13,14];
-const AShapePositions = [-11,-10,-9,-8, 1,2,3,4, 13,14,15,16];
-const GShapePositions = [-8,-7,-6,-5, 4,5,6,7, 16,17,18,19];
-const EShapePositions = [-6,-5,-4,-3, 6,7,8,9, 18,19,20,21];
-const DShapePositions = [-4,-3,-2,-1, 8,9,10,11, 20,21,22,23];
+type Shape = keyof CurrentCAGED;
 
-// position = fret number - 1
-export const CAGED = {
-    CShape: {
-        e: CShapePositions,
-        B: CShapePositions,
-        G: CShapePositions,
-        D: CShapePositions,
-        A: CShapePositions,
-        E: CShapePositions,
-    },
-    AShape: {
-        e: AShapePositions,
-        B: AShapePositions,
-        G: AShapePositions,
-        D: AShapePositions,
-        A: AShapePositions,
-        E: AShapePositions,
-    },
-    GShape: {
-        e: GShapePositions,
-        B: GShapePositions,
-        G: GShapePositions,
-        D: GShapePositions,
-        A: GShapePositions,
-        E: GShapePositions,
-    },
-    EShape: {
-        e: EShapePositions,
-        B: EShapePositions,
-        G: EShapePositions,
-        D: EShapePositions,
-        A: EShapePositions,
-        E: EShapePositions,
-    },
-    DShape: {
-        e: DShapePositions,
-        B: DShapePositions,
-        G: DShapePositions,
-        D: DShapePositions,
-        A: DShapePositions,
-        E: DShapePositions,
-    }
+// First fret of each shape's block in C: four frets on every string, repeating every 12 frets
+const CAGEDBlockStart: Record<Shape, number> = {
+    CShape: 0,
+    AShape: 2,
+    GShape: 5,
+    EShape: 7,
+    DShape: 10,
 }
 
-export const isCAGED = (index: number, stringName: string, currentKey: string, tonality: Tonality, highlightCAGED?: string[]): boolean => {
-    if (tonality == Tonality.MAJOR)
-        index = index - majorKeyToNumber[currentKey];
-    if (tonality == Tonality.MINOR)
-        index = index - minorKeyToNumber[currentKey];
+const BLOCK_FRETS = 4;
 
-    if (highlightCAGED) {
-        if (highlightCAGED.includes("CShape") && CAGED.CShape?.[stringName].includes(index)) 
-            return true;
-        
-        if (highlightCAGED.includes("AShape") && CAGED.AShape?.[stringName].includes(index)) 
-            return true;
-        
-        if (highlightCAGED.includes("GShape") && CAGED.GShape?.[stringName].includes(index)) 
-            return true;
-        
-        if (highlightCAGED.includes("EShape") && CAGED.EShape?.[stringName].includes(index)) 
-            return true;
-        
-        if (highlightCAGED.includes("DShape") && CAGED.DShape?.[stringName].includes(index)) 
-            return true;
-    }
+// Shape notes in C that sit a fret outside the block; they stay lit, though the block isn't drawn under them
+const outsideBlock: Partial<Record<Shape, Record<string, number[]>>> = {
+    // The scale's 4th
+    AShape: { B: [6] },
+    // The scale's 7th, and the minor chord's 3rd
+    GShape: { G: [4], B: [4] },
+    // The scale's 7th and 3rd
+    DShape: { D: [9], G: [9] },
+}
+
+const mod12 = (value: number) => ((value % 12) + 12) % 12;
+
+// Minor keys take their relative major's shapes
+const shapeShift = (currentKey: string, tonality: Tonality) =>
+    tonality == Tonality.MINOR ? minorKeyToNumber[currentKey] : majorKeyToNumber[currentKey];
+
+// position = fret number - 1; the open string is asked about as fret 12
+const fretInC = (index: number, currentKey: string, tonality: Tonality) => index + 1 - shapeShift(currentKey, tonality);
+
+const inBlock = (shape: Shape, fret: number) => mod12(fret - CAGEDBlockStart[shape]) < BLOCK_FRETS;
+
+export const isInCAGEDBlock = (index: number, currentKey: string, tonality: Tonality, highlightCAGED?: string[]): boolean => {
+    const fret = fretInC(index, currentKey, tonality);
+    return !!highlightCAGED?.some(shape => shape in CAGEDBlockStart && inBlock(shape as Shape, fret));
+};
+
+// Whether a note belongs to a highlighted shape: inside its block, or one of the notes just outside it
+export const isCAGED = (index: number, stringName: string, currentKey: string, tonality: Tonality, highlightCAGED?: string[]): boolean => {
+    const fret = fretInC(index, currentKey, tonality);
+
+    return !!highlightCAGED?.some(shape => shape in CAGEDBlockStart && (
+        inBlock(shape as Shape, fret) ||
+        !!outsideBlock[shape as Shape]?.[stringName]?.some(outside => mod12(fret - outside) == 0)
+    ));
 };
 
 export const CAGEDNamePosition = {
     CShape: {
         name: "C Shape",
-        position: [-11, 1, 12],
+        position: [-11, 1, 13],
     },
     AShape: {
         name: "A Shape",
@@ -100,32 +75,11 @@ export const CAGEDNamePosition = {
 }
 
 export const isCAGEDNameHere = (index: number, currentCAGED: CurrentCAGED, currentKey: string, tonality: Tonality) => {
-    if (tonality == Tonality.MAJOR)
-        index = index - majorKeyToNumber[currentKey];
-    if (tonality == Tonality.MINOR)
-        index = index - majorKeyToNumber[currentKey] - 3;
-
-    if (currentCAGED.CShape && CAGEDNamePosition.CShape.position.includes(index))
-        return true;
-
-    if (currentCAGED.AShape && CAGEDNamePosition.AShape.position.includes(index))
-        return true;
-
-    if (currentCAGED.GShape && CAGEDNamePosition.GShape.position.includes(index))
-        return true;
-
-    if (currentCAGED.EShape && CAGEDNamePosition.EShape.position.includes(index))
-        return true;
-
-    if (currentCAGED.DShape && CAGEDNamePosition.DShape.position.includes(index))
-        return true;
+    return !!GetCAGEDName(index, currentCAGED, currentKey, tonality);
 }
 
 export const GetCAGEDName = (index: number, currentCAGED: CurrentCAGED, currentKey: string, tonality: Tonality) => {
-    if (tonality == Tonality.MAJOR)
-        index = index - majorKeyToNumber[currentKey];
-    if (tonality == Tonality.MINOR)
-        index = index - majorKeyToNumber[currentKey] - 3;
+    index = index - shapeShift(currentKey, tonality);
 
     if (currentCAGED.CShape && CAGEDNamePosition.CShape.position.includes(index))
         return CAGEDNamePosition.CShape.name;

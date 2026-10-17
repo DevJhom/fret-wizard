@@ -2,7 +2,7 @@
 import { CurrentCAGED, CurrentStrings } from '@/lib/fretboardData';
 import { Pattern, Tonality, Accidental } from '@data/constants';
 import { isCAGEDNameHere, GetCAGEDName } from '@data/CAGED';
-import { ChordPositions } from '@data/chords';
+import { FRET_MARKERS, DOUBLE_INLAY_FRETS, SINGLE_INLAY_FRETS } from '@/lib/fretMarkers';
 import MyString from '@components/MyString.vue';
 
 const props = defineProps<{
@@ -19,8 +19,6 @@ const props = defineProps<{
     labelMode?: 'notes' | 'intervals',
     stringToggles?: boolean,
     shapeNames?: boolean,
-    chordPositions?: ChordPositions,
-    barPositions?: ChordPositions,
     E: string[],
     A: string[],
     D: string[],
@@ -34,11 +32,11 @@ const emit = defineEmits<{
 }>();
 
 const fretIndicator = new Array(24);
-const fretIndicatorIndexes = [3,5,7,9,12,15,17,19,21,24];
+const fretIndicatorIndexes = FRET_MARKERS;
 
 // Inlay dots on the neck: one between G and D, two at the octaves (between B and G, and D and A)
-const doubleInlayFrets = [12, 24];
-const singleInlayFrets = fretIndicatorIndexes.filter(fret => !doubleInlayFrets.includes(fret));
+const doubleInlayFrets = DOUBLE_INLAY_FRETS;
+const singleInlayFrets = SINGLE_INLAY_FRETS;
 
 </script>
 
@@ -65,8 +63,6 @@ const singleInlayFrets = fretIndicatorIndexes.filter(fret => !doubleInlayFrets.i
                     <MyString
                         :string-name="'e'"
                         :string-data="e"
-                        :chord-positions="chordPositions?.e"
-                        :bar-positions="barPositions?.e"
                         :fret-amount="fretAmount"
                         :current-key="currentKey"
                         :current-tonality="currentTonality"
@@ -88,8 +84,6 @@ const singleInlayFrets = fretIndicatorIndexes.filter(fret => !doubleInlayFrets.i
                     <MyString
                         :string-name="'B'"
                         :string-data="B"
-                        :chord-positions="chordPositions?.B"
-                        :bar-positions="barPositions?.B"
                         :inlay-frets="doubleInlayFrets"
                         :fret-amount="fretAmount"
                         :current-key="currentKey"
@@ -112,8 +106,6 @@ const singleInlayFrets = fretIndicatorIndexes.filter(fret => !doubleInlayFrets.i
                     <MyString
                         :string-name="'G'"
                         :string-data="G"
-                        :chord-positions="chordPositions?.G"
-                        :bar-positions="barPositions?.G"
                         :inlay-frets="singleInlayFrets"
                         :fret-amount="fretAmount"
                         :current-key="currentKey"
@@ -136,8 +128,6 @@ const singleInlayFrets = fretIndicatorIndexes.filter(fret => !doubleInlayFrets.i
                     <MyString
                         :string-name="'D'"
                         :string-data="D"
-                        :chord-positions="chordPositions?.D"
-                        :bar-positions="barPositions?.D"
                         :inlay-frets="doubleInlayFrets"
                         :fret-amount="fretAmount"
                         :current-key="currentKey"
@@ -160,8 +150,6 @@ const singleInlayFrets = fretIndicatorIndexes.filter(fret => !doubleInlayFrets.i
                     <MyString
                         :string-name="'A'"
                         :string-data="A"
-                        :chord-positions="chordPositions?.A"
-                        :bar-positions="barPositions?.A"
                         :fret-amount="fretAmount"
                         :current-key="currentKey"
                         :current-tonality="currentTonality"
@@ -183,8 +171,6 @@ const singleInlayFrets = fretIndicatorIndexes.filter(fret => !doubleInlayFrets.i
                     <MyString
                         :string-name="'E'"
                         :string-data="E"
-                        :chord-positions="chordPositions?.E"
-                        :bar-positions="barPositions?.E"
                         :fret-amount="fretAmount"
                         :is-last-string="true"
                         :current-key="currentKey"
@@ -254,14 +240,25 @@ const singleInlayFrets = fretIndicatorIndexes.filter(fret => !doubleInlayFrets.i
 }
 
 .string-hidden {
-    opacity: 0.45;
-    text-decoration: line-through;
+    color: rgba($gray-1, 0.6);
 }
 
 // Containing block for MyString's absolute open-position note, so it scrolls with the neck.
 .fret-start {
     position: relative;
+    border-top: var(--string-width) solid var(--string-color);
     border-left: 3px solid var(--nut-color);
+}
+
+// Where a string meets the nut the browser splits the corner diagonally, so the nut fills it in
+.fret-start::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: -3px;
+    width: 3px;
+    height: var(--string-width);
+    background-color: var(--nut-color);
 }
 
 .string-e, .string-B, .string-G, .string-D, .string-A {
@@ -269,27 +266,27 @@ const singleInlayFrets = fretIndicatorIndexes.filter(fret => !doubleInlayFrets.i
 }
 
 .string-e {
-    border-top: 1px solid var(--string-color);
+    --string-width: 1px;
 }
 
 .string-B {
-    border-top: 1.5px solid var(--string-color);
+    --string-width: 1.5px;
 }
 
 .string-G {
-    border-top: 2px solid var(--string-color);
+    --string-width: 2px;
 }
 
 .string-D {
-    border-top: 2.5px solid var(--string-color);
+    --string-width: 2.5px;
 }
 
 .string-A {
-    border-top: 3px solid var(--string-color);
+    --string-width: 3px;
 }
 
 .string-E {
-    border-top: 3.5px solid var(--string-color);
+    --string-width: 3.5px;
 }
 
 .last-string {
