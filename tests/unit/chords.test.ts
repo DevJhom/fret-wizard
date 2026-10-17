@@ -197,11 +197,10 @@ describe('chord shapes', () => {
     }
   })
 
-  it('lies inside its CAGED shape on the neck, but for the stretched 9th of the A and E shape add9 chords', () => {
+  it('lies inside its CAGED shape on the neck, so none of its notes fade there', () => {
     for (const { key, pattern, voicing, name } of everyVoicing()) {
       for (const note of voicing.notes) {
-        if (pattern == Pattern.Add9 && note.degree == Degree.seconds && (voicing.shape == 'A' || voicing.shape == 'E')) continue
-        expect(isCAGED(note.fret === 0 ? 11 : note.fret - 1, note.string, key, MAJOR, [`${voicing.shape}Shape`]), `${name}, ${note.string} string`).toBe(true)
+        expect(isCAGED(note.fret === 0 ? 11 : note.fret - 1, note.string, key, MAJOR, [`${voicing.shape}Shape`], pattern), `${name}, ${note.string} string`).toBe(true)
       }
     }
   })

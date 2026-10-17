@@ -367,14 +367,13 @@ watch(() => props.cardId, cardId => attachCard(cardId));
                                     </div>
                                 </div>
 
-                                <div class="toolbar-group stacked">
-                                    <label for="board-frets" class="toolbar-label">Frets</label>
+                                <div class="toolbar-group">
                                     <div class="fret-range">
                                         <span class="fret-min fw-bold">12</span>
                                         <input
-                                            id="board-frets"
                                             type="range"
                                             class="fret-slider"
+                                            aria-label="Frets"
                                             min="12"
                                             max="24"
                                             step="1"

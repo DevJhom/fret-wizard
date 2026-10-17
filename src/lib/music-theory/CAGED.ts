@@ -1,5 +1,5 @@
 import { CurrentCAGED } from '@/lib/fretboardData';
-import { majorKeyToNumber, minorKeyToNumber } from '@data/constants';
+import { majorKeyToNumber, minorKeyToNumber, Pattern } from '@data/constants';
 import { Tonality } from '@data/constants';
 
 type Shape = keyof CurrentCAGED;
@@ -25,6 +25,12 @@ const outsideBlock: Partial<Record<Shape, Record<string, number[]>>> = {
     DShape: { D: [9], G: [9] },
 }
 
+// The add9 chords' A and E shapes reach two frets past the block for their 9th
+const add9OutsideBlock: Partial<Record<Shape, Record<string, number[]>>> = {
+    AShape: { G: [7] },
+    EShape: { D: [12] },
+}
+
 const mod12 = (value: number) => ((value % 12) + 12) % 12;
 
 // Minor keys take their relative major's shapes
@@ -42,12 +48,13 @@ export const isInCAGEDBlock = (index: number, currentKey: string, tonality: Tona
 };
 
 // Whether a note belongs to a highlighted shape: inside its block, or one of the notes just outside it
-export const isCAGED = (index: number, stringName: string, currentKey: string, tonality: Tonality, highlightCAGED?: string[]): boolean => {
+export const isCAGED = (index: number, stringName: string, currentKey: string, tonality: Tonality, highlightCAGED?: string[], pattern?: Pattern): boolean => {
     const fret = fretInC(index, currentKey, tonality);
+    const outsideNotes = pattern == Pattern.Add9 ? [outsideBlock, add9OutsideBlock] : [outsideBlock];
 
     return !!highlightCAGED?.some(shape => shape in CAGEDBlockStart && (
         inBlock(shape as Shape, fret) ||
-        !!outsideBlock[shape as Shape]?.[stringName]?.some(outside => mod12(fret - outside) == 0)
+        outsideNotes.some(notes => !!notes[shape as Shape]?.[stringName]?.some(outside => mod12(fret - outside) == 0))
     ));
 };
 

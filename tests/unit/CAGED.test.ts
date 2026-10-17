@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { Tonality, majorKeyToNumber, minorKeyToNumber } from '@data/constants'
+import { Pattern, Tonality, majorKeyToNumber, minorKeyToNumber } from '@data/constants'
 import { GetCAGEDName, isCAGED, isCAGEDNameHere, isInCAGEDBlock } from '@data/CAGED'
 import { findRelativeMajor } from '@data/noteNames'
 import type { CurrentCAGED, CurrentStrings } from '@/lib/fretboardData'
@@ -118,6 +118,14 @@ describe('isInCAGEDBlock', () => {
     for (const [shape, string, fret] of [['AShape', 'B', 6], ['GShape', 'G', 4], ['GShape', 'B', 4], ['DShape', 'D', 9], ['DShape', 'G', 9]] as [Shape, StringName, number][]) {
       expect(isInCAGEDBlock(fret - 1, 'C', Tonality.MAJOR, [shape]), `${shape}, ${string} string, fret ${fret}`).toBe(false)
       expect(inShape(shape, string, fret, 'C'), `${shape}, ${string} string, fret ${fret}`).toBe(true)
+    }
+  })
+
+  it('keeps the 9th of the add9 A and E shapes lit, for add9 only', () => {
+    for (const [shape, string, fret] of [['AShape', 'G', 7], ['EShape', 'D', 12]] as [Shape, StringName, number][]) {
+      expect(isCAGED(fret - 1, string, 'C', Tonality.MAJOR, [shape], Pattern.Add9), `${shape}, add9`).toBe(true)
+      expect(isCAGED(fret - 1, string, 'C', Tonality.MAJOR, [shape], Pattern.Triad), `${shape}, triad`).toBe(false)
+      expect(isCAGED(fret - 1, string, 'C', Tonality.MAJOR, [shape], Pattern.Diatonic), `${shape}, diatonic`).toBe(false)
     }
   })
 })

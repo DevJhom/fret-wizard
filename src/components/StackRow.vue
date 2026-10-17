@@ -42,7 +42,7 @@ const fullName = computed(() => isScale.value ? `${title.value} ${subtitle.value
         </div>
 
         <div class="row-actions">
-            <button type="button" class="row-action" :aria-label="`Edit ${fullName}`" title="Edit" @click="emit('edit')">
+            <button type="button" class="row-action edit-action" :aria-label="`Edit ${fullName}`" title="Edit" @click="emit('edit')">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="m13.5 6.5 4 4"/></svg>
             </button>
             <button v-if="removable" type="button" class="row-action remove-action" :aria-label="`Remove ${fullName}`" title="Remove from the stack" @click="emit('remove')">
@@ -157,6 +157,12 @@ const fullName = computed(() => isScale.value ? `${title.value} ${subtitle.value
     &:focus-visible {
         outline: 2px solid $yellow;
         outline-offset: 2px;
+    }
+}
+
+.edit-action {
+    &:hover {
+        color: var(--accent-text-color);
     }
 }
 

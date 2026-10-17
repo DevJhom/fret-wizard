@@ -67,7 +67,7 @@ const currentHighlightCAGED = computed(() => {
 const shapeTonality = computed(() => props.rootBasedShapes ? Tonality.MAJOR : props.currentTonality);
 
 const isInShape = (index: number) => {
-    return isCAGED(index, props.stringName, props.currentKey, shapeTonality.value, currentHighlightCAGED.value);
+    return isCAGED(index, props.stringName, props.currentKey, shapeTonality.value, currentHighlightCAGED.value, props.currentPattern);
 }
 
 const isInShapeBlock = (index: number) => {

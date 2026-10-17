@@ -63,7 +63,7 @@ Located in `src/lib/music-theory/` (alias `@data`):
 - **`constants.ts`** — Enums (Pattern, Tonality, Setup, Accidental, Degree), note arrays for all key/tonality/accidental combos, degree-to-pattern lookup tables, key-to-number mappings
 - **`intervals.ts`** — Fret positions for each interval/degree on each string, accounts for 3 octaves per string. Functions: `getRoots()`, `getSeconds()`, `getThirds()`, etc.
 - **`noteNames.ts`** — Note naming and enharmonic equivalents (C♯ vs D♭). Functions: `getNoteName()`, `findRelativeMajor()`, `findRelativeMinor()`
-- **`CAGED.ts`** — CAGED system shape definitions, written in C and repeating every 12 frets: each shape is a 4-fret block on every string, plus a few of its notes a fret outside it. Functions: `isInCAGEDBlock()` for the highlighted band, `isCAGED()` for whether a note is in the active shapes (block or just outside; notes outside fade)
+- **`CAGED.ts`** — CAGED system shape definitions, written in C and repeating every 12 frets: each shape is a 4-fret block on every string, plus a few of its notes a fret outside it (and, for add9 only, the A and E shapes' 9th two frets out). Functions: `isInCAGEDBlock()` for the highlighted band, `isCAGED()` for whether a note is in the active shapes (block or just outside; notes outside fade)
 - **`patternNames.ts`** — Titles, subtitles and stack-chip labels for chords and scales (`patternTitle()`, `patternSubtitle()`, `patternSymbol()`), degree labels (`degreeLabel()`), `isQualityLocked()` for Dominant/Power/Chromatic
 - **`chords.ts`** — Chord shapes for the Chord page's chord diagrams, written in C as tabs per chord type and tonality. Functions: `chordVoicings()` (one playable voicing per shape for a `FretboardData`: frets placed in the lowest 5-fret window, muting hidden tones and strings, with its barre and first fret), `fingeringAvailable()`
 - **`progressions.ts`** — Diatonic chords per key with correct letter spelling. Functions: `progressionKeys()`, `diatonicChords()`, `relativeProgressionKey()`
@@ -161,10 +161,9 @@ SortableJS is used for reordering multiple fretboards: the tabs in `StackBar.vue
 ### Adding a New Pattern Type
 1. Define the pattern in `src/lib/music-theory/intervals.ts` or `chords.ts`
 2. Add enum value in `constants.ts` if needed
-3. Update the music database `database/all-scales.json`
-4. Add it to the type/scale list in `PatternBuilder.vue` and its names in `patternNames.ts`
-5. Check it renders on `FretboardPage.vue` for the right setup
-6. Test with both single and multiple fretboards
+3. Add it to the type/scale list in `PatternBuilder.vue` and its names in `patternNames.ts`
+4. Check it renders on `FretboardPage.vue` for the right setup
+5. Test with both single and multiple fretboards
 
 ### Customizing the Fretboard
 1. Edit fretboard rendering in `MyFretboard.vue` (DOM structure)
