@@ -36,6 +36,11 @@ describe('sameStack', () => {
     expect(sameStack([board('A')], [board('E')])).toBe(false)
     expect(sameStack([board('A')], [board('A'), board('A')])).toBe(false)
   })
+
+  it('treats two spellings of one key as the same key', () => {
+    expect(sameStack([board('C♯')], [board('D♭')])).toBe(true)
+    expect(sameStack([board('C♯')], [board('D')])).toBe(false)
+  })
 })
 
 describe('resolveCardRoute', () => {

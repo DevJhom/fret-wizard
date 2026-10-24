@@ -53,7 +53,7 @@ const muted = computed(() => diagramStrings.filter(string => !noteOn(string)));
 
 const label = (note: ChordNote) => props.labelMode === 'intervals'
     ? degreeLabel(note.degree, props.chord.currentPattern)
-    : getNoteName(note.degree, props.chord.currentKey, props.chord.currentAccidental);
+    : getNoteName(note.degree, props.chord.currentKey, props.chord.currentPattern);
 
 const description = computed(() => `${props.voicing.shape} shape: ${diagramStrings.map(string => noteOn(string)?.fret ?? 'x').join(' ')}`);
 </script>

@@ -79,10 +79,47 @@ const dominantShapes = [
     chordShape('D', 'x x 10 12 11 12'),
 ];
 
+const sus2Shapes = [
+    // No high e: its 2nd would be fret -2 in C; the open D and G strings become a barre once moved
+    chordShape('C', 'x 3 0 0 1 x', 0),
+    chordShape('A', 'x 3 5 5 3 3', 3),
+    // The top four strings of the open Gsus2, 3 x 0 2 3 3
+    chordShape('G', 'x x 5 7 8 8'),
+    // The open Esus2, 0 2 4 4 0 0: the same reach as the add9's E shape
+    chordShape('E', '8 10 12 12 8 8', 8),
+    chordShape('D', 'x x 10 12 13 10', 10),
+];
+
+const sus4Shapes = [
+    chordShape('C', 'x 3 3 0 1 1'),
+    chordShape('A', 'x 3 5 5 6 3', 3),
+    chordShape('G', 'x x 5 5 6 8', 5),
+    chordShape('E', '8 10 10 10 8 8', 8),
+    chordShape('D', 'x x 10 12 13 13'),
+];
+
+// No C or G shape: the C shape's ♭5 on the G string would be fret -1 in C, and the G shape's would stretch it over five frets
+const diminishedShapes = [
+    chordShape('A', 'x 3 4 5 4 x'),
+    chordShape('E', '8 9 10 8 x x', 8),
+    chordShape('D', 'x x 10 11 13 11'),
+];
+
+// The open Am7♭5 and Dm7♭5 moved, and the usual root-on-E grip; no C or G shape has a standard voicing
+const halfDiminishedShapes = [
+    chordShape('A', 'x 3 4 3 4 x'),
+    chordShape('E', '8 x 8 8 7 x'),
+    chordShape('D', 'x x 10 11 11 11'),
+];
+
 const chordShapes: Partial<Record<Pattern, Record<Tonality, ChordShape[]>>> = {
     [Pattern.Triad]: { [Tonality.MAJOR]: triadShapes, [Tonality.MINOR]: minorTriadShapes },
     [Pattern.Power]: { [Tonality.MAJOR]: powerShapes, [Tonality.MINOR]: powerShapes },
     [Pattern.Dominant]: { [Tonality.MAJOR]: dominantShapes, [Tonality.MINOR]: dominantShapes },
+    [Pattern.Sus2]: { [Tonality.MAJOR]: sus2Shapes, [Tonality.MINOR]: sus2Shapes },
+    [Pattern.Sus4]: { [Tonality.MAJOR]: sus4Shapes, [Tonality.MINOR]: sus4Shapes },
+    [Pattern.Diminished]: { [Tonality.MAJOR]: diminishedShapes, [Tonality.MINOR]: diminishedShapes },
+    [Pattern.HalfDiminished]: { [Tonality.MAJOR]: halfDiminishedShapes, [Tonality.MINOR]: halfDiminishedShapes },
     [Pattern.Seventh]: {
         [Tonality.MAJOR]: [
             chordShape('C', 'x 3 2 0 0 0', 0),

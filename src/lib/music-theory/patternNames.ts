@@ -2,7 +2,11 @@ import { Degree, Pattern, Tonality } from "@data/constants";
 
 const { roots, minorSeconds, seconds, minorThirds, thirds, fourths, tritones, fifths, minorSixths, sixths, minorSevenths, sevenths } = Degree;
 
-const addChords = [Pattern.Add9, Pattern.Add11, Pattern.Add13];
+// Add13 is shown as the sixth chord, so its 6th keeps its plain label
+const addChords = [Pattern.Add9, Pattern.Add11];
+
+// Chords with one quality whatever the Major/Minor choice
+const lockedPatterns = [Pattern.Dominant, Pattern.Power, Pattern.Chromatic, Pattern.Sus2, Pattern.Sus4, Pattern.Diminished, Pattern.HalfDiminished];
 
 const scaleShortNames: Partial<Record<Pattern, string>> = {
   [Pattern.Pentatonic]: "Pentatonic",
@@ -40,13 +44,17 @@ const extensionLabels: Partial<Record<Degree, string>> = {
 };
 
 export const isQualityLocked = (pattern: Pattern) => {
-  return pattern == Pattern.Dominant || pattern == Pattern.Power || pattern == Pattern.Chromatic;
+  return lockedPatterns.includes(pattern);
 }
 
 export const qualityLockedReason = (pattern: Pattern) => {
   switch (pattern) {
     case Pattern.Power: return "Power chords have no third";
     case Pattern.Chromatic: return "Chromatic has no major or minor";
+    case Pattern.Sus2:
+    case Pattern.Sus4: return "Suspended chords have no third";
+    case Pattern.Diminished: return "Diminished is always ♭3 and ♭5";
+    case Pattern.HalfDiminished: return "Half-diminished is always ♭3, ♭5 and ♭7";
     default: return "Dominant 7 is always major";
   }
 }
@@ -59,8 +67,13 @@ const chordSymbol = (key: string, tonality: Tonality, pattern: Pattern) => {
     case Pattern.Dominant: return key + "7";
     case Pattern.Add9: return key + (minor ? "m(add9)" : "add9");
     case Pattern.Add11: return key + (minor ? "m(add11)" : "add11");
-    case Pattern.Add13: return key + (minor ? "m(add13)" : "add13");
+    case Pattern.Add13: return key + (minor ? "m6" : "6");
     case Pattern.Power: return key + "5";
+    case Pattern.Sus2: return key + "sus2";
+    case Pattern.Sus4: return key + "sus4";
+    // Written as the Chord Progression page writes it
+    case Pattern.Diminished: return key + "°";
+    case Pattern.HalfDiminished: return key + "m7♭5";
     default: return key + (minor ? "m" : "maj");
   }
 }
@@ -73,8 +86,12 @@ const chordFullName = (key: string, tonality: Tonality, pattern: Pattern) => {
     case Pattern.Dominant: return `${key} dominant seventh`;
     case Pattern.Add9: return `${key} ${quality} add 9`;
     case Pattern.Add11: return `${key} ${quality} add 11`;
-    case Pattern.Add13: return `${key} ${quality} add 13`;
+    case Pattern.Add13: return `${key} ${quality} sixth`;
     case Pattern.Power: return `${key} power chord`;
+    case Pattern.Sus2: return `${key} suspended second`;
+    case Pattern.Sus4: return `${key} suspended fourth`;
+    case Pattern.Diminished: return `${key} diminished`;
+    case Pattern.HalfDiminished: return `${key} half-diminished`;
     default: return `${key} ${quality}`;
   }
 }

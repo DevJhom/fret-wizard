@@ -1,6 +1,7 @@
 import _ from 'lodash'
 import { Setup, Theme, Tonality } from '@data/constants'
 import { FretboardData, defaultDataFor } from '@/lib/fretboardData'
+import type { CurrentCAGED, CurrentStrings } from '@/lib/fretboardData'
 import type { ChordType } from '@data/progressions'
 
 export interface LibraryCard {
@@ -25,11 +26,22 @@ export interface LibraryCardPatch {
   isFavorite?: boolean
 }
 
+// How a progression chord shows on its neck. Tones are stored as hidden, not shown, so a chord
+// whose quality changes with the key (ii in major, ii° in minor) still shows its new tones
+export interface ProgressionChordView {
+  hiddenTones: string[]
+  currentCAGED: CurrentCAGED
+  currentStrings: CurrentStrings
+  fretAmount: number
+}
+
 export interface ProgressionChord {
   id: string
   degree: number
   // Missing on chords saved before chord types existed: treat as 'triad'
   type?: ChordType
+  // Set once its row is edited; missing means the defaults
+  view?: ProgressionChordView
 }
 
 export interface ChordProgression {

@@ -25,10 +25,12 @@ const outsideBlock: Partial<Record<Shape, Record<string, number[]>>> = {
     DShape: { D: [9], G: [9] },
 }
 
-// The add9 chords' A and E shapes reach two frets past the block for their 9th
-const add9OutsideBlock: Partial<Record<Shape, Record<string, number[]>>> = {
-    AShape: { G: [7] },
-    EShape: { D: [12] },
+// Chord shapes that reach two frets past the block, lit for their own chord type only
+const patternOutsideBlock: Partial<Record<Pattern, Partial<Record<Shape, Record<string, number[]>>>>> = {
+    // The add9 chords' A and E shapes, for their 9th
+    [Pattern.Add9]: { AShape: { G: [7] }, EShape: { D: [12] } },
+    // The sus2 chord's E shape (the open Esus2 moved), for its 2nd and 5th
+    [Pattern.Sus2]: { EShape: { D: [12], G: [12] } },
 }
 
 const mod12 = (value: number) => ((value % 12) + 12) % 12;
@@ -50,7 +52,8 @@ export const isInCAGEDBlock = (index: number, currentKey: string, tonality: Tona
 // Whether a note belongs to a highlighted shape: inside its block, or one of the notes just outside it
 export const isCAGED = (index: number, stringName: string, currentKey: string, tonality: Tonality, highlightCAGED?: string[], pattern?: Pattern): boolean => {
     const fret = fretInC(index, currentKey, tonality);
-    const outsideNotes = pattern == Pattern.Add9 ? [outsideBlock, add9OutsideBlock] : [outsideBlock];
+    const patternNotes = pattern && patternOutsideBlock[pattern];
+    const outsideNotes = patternNotes ? [outsideBlock, patternNotes] : [outsideBlock];
 
     return !!highlightCAGED?.some(shape => shape in CAGEDBlockStart && (
         inBlock(shape as Shape, fret) ||

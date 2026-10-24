@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { Accidental, Pattern, Setup, Tonality, majorSharpAllNotes, majorFlatAllNotes } from '@data/constants';
+import { Pattern, Setup, Tonality, majorKeyToNumber } from '@data/constants';
+import { keyRoots } from '@data/noteNames';
 import { isQualityLocked, qualityLockedReason } from '@data/patternNames';
 import type { FretboardData } from '@/lib/fretboardData';
 
@@ -13,7 +14,6 @@ const emit = defineEmits<{
     (e: 'change-root', key: string): void
     (e: 'change-tonality', tonality: Tonality): void
     (e: 'change-pattern', pattern: Pattern): void
-    (e: 'change-accidental', accidental: Accidental): void
 }>();
 
 const scaleTypes = [
@@ -25,19 +25,26 @@ const scaleTypes = [
 ];
 
 const chordTypes = [
+    { pattern: Pattern.Power, label: 'Power' },
     { pattern: Pattern.Triad, label: 'Triad' },
-    { pattern: Pattern.Seventh, label: '7th' },
+    { pattern: Pattern.Add13, label: '6th' },
     { pattern: Pattern.Dominant, label: 'Dom7' },
+    { pattern: Pattern.Seventh, label: '7th' },
     { pattern: Pattern.Add9, label: 'Add9' },
     { pattern: Pattern.Add11, label: 'Add11' },
-    { pattern: Pattern.Add13, label: 'Add13' },
-    { pattern: Pattern.Power, label: 'Power' },
+    { pattern: Pattern.Sus2, label: 'Sus2' },
+    { pattern: Pattern.Sus4, label: 'Sus4' },
+    { pattern: Pattern.Diminished, label: 'Dim' },
+    { pattern: Pattern.HalfDiminished, label: 'm7♭5' },
 ];
 
-const roots = computed(() => props.chord.currentAccidental == Accidental.FLAT ? majorFlatAllNotes : majorSharpAllNotes);
+const isScale = computed(() => props.setup == Setup.Scale);
+// Black keys take the name that spells the scale or chord cleanly (D♭ major, C♯ minor)
+const roots = computed(() => keyRoots(props.chord.currentPattern, props.chord.currentTonality));
+// By pitch, so relabelling D♭ as C♯ keeps it selected
+const isCurrentRoot = (root: string) => majorKeyToNumber[root] == majorKeyToNumber[props.chord.currentKey];
 const qualityLocked = computed(() => isQualityLocked(props.chord.currentPattern));
 const lockedNote = computed(() => qualityLockedReason(props.chord.currentPattern));
-const isScale = computed(() => props.setup == Setup.Scale);
 const types = computed(() => isScale.value ? scaleTypes : chordTypes);
 </script>
 
@@ -47,35 +54,8 @@ const types = computed(() => isScale.value ? scaleTypes : chordTypes);
             <span class="builder-label">Key</span>
             <div class="option-row">
                 <label v-for="root in roots" :key="root" class="custom-radio">
-                    <input type="radio" name="chord-root" :value="root" :checked="chord.currentKey == root" @change="emit('change-root', root)">
+                    <input type="radio" name="chord-root" :value="root" :checked="isCurrentRoot(root)" @change="emit('change-root', root)">
                         <span class="label">{{ root }}</span>
-                    </input>
-                </label>
-            </div>
-        </div>
-
-        <div class="builder-field">
-            <span class="builder-label">Accidental</span>
-            <div class="tile-radio fw-bold">
-                <label>
-                    <input type="radio" name="chord-accidental" :checked="chord.currentAccidental == Accidental.SHARP" @change="emit('change-accidental', Accidental.SHARP)">
-                        <div class="label px-2 py-1" aria-label="Sharps">♯</div>
-                    </input>
-                </label>
-                <label>
-                    <input type="radio" name="chord-accidental" :checked="chord.currentAccidental == Accidental.FLAT" @change="emit('change-accidental', Accidental.FLAT)">
-                        <div class="label px-2 py-1" aria-label="Flats">♭</div>
-                    </input>
-                </label>
-            </div>
-        </div>
-
-        <div class="builder-field">
-            <span class="builder-label">{{ isScale ? 'Scale' : 'Chord' }}</span>
-            <div class="option-row">
-                <label v-for="type in types" :key="type.pattern" class="custom-radio">
-                    <input type="radio" name="chord-type" :value="type.pattern" :checked="chord.currentPattern == type.pattern" @change="emit('change-pattern', type.pattern)">
-                        <span class="label px-3">{{ type.label }}</span>
                     </input>
                 </label>
             </div>
@@ -97,11 +77,22 @@ const types = computed(() => isScale.value ? scaleTypes : chordTypes);
             </div>
             <small v-if="qualityLocked" class="locked-note">{{ lockedNote }}</small>
         </div>
+
+        <div class="builder-field full-row">
+            <span class="builder-label">{{ isScale ? 'Scale' : 'Chord' }}</span>
+            <div class="option-row">
+                <label v-for="type in types" :key="type.pattern" class="custom-radio">
+                    <input type="radio" name="chord-type" :value="type.pattern" :checked="chord.currentPattern == type.pattern" @change="emit('change-pattern', type.pattern)">
+                        <span class="label px-3">{{ type.label }}</span>
+                    </input>
+                </label>
+            </div>
+        </div>
     </div>
 </template>
 
 <style scoped lang="scss">
-// Each field is a heading above its options: Key | Accidental, then Scale/Chord | Quality
+// Each field is a heading above its options: Key | Quality, then Scale/Chord across the second row
 .pattern-builder {
     display: grid;
     grid-template-columns: auto auto;
@@ -117,6 +108,10 @@ const types = computed(() => isScale.value ? scaleTypes : chordTypes);
     align-items: flex-start;
     gap: 0.4rem;
     min-width: 0;
+}
+
+.full-row {
+    grid-column: 1 / -1;
 }
 
 .builder-label {

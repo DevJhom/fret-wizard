@@ -1,4 +1,5 @@
-import { Tonality, majorKeyToNumber } from "@data/constants";
+import { Pattern, Tonality, majorKeyToNumber } from "@data/constants";
+import { keyRoots, spellInterval } from "@data/noteNames";
 
 export type ChordQuality = "major" | "minor" | "diminished";
 export type ChordType = "triad" | "seventh" | "power";
@@ -13,9 +14,6 @@ export interface DiatonicChord {
 const majorProgressionKeys = ["C", "G", "D", "A", "E", "B", "F♯", "D♭", "A♭", "E♭", "B♭", "F"];
 const minorProgressionKeys = ["A", "E", "B", "F♯", "C♯", "G♯", "E♭", "B♭", "F", "C", "G", "D"];
 
-const letters = ["C", "D", "E", "F", "G", "A", "B"];
-const letterPitches = [0, 2, 4, 5, 7, 9, 11];
-const accidentals: { [offset: number]: string } = { [-2]: "𝄫", [-1]: "♭", 0: "", 1: "♯", 2: "𝄪" };
 const qualitySuffixes: Record<ChordQuality, string> = { major: "", minor: "m", diminished: "°" };
 
 const scaleSteps: Record<Tonality, { intervals: number[]; qualities: ChordQuality[]; numerals: string[]; seventhSuffixes: string[]; seventhNumerals: string[] }> = {
@@ -47,22 +45,47 @@ export const relativeProgressionKey = (key: string, from: Tonality, to: Tonality
   return progressionKeys(to)[index > -1 ? index : 0];
 }
 
-const spellNote = (tonic: string, degree: number, interval: number) => {
-  const tonicLetterIndex = letters.indexOf(tonic[0]);
-  const letterIndex = (tonicLetterIndex + degree) % 7;
-  const targetPitch = (majorKeyToNumber[tonic] + interval) % 12;
-  const offset = ((targetPitch - letterPitches[letterIndex] + 18) % 12) - 6;
-  return letters[letterIndex] + accidentals[offset];
-}
-
 export const diatonicChords = (key: string, tonality: Tonality, type: ChordType = "triad"): DiatonicChord[] => {
   const { intervals, qualities, numerals, seventhSuffixes, seventhNumerals } = scaleSteps[tonality];
 
   return intervals.map((interval, degree) => {
-    const root = spellNote(key, degree, interval);
+    const root = spellInterval(key, degree, interval);
     const chord = { degree, quality: qualities[degree] };
     if (type == "seventh") return { ...chord, numeral: seventhNumerals[degree], name: root + seventhSuffixes[degree] };
     if (type == "power") return { ...chord, numeral: powerNumerals[degree], name: root + "5" };
     return { ...chord, numeral: numerals[degree], name: root + qualitySuffixes[qualities[degree]] };
   });
+}
+
+export interface ChordPattern {
+  root: string;
+  pattern: Pattern;
+  tonality: Tonality;
+}
+
+// The Chord page's pattern and quality for each chord name the palette writes
+const triadPatterns: Record<ChordQuality, Omit<ChordPattern, "root">> = {
+  major: { pattern: Pattern.Triad, tonality: Tonality.MAJOR },
+  minor: { pattern: Pattern.Triad, tonality: Tonality.MINOR },
+  diminished: { pattern: Pattern.Diminished, tonality: Tonality.MAJOR },
+};
+
+const seventhPatterns: Record<string, Omit<ChordPattern, "root">> = {
+  maj7: { pattern: Pattern.Seventh, tonality: Tonality.MAJOR },
+  m7: { pattern: Pattern.Seventh, tonality: Tonality.MINOR },
+  "7": { pattern: Pattern.Dominant, tonality: Tonality.MAJOR },
+  "m7♭5": { pattern: Pattern.HalfDiminished, tonality: Tonality.MAJOR },
+};
+
+// A progression chord as a fretboard shows it. The neck only knows the twelve key names,
+// so a root such as E♯ (F♯ major's vii°) or C♭ (E♭ minor's VI) takes its other name
+export const diatonicChordPattern = (key: string, tonality: Tonality, degree: number, type: ChordType = "triad"): ChordPattern => {
+  const { intervals, qualities, seventhSuffixes } = scaleSteps[tonality];
+  const interval = intervals[degree];
+  const chord = type == "power" ? { pattern: Pattern.Power, tonality: Tonality.MAJOR }
+    : type == "seventh" ? seventhPatterns[seventhSuffixes[degree]]
+    : triadPatterns[qualities[degree]];
+  const spelled = spellInterval(key, degree, interval);
+  const root = spelled in majorKeyToNumber ? spelled : keyRoots(chord.pattern, chord.tonality)[(majorKeyToNumber[key] + interval) % 12];
+  return { root, ...chord };
 }

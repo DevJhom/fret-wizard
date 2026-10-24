@@ -22,7 +22,7 @@ const named = (fretboard: FretboardData) => chordVoicings(fretboard).map(voicing
 const allStrings = { E: true, A: true, D: true, G: true, B: true, e: true }
 
 const { MAJOR, MINOR } = Tonality
-const chordPatterns = [Pattern.Triad, Pattern.Seventh, Pattern.Dominant, Pattern.Add9, Pattern.Add11, Pattern.Add13, Pattern.Power]
+const chordPatterns = [Pattern.Triad, Pattern.Seventh, Pattern.Dominant, Pattern.Add9, Pattern.Add11, Pattern.Add13, Pattern.Power, Pattern.Sus2, Pattern.Sus4, Pattern.Diminished, Pattern.HalfDiminished]
 const scalePatterns = [Pattern.Pentatonic, Pattern.Blue, Pattern.Diatonic, Pattern.Chromatic]
 
 describe('chordVoicings', () => {
@@ -113,6 +113,10 @@ describe('chord shapes', () => {
     [Pattern.Add11, MINOR, ['A: x 3 3 5 4 3', 'E: 8 8 10 8 8 8', 'D: x x 10 10 13 11']],
     [Pattern.Add13, MAJOR, ['C: x 3 2 2 1 0', 'A: x 3 5 5 5 5', 'G: x x 5 5 5 5', 'E: 8 10 10 9 10 8', 'D: x x 10 12 10 12']],
     [Pattern.Add13, MINOR, ['A: x 3 5 5 4 5', 'E: 8 10 10 8 10 8', 'D: x x 10 12 10 11']],
+    [Pattern.Sus2, MAJOR, ['C: x 3 0 0 1 x', 'A: x 3 5 5 3 3', 'G: x x 5 7 8 8', 'E: 8 10 12 12 8 8', 'D: x x 10 12 13 10']],
+    [Pattern.Sus4, MAJOR, ['C: x 3 3 0 1 1', 'A: x 3 5 5 6 3', 'G: x x 5 5 6 8', 'E: 8 10 10 10 8 8', 'D: x x 10 12 13 13']],
+    [Pattern.Diminished, MAJOR, ['A: x 3 4 5 4 x', 'E: 8 9 10 8 x x', 'D: x x 10 11 13 11']],
+    [Pattern.HalfDiminished, MAJOR, ['A: x 3 4 3 4 x', 'E: 8 x 8 8 7 x', 'D: x x 10 11 11 11']],
   ]
 
   for (const [pattern, tonality, tabs] of inC) {
@@ -121,9 +125,47 @@ describe('chord shapes', () => {
     })
   }
 
-  it('plays the same chords for both tonalities of a power or dominant chord', () => {
-    expect(named(chord('C', MINOR, Pattern.Power))).toEqual(named(chord('C', MAJOR, Pattern.Power)))
-    expect(named(chord('C', MINOR, Pattern.Dominant))).toEqual(named(chord('C', MAJOR, Pattern.Dominant)))
+  it('plays the same chords for both tonalities of a power, dominant, suspended or diminished chord', () => {
+    for (const pattern of [Pattern.Power, Pattern.Dominant, Pattern.Sus2, Pattern.Sus4, Pattern.Diminished, Pattern.HalfDiminished]) {
+      expect(named(chord('C', MINOR, pattern)), pattern).toEqual(named(chord('C', MAJOR, pattern)))
+    }
+  })
+
+  it('lands the suspended and diminished shapes on their open chords', () => {
+    const open: [string, Pattern, string, string][] = [
+      ['A', Pattern.Sus2, 'A', 'x 0 2 2 0 0'],
+      ['G', Pattern.Sus2, 'G', 'x x 0 2 3 3'],
+      ['E', Pattern.Sus2, 'E', '0 2 4 4 0 0'],
+      ['D', Pattern.Sus2, 'D', 'x x 0 2 3 0'],
+      ['C', Pattern.Sus4, 'C', 'x 3 3 0 1 1'],
+      ['A', Pattern.Sus4, 'A', 'x 0 2 2 3 0'],
+      ['G', Pattern.Sus4, 'G', 'x x 0 0 1 3'],
+      ['E', Pattern.Sus4, 'E', '0 2 2 2 0 0'],
+      ['D', Pattern.Sus4, 'D', 'x x 0 2 3 3'],
+      ['A', Pattern.Diminished, 'A', 'x 0 1 2 1 x'],
+      ['E', Pattern.Diminished, 'E', '0 1 2 0 x x'],
+      ['D', Pattern.Diminished, 'D', 'x x 0 1 3 1'],
+      ['A', Pattern.HalfDiminished, 'A', 'x 0 1 0 1 x'],
+      ['B', Pattern.HalfDiminished, 'A', 'x 2 3 2 3 x'],
+      ['D', Pattern.HalfDiminished, 'D', 'x x 0 1 1 1'],
+    ]
+    for (const [key, pattern, name, expected] of open) {
+      expect(tab(shape(chord(key, MAJOR, pattern), name)), `${key} ${pattern}, ${name} shape`).toBe(expected)
+    }
+  })
+
+  it('barres the suspended and diminished shapes where a finger lies across the strings', () => {
+    expect(chordVoicings(chord('C', MAJOR, Pattern.Sus2)).map(voicing => voicing.barre)).toEqual([
+      undefined,
+      { fret: 3, from: 'A', to: 'e' },
+      undefined,
+      { fret: 8, from: 'E', to: 'e' },
+      { fret: 10, from: 'D', to: 'e' },
+    ])
+    // The C shape's open D and G strings, once moved off the nut
+    expect(shape(chord('D', MAJOR, Pattern.Sus2), 'C').barre).toEqual({ fret: 2, from: 'D', to: 'G' })
+    expect(shape(chord('C', MAJOR, Pattern.Sus4), 'G').barre).toEqual({ fret: 5, from: 'D', to: 'G' })
+    expect(shape(chord('C', MAJOR, Pattern.Diminished), 'E').barre).toEqual({ fret: 8, from: 'E', to: 'G' })
   })
 
   it('lands on the open chords each shape is named after', () => {

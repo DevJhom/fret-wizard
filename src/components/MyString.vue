@@ -2,7 +2,7 @@
 import { computed } from 'vue';
 import { CurrentStrings, CurrentCAGED } from '@/lib/fretboardData';
 import { isCAGED, isInCAGEDBlock } from '@data/CAGED';
-import { Accidental, Tonality, Degree, Pattern } from '@data/constants';
+import { Tonality, Degree, Pattern } from '@data/constants';
 import { getRoots, getMinorSeconds, getSeconds, getMinorThirds, getThirds, getFourths, getTritones, getFifths, getSixths, getSevenths, getMinorSixths, getMinorSevenths } from '@data/intervals';
 import { getNoteName } from '@data/noteNames';
 import { degreeLabel } from '@data/patternNames';
@@ -14,7 +14,6 @@ const props = defineProps<{
     isLastString?: boolean,
     currentKey: string,
     currentTonality: Tonality,
-    currentAccidental: Accidental,
     currentHighlightNotes: string[],
     currentCAGED: CurrentCAGED,
     currentStrings: CurrentStrings,
@@ -42,18 +41,18 @@ const minorSeventhIntervals = computed(() => getMinorSevenths(props.currentTonal
 const seventhIntervals = computed(() => getSevenths(props.currentTonality, props.currentKey, props.stringName));
 
 // Note Names
-const rootNoteName = computed(() => getNoteName(roots, props.currentKey, props.currentAccidental));
-const minorSecondNoteName = computed(() => getNoteName(minorSeconds, props.currentKey, props.currentAccidental));
-const secondNoteName = computed(() => getNoteName(seconds, props.currentKey, props.currentAccidental));
-const minorThirdNoteName = computed(() => getNoteName(minorThirds, props.currentKey, props.currentAccidental));
-const thirdNoteName = computed(() => getNoteName(thirds, props.currentKey, props.currentAccidental));
-const fourthNoteName = computed(() => getNoteName(fourths, props.currentKey, props.currentAccidental));
-const tritoneNoteName = computed(() => getNoteName(tritones, props.currentKey, props.currentAccidental));
-const fifthNoteName = computed(() => getNoteName(fifths, props.currentKey, props.currentAccidental));
-const minorSixthNoteName = computed(() => getNoteName(minorSixths, props.currentKey, props.currentAccidental));
-const sixthNoteName = computed(() => getNoteName(sixths, props.currentKey, props.currentAccidental));
-const minorSeventhNoteName = computed(() => getNoteName(minorSevenths, props.currentKey, props.currentAccidental));
-const seventhNoteName = computed(() => getNoteName(sevenths, props.currentKey, props.currentAccidental));
+const rootNoteName = computed(() => getNoteName(roots, props.currentKey, props.currentPattern));
+const minorSecondNoteName = computed(() => getNoteName(minorSeconds, props.currentKey, props.currentPattern));
+const secondNoteName = computed(() => getNoteName(seconds, props.currentKey, props.currentPattern));
+const minorThirdNoteName = computed(() => getNoteName(minorThirds, props.currentKey, props.currentPattern));
+const thirdNoteName = computed(() => getNoteName(thirds, props.currentKey, props.currentPattern));
+const fourthNoteName = computed(() => getNoteName(fourths, props.currentKey, props.currentPattern));
+const tritoneNoteName = computed(() => getNoteName(tritones, props.currentKey, props.currentPattern));
+const fifthNoteName = computed(() => getNoteName(fifths, props.currentKey, props.currentPattern));
+const minorSixthNoteName = computed(() => getNoteName(minorSixths, props.currentKey, props.currentPattern));
+const sixthNoteName = computed(() => getNoteName(sixths, props.currentKey, props.currentPattern));
+const minorSeventhNoteName = computed(() => getNoteName(minorSevenths, props.currentKey, props.currentPattern));
+const seventhNoteName = computed(() => getNoteName(sevenths, props.currentKey, props.currentPattern));
 
 const isStringActive = computed(() => {
     return props.currentStrings[props.stringName];

@@ -24,6 +24,13 @@ describe('fretboardLabel', () => {
     expect(fretboardLabel(fb(Setup.Chord, 'C', Tonality.MAJOR, Pattern.Triad), Setup.Chord)).toBe('Cmaj')
     expect(fretboardLabel(fb(Setup.Chord, 'C', Tonality.MINOR, Pattern.Triad), Setup.Chord)).toBe('Cm')
   })
+
+  it('names a root as its page does, whatever spelling it was saved with', () => {
+    expect(fretboardLabel(fb(Setup.Chord, 'A♯', Tonality.MAJOR, Pattern.Triad), Setup.Chord)).toBe('B♭maj')
+    expect(fretboardLabel(fb(Setup.Chord, 'D♭', Tonality.MINOR, Pattern.Seventh), Setup.Chord)).toBe('C♯m7')
+    expect(fretboardLabel(fb(Setup.Scale, 'A♯', Tonality.MAJOR, Pattern.Diatonic), Setup.Scale)).toBe('B♭ Diatonic')
+    expect(fretboardLabel(fb(Setup.Scale, 'D♭', Tonality.MINOR, Pattern.Pentatonic), Setup.Scale)).toBe('C♯m Pentatonic')
+  })
 })
 
 describe('normalizeAccidentals', () => {

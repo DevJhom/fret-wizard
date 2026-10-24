@@ -39,6 +39,10 @@ const formulas: Record<Pattern, Record<Tonality, number[]>> = {
   [Pattern.Add11]: { [Tonality.MAJOR]: [0, 4, 5, 7], [Tonality.MINOR]: [0, 3, 5, 7] },
   [Pattern.Add13]: { [Tonality.MAJOR]: [0, 4, 7, 9], [Tonality.MINOR]: [0, 3, 7, 9] },
   [Pattern.Dominant]: { [Tonality.MAJOR]: [0, 4, 7, 10], [Tonality.MINOR]: [0, 4, 7, 10] },
+  [Pattern.Sus2]: { [Tonality.MAJOR]: [0, 2, 7], [Tonality.MINOR]: [0, 2, 7] },
+  [Pattern.Sus4]: { [Tonality.MAJOR]: [0, 5, 7], [Tonality.MINOR]: [0, 5, 7] },
+  [Pattern.Diminished]: { [Tonality.MAJOR]: [0, 3, 6], [Tonality.MINOR]: [0, 3, 6] },
+  [Pattern.HalfDiminished]: { [Tonality.MAJOR]: [0, 3, 6, 10], [Tonality.MINOR]: [0, 3, 6, 10] },
 }
 
 const tonalities = [Tonality.MAJOR, Tonality.MINOR]

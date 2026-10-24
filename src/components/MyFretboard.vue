@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { CurrentCAGED, CurrentStrings } from '@/lib/fretboardData';
-import { Pattern, Tonality, Accidental } from '@data/constants';
+import { Pattern, Tonality } from '@data/constants';
 import { isCAGEDNameHere, GetCAGEDName } from '@data/CAGED';
 import { FRET_MARKERS, DOUBLE_INLAY_FRETS, SINGLE_INLAY_FRETS } from '@/lib/fretMarkers';
 import MyString from '@components/MyString.vue';
@@ -10,7 +10,6 @@ const props = defineProps<{
     currentKey: string,
     currentPattern: Pattern,
     currentTonality: Tonality, 
-    currentAccidental: Accidental,
     currentHighlightNotes: string[],
     currentCAGED: CurrentCAGED, 
     currentStrings: CurrentStrings,
@@ -66,7 +65,6 @@ const singleInlayFrets = SINGLE_INLAY_FRETS;
                         :fret-amount="fretAmount"
                         :current-key="currentKey"
                         :current-tonality="currentTonality"
-                        :current-accidental="currentAccidental"
                         :current-highlight-notes="currentHighlightNotes"
                         :currentCAGED="currentCAGED"
                         :current-strings="currentStrings"
@@ -88,7 +86,6 @@ const singleInlayFrets = SINGLE_INLAY_FRETS;
                         :fret-amount="fretAmount"
                         :current-key="currentKey"
                         :current-tonality="currentTonality"
-                        :current-accidental="currentAccidental"
                         :current-highlight-notes="currentHighlightNotes"
                         :currentCAGED="currentCAGED"
                         :current-strings="currentStrings"
@@ -110,7 +107,6 @@ const singleInlayFrets = SINGLE_INLAY_FRETS;
                         :fret-amount="fretAmount"
                         :current-key="currentKey"
                         :current-tonality="currentTonality"
-                        :current-accidental="currentAccidental"
                         :current-highlight-notes="currentHighlightNotes"
                         :currentCAGED="currentCAGED"
                         :current-strings="currentStrings"
@@ -132,7 +128,6 @@ const singleInlayFrets = SINGLE_INLAY_FRETS;
                         :fret-amount="fretAmount"
                         :current-key="currentKey"
                         :current-tonality="currentTonality"
-                        :current-accidental="currentAccidental"
                         :current-highlight-notes="currentHighlightNotes"
                         :currentCAGED="currentCAGED"
                         :current-strings="currentStrings"
@@ -153,7 +148,6 @@ const singleInlayFrets = SINGLE_INLAY_FRETS;
                         :fret-amount="fretAmount"
                         :current-key="currentKey"
                         :current-tonality="currentTonality"
-                        :current-accidental="currentAccidental"
                         :current-highlight-notes="currentHighlightNotes"
                         :currentCAGED="currentCAGED"
                         :current-strings="currentStrings"
@@ -175,7 +169,6 @@ const singleInlayFrets = SINGLE_INLAY_FRETS;
                         :is-last-string="true"
                         :current-key="currentKey"
                         :current-tonality="currentTonality"
-                        :current-accidental="currentAccidental"
                         :current-highlight-notes="currentHighlightNotes"
                         :currentCAGED="currentCAGED"
                         :current-strings="currentStrings"

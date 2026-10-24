@@ -128,6 +128,15 @@ describe('isInCAGEDBlock', () => {
       expect(isCAGED(fret - 1, string, 'C', Tonality.MAJOR, [shape], Pattern.Diatonic), `${shape}, diatonic`).toBe(false)
     }
   })
+
+  it('keeps the 2nd and 5th of the sus2 E shape lit, for sus2 only', () => {
+    for (const string of ['D', 'G'] as StringName[]) {
+      expect(isInCAGEDBlock(11, 'C', Tonality.MAJOR, ['EShape']), `${string} string, block`).toBe(false)
+      expect(isCAGED(11, string, 'C', Tonality.MAJOR, ['EShape'], Pattern.Sus2), `${string} string, sus2`).toBe(true)
+      expect(isCAGED(11, string, 'C', Tonality.MAJOR, ['EShape'], Pattern.Sus4), `${string} string, sus4`).toBe(false)
+      expect(isCAGED(11, string, 'C', Tonality.MAJOR, ['EShape'], Pattern.Add9), `${string} string, add9`).toBe(string === 'D')
+    }
+  })
 })
 
 describe('CAGED shape names', () => {

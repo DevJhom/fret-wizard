@@ -1,12 +1,18 @@
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue';
+import { ref, computed, watch, nextTick, onMounted } from 'vue';
 import Sortable from 'sortablejs';
-import { Tonality } from '@data/constants';
+import { Setup, Tonality } from '@data/constants';
 import { diatonicChords, progressionKeys, relativeProgressionKey } from '@data/progressions';
 import type { ChordType, DiatonicChord } from '@data/progressions';
+import type { FretboardData } from '@/lib/fretboardData';
+import { progressionChordView, progressionFretboard } from '@/lib/progressionStack';
 import { fetchChordProgression, saveChordProgression } from '@/services/customizerService';
 import type { ProgressionChord } from '@services/adapters/localStorageAdapter';
 import ChordBlock from '@components/ChordBlock.vue';
+import StackRow from '@components/StackRow.vue';
+import FretboardEditor from '@components/FretboardEditor.vue';
+
+type LabelMode = 'notes' | 'intervals';
 
 interface SortableEvent {
     item: HTMLElement;
@@ -28,9 +34,13 @@ const currentTonality = ref<Tonality>(Tonality.MAJOR);
 const currentType = ref<ChordType>('triad');
 const progression = ref<ProgressionChord[]>([]);
 const isLoaded = ref<boolean>(false);
+// The stack row opened into the editor, as on the Chord page's Stack View
+const editingId = ref<string | null>(null);
+const labelMode = ref<LabelMode>('notes');
 
 const paletteList = ref<HTMLElement | null>(null);
 const progressionList = ref<HTMLElement | null>(null);
+const stackList = ref<HTMLElement | null>(null);
 
 const keys = computed(() => progressionKeys(currentTonality.value));
 const chordsByType = computed(() => Object.fromEntries(chordTypes.map(({ type }) =>
@@ -38,12 +48,40 @@ const chordsByType = computed(() => Object.fromEntries(chordTypes.map(({ type })
 const chords = computed(() => chordsByType.value[currentType.value]);
 const progressionChord = (item: ProgressionChord) => chordsByType.value[item.type ?? 'triad'][item.degree];
 
+// Every chord of the progression on the neck, in its order, as the Chord page's Stack View shows it
+const progressionStack = computed(() => progression.value.map(item =>
+    ({ id: item.id, fretboard: progressionFretboard(currentKey.value, currentTonality.value, item) })));
+
+// The editor is much taller than the row it replaces, so bring all of it on screen
+const editStackChord = async (id: string) => {
+    editingId.value = id;
+    await nextTick();
+    stackList.value?.querySelector('.fretboard-card')?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+}
+
+// The chord itself comes from the progression, so an edit only changes how it shows
+const updateStackChord = (id: string, fretboard: FretboardData, patch: Partial<FretboardData>) => {
+    const item = progression.value.find(chord => chord.id === id);
+    if (item) item.view = progressionChordView({ ...fretboard, ...patch });
+}
+
+const resetStackChord = (id: string) => {
+    const item = progression.value.find(chord => chord.id === id);
+    if (item) delete item.view;
+}
+
 const addChord = (degree: number, index = progression.value.length, type = currentType.value) => {
     progression.value.splice(index, 0, { id: crypto.randomUUID(), degree, type });
 }
 
 const removeChord = (index: number) => {
     progression.value.splice(index, 1);
+}
+
+// The box and the stack below it show one progression, so dragging in either reorders both
+const moveChord = (oldIndex: number, newIndex: number) => {
+    const [moved] = progression.value.splice(oldIndex, 1);
+    progression.value.splice(newIndex, 0, moved);
 }
 
 const clearProgression = () => {
@@ -82,7 +120,7 @@ watch([currentKey, currentTonality, progression], () => {
     saveChordProgression({
         key: currentKey.value,
         tonality: currentTonality.value,
-        progression: progression.value.map(({ id, degree, type }) => ({ id, degree, type: type ?? 'triad' })),
+        progression: progression.value.map(({ id, degree, type, view }) => ({ id, degree, type: type ?? 'triad', ...(view && { view }) })),
     });
 }, { deep: true });
 
@@ -108,8 +146,19 @@ onMounted(async () => {
             const { item, from, oldIndex, newIndex } = evt;
             if (oldIndex === undefined || newIndex === undefined) return;
             restoreElementPosition(from, item, oldIndex);
-            const [moved] = progression.value.splice(oldIndex, 1);
-            progression.value.splice(newIndex, 0, moved);
+            moveChord(oldIndex, newIndex);
+        },
+    });
+
+    // Rows are dragged by their handle, as on the Chord page; the editor card has none, so it stays put
+    Sortable.create(stackList.value!, {
+        animation: 150,
+        handle: '.drag-handle',
+        onUpdate(evt: SortableEvent) {
+            const { item, from, oldIndex, newIndex } = evt;
+            if (oldIndex === undefined || newIndex === undefined) return;
+            restoreElementPosition(from, item, oldIndex);
+            moveChord(oldIndex, newIndex);
         },
     });
 })
@@ -118,7 +167,23 @@ onMounted(async () => {
 <template>
     <div class="progression-page">
         <div class="page-card progression-editor">
+            <div class="progression-summary">
+                <div class="progression-title">{{ currentKey }} {{ currentTonality }}</div>
+                <div class="progression-subtitle">Chord Progression</div>
+            </div>
+
             <div class="progression-builder">
+                <div class="builder-field">
+                    <span class="builder-label">Key</span>
+                    <div class="option-row">
+                        <label v-for="key in keys" :key="key" class="custom-radio">
+                            <input type="radio" name="progression-keys" v-model="currentKey" :value="key">
+                                <span class="label">{{ key }}</span>
+                            </input>
+                        </label>
+                    </div>
+                </div>
+
                 <div class="builder-field">
                     <span class="builder-label">Quality</span>
                     <div class="tile-radio fw-bold">
@@ -130,17 +195,6 @@ onMounted(async () => {
                         <label>
                             <input type="radio" name="progression-tonality" :value="Tonality.MINOR" :checked="currentTonality == Tonality.MINOR" @change="onChangeTonality(Tonality.MINOR)">
                                 <div class="label px-2 py-1"> Minor </div>
-                            </input>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="builder-field">
-                    <span class="builder-label">Key</span>
-                    <div class="option-row">
-                        <label v-for="key in keys" :key="key" class="custom-radio">
-                            <input type="radio" name="progression-keys" v-model="currentKey" :value="key">
-                                <span class="label">{{ key }}</span>
                             </input>
                         </label>
                     </div>
@@ -159,23 +213,16 @@ onMounted(async () => {
             </div>
         </div>
 
-        <div class="palette-row">
-            <div class="progression-summary">
-                <div class="progression-title">{{ currentKey }} {{ currentTonality }}</div>
-                <div class="progression-subtitle">Chord Progression</div>
-            </div>
-
-            <div ref="paletteList" class="chord-palette">
-                <ChordBlock
-                    v-for="chord in chords"
-                    :key="chord.degree"
-                    :data-degree="chord.degree"
-                    :data-type="currentType"
-                    :numeral="chord.numeral"
-                    :name="chord.name"
-                    @click="addChord(chord.degree)"
-                />
-            </div>
+        <div ref="paletteList" class="chord-palette">
+            <ChordBlock
+                v-for="chord in chords"
+                :key="chord.degree"
+                :data-degree="chord.degree"
+                :data-type="currentType"
+                :numeral="chord.numeral"
+                :name="chord.name"
+                @click="addChord(chord.degree)"
+            />
         </div>
 
         <div class="progression-row">
@@ -193,9 +240,37 @@ onMounted(async () => {
                     />
                 </div>
                 <div v-if="!progression.length" class="progression-hint">
-                    Drag chords here or click them to add
+                    Click or drag chords here
                 </div>
             </div>
+        </div>
+
+        <!-- v-show, not v-if: SortableJS is attached to this list once, when the page mounts -->
+        <div v-show="progressionStack.length" ref="stackList" class="progression-stack">
+            <template v-for="(item, index) in progressionStack" :key="item.id">
+                <FretboardEditor
+                    v-if="item.id === editingId"
+                    v-model:label-mode="labelMode"
+                    class="page-card is-editing"
+                    :chord="item.fretboard"
+                    :setup="Setup.Chord"
+                    removable
+                    collapsible
+                    @update="updateStackChord(item.id, item.fretboard, $event)"
+                    @reset="resetStackChord(item.id)"
+                    @remove="removeChord(index)"
+                    @done="editingId = null"
+                />
+                <StackRow
+                    v-else
+                    :chord="item.fretboard"
+                    :setup="Setup.Chord"
+                    :label-mode="labelMode"
+                    removable
+                    @edit="editStackChord(item.id)"
+                    @remove="removeChord(index)"
+                />
+            </template>
         </div>
     </div>
 </template>
@@ -217,26 +292,18 @@ onMounted(async () => {
     box-shadow: var(--fretboard-shadow);
 }
 
+// Title on the left, builder on the right, as on the Scale and Chord pages
 .progression-editor {
     display: flex;
     flex-wrap: wrap;
-    gap: 2.5rem;
+    // Row gap only: it applies when the builder wraps below the title
+    gap: 2.5rem 0;
     width: 100%;
     padding: 1.75rem 2rem;
     text-align: start;
 }
 
-// Title in front of the chord palette
-.palette-row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: center;
-    gap: 1.5rem 2.5rem;
-    width: 100%;
-}
-
-// Fixed width (widest title, "G♯ Minor", is ~275px) so the palette doesn't shift when the key changes
+// Fixed width (widest title, "G♯ Minor", is ~275px) so the builder doesn't shift when the key changes
 .progression-summary {
     width: 300px;
     flex-shrink: 0;
@@ -252,10 +319,10 @@ onMounted(async () => {
 
 .progression-subtitle {
     margin-top: 0.4rem;
-    color: $gray-1;
+    color: var(--accent-text-color);
 }
 
-// Heading above its options: Quality | Key on one row, Chord below
+// Heading above its options: Key | Quality on one row, Chord below
 .progression-builder {
     display: grid;
     grid-template-columns: auto auto;
@@ -310,6 +377,7 @@ onMounted(async () => {
 
 .chord-palette {
     display: flex;
+    width: 100%;
     flex-wrap: wrap;
     justify-content: center;
     gap: 0.75rem;
@@ -377,6 +445,19 @@ onMounted(async () => {
 
 .chord-ghost {
     opacity: 0.4;
+}
+
+// Follows the progression: adding, moving or removing a chord above changes its row here
+.progression-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+}
+
+// The outline marks the chord being edited, as in the Chord page's Stack View
+.page-card.is-editing {
+    box-shadow: 0 0 0 2px var(--accent-text-color);
 }
 
 @media (max-width: $phone) {

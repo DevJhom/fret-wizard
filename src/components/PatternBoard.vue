@@ -25,7 +25,6 @@ const board = computed(() => getScale(props.chord.currentTonality, props.chord.c
         :currentPattern="chord.currentPattern"
         :currentKey="chord.currentKey"
         :currentTonality="chord.currentTonality"
-        :currentAccidental="chord.currentAccidental"
         :currentHighlightNotes="chord.currentHighlightNotes"
         :currentCAGED="chord.currentCAGED"
         :currentStrings="chord.currentStrings"

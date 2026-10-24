@@ -25,7 +25,7 @@ const tones = computed(() => {
     const degrees = degreeInPattern(props.chord.currentPattern, props.chord.currentTonality) ?? [];
     const showNotes = props.labelMode === 'notes';
     return degrees.map(degree => {
-        const name = getNoteName(degree, props.chord.currentKey, props.chord.currentAccidental);
+        const name = getNoteName(degree, props.chord.currentKey, props.chord.currentPattern);
         const interval = degreeLabel(degree, props.chord.currentPattern);
         return {
             degree,

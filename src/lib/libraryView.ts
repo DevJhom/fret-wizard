@@ -1,14 +1,19 @@
 import { Setup } from '@data/constants';
 import { patternSubtitle, patternSymbol } from '@data/patternNames';
+import { rootName } from '@data/noteNames';
 import type { FretboardData } from '@/lib/fretboardData';
 import type { LibraryCard } from '@services/adapters/localStorageAdapter';
 
 export type LibraryFilter = 'all' | Setup;
 export type LibrarySort = 'newest' | 'oldest' | 'name';
 
+// Cards saved with a ♯/♭ choice read as their page now names the root (A♯ major as B♭)
+const displayKey = (fretboard: FretboardData) =>
+  rootName(fretboard.currentKey, fretboard.currentPattern, fretboard.currentTonality);
+
 // Same symbol the stack chips use: "Am Pentatonic", "Gmaj7", "E5"
 export const fretboardLabel = (fretboard: FretboardData, setup: Setup) =>
-  patternSymbol(fretboard.currentKey, fretboard.currentTonality, fretboard.currentPattern, setup == Setup.Scale);
+  patternSymbol(displayKey(fretboard), fretboard.currentTonality, fretboard.currentPattern, setup == Setup.Scale);
 
 // Lets people type "Bb", "bbm" or "F#" for B♭, B♭m and F♯
 export const normalizeAccidentals = (text: string) =>
@@ -18,7 +23,7 @@ const searchText = (card: LibraryCard) => {
   const isScale = card.setup == Setup.Scale;
   const words = card.fretboards.flatMap(f => [
     fretboardLabel(f, card.setup),
-    patternSubtitle(f.currentKey, f.currentTonality, f.currentPattern, isScale),
+    patternSubtitle(displayKey(f), f.currentTonality, f.currentPattern, isScale),
     f.currentTonality,
   ]);
   return [card.name, ...words].join(' ').toLowerCase();

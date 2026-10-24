@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import { Setup } from '@data/constants';
+import { Setup, majorKeyToNumber } from '@data/constants';
 import type { FretboardData } from '@/lib/fretboardData';
 import type { LibraryCard } from '@services/adapters/localStorageAdapter';
 
@@ -30,8 +30,10 @@ export const clearWorkspaceCardId = (setup: Setup) => {
   }
 };
 
-// Drops undefined fields and ignores key order, so a stack read back from the API compares equal
-const plain = (stack: FretboardData[]) => JSON.parse(JSON.stringify(stack));
+// Drops undefined fields and ignores key order, so a stack read back from the API compares equal.
+// Keys compare by pitch: the Chord page respells a saved C♯ major as D♭ without changing the chord
+const plain = (stack: FretboardData[]) => (JSON.parse(JSON.stringify(stack)) as FretboardData[])
+  .map(fretboard => ({ ...fretboard, currentKey: majorKeyToNumber[fretboard.currentKey] ?? fretboard.currentKey }));
 
 export const sameStack = (a: FretboardData[], b: FretboardData[]) => _.isEqual(plain(a), plain(b));
 

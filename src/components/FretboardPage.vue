@@ -2,24 +2,21 @@
 import { ref, computed, watch, nextTick, onMounted } from 'vue';
 import _ from 'lodash';
 import Sortable from 'sortablejs';
-import { Accidental, Degree, Pattern, Setup, Tonality, degreeInPattern, majorSharpAllNotes, majorFlatAllNotes } from '@data/constants';
+import { Pattern, Setup, Tonality, degreeInPattern } from '@data/constants';
 import { isQualityLocked } from '@data/patternNames';
-import { chordVoicings, ChordVoicing } from '@data/chords';
+import { rootName } from '@data/noteNames';
 import { fetchCurrentFretboard, fetchFretboards, saveCurrentFretboard, saveFretboards } from '@/services/customizerService';
-import { defaultDataFor, CurrentCAGED, CurrentStrings, FretboardData } from '@/lib/fretboardData';
+import { defaultDataFor, FretboardData } from '@/lib/fretboardData';
 import { useLibraryStore } from '@stores/useLibraryStore';
 import { cardWithUnsavedDraft, clearWorkspaceCardId, getWorkspaceCardId, resolveCardRoute, sameStack, setWorkspaceCardId } from '@/lib/cardSession';
 import { getStackView, setStackView } from '@/lib/stackView';
 import StackBar from '@components/StackBar.vue';
 import StackRow from '@components/StackRow.vue';
-import PatternSummary from '@components/PatternSummary.vue';
 import PatternBuilder from '@components/PatternBuilder.vue';
-import PatternBoard from '@components/PatternBoard.vue';
-import VerticalChord from '@components/VerticalChord.vue';
+import FretboardEditor from '@components/FretboardEditor.vue';
 import RotatePhone from '@/assets/icons/RotatePhone.vue';
 import { rotateHintDismissed } from '@/lib/rotateHint';
 
-type Shape = keyof CurrentCAGED;
 type LabelMode = 'notes' | 'intervals';
 
 interface SortableEvent {
@@ -36,8 +33,6 @@ const emit = defineEmits<{
     (e: 'close-card', replace: boolean): void
 }>();
 
-const shapes: Shape[] = ['CShape', 'AShape', 'GShape', 'EShape', 'DShape'];
-
 const libraryStore = useLibraryStore();
 
 const stack = ref<FretboardData[]>([]);
@@ -50,28 +45,24 @@ const isEditing = ref<boolean>(false);
 const isLoaded = ref<boolean>(false);
 const stackList = ref<HTMLElement | null>(null);
 
-const isScale = computed(() => props.setup == Setup.Scale);
 const chord = computed(() => stack.value[selectedIndex.value]);
 
 // The Library card named in the URL, once the library has loaded
 const openCard = computed(() => props.cardId ? libraryStore.cards.find(c => c.id === props.cardId && c.setup === props.setup) : undefined);
 const isDirty = computed(() => !!openCard.value && !sameStack(stack.value, openCard.value.fretboards));
 
-const voicings = computed(() => chordVoicings(chord.value));
-
-const selectedShape = computed<Shape | 'All'>(() => {
-    const active = shapes.filter(shape => chord.value.currentCAGED[shape]);
-    return active.length === 1 ? active[0] : 'All';
-});
-
-const diagramShape = (voicing: ChordVoicing) => `${voicing.shape}Shape` as Shape;
-
 const dismissRotateHint = () => {
     rotateHintDismissed.value = true;
 }
 
+// A root is named by its pattern and quality (C♯m but D♭), whatever spelling it was saved with
+const respellRoot = (fretboard: FretboardData) => {
+    fretboard.currentKey = rootName(fretboard.currentKey, fretboard.currentPattern, fretboard.currentTonality);
+}
+
 const updateChord = (patch: Partial<FretboardData>) => {
     Object.assign(stack.value[selectedIndex.value], patch);
+    respellRoot(stack.value[selectedIndex.value]);
 }
 
 const allTones = (pattern: Pattern, tonality: Tonality) => degreeInPattern(pattern, tonality) ?? [];
@@ -87,27 +78,6 @@ const onChangeTonality = (tonality: Tonality) => {
 const onChangePattern = (pattern: Pattern) => {
     const tonality = isQualityLocked(pattern) ? Tonality.MAJOR : chord.value.currentTonality;
     updateChord({ currentPattern: pattern, currentTonality: tonality, currentHighlightNotes: allTones(pattern, tonality) });
-}
-
-const onChangeAccidental = (accidental: Accidental) => {
-    const from = accidental == Accidental.SHARP ? majorFlatAllNotes : majorSharpAllNotes;
-    const to = accidental == Accidental.SHARP ? majorSharpAllNotes : majorFlatAllNotes;
-    const index = from.indexOf(chord.value.currentKey);
-    updateChord({ currentAccidental: accidental, currentKey: index > -1 ? to[index] : chord.value.currentKey });
-}
-
-const onToggleTone = (degree: Degree) => {
-    const notes = chord.value.currentHighlightNotes;
-    updateChord({ currentHighlightNotes: notes.includes(degree) ? notes.filter(note => note !== degree) : [...notes, degree] });
-}
-
-const onChangeShape = (selected: Shape | 'All') => {
-    const currentCAGED = Object.fromEntries(shapes.map(shape => [shape, selected === 'All' || shape === selected])) as unknown as CurrentCAGED;
-    updateChord({ currentCAGED });
-}
-
-const onToggleString = (stringName: keyof CurrentStrings) => {
-    updateChord({ currentStrings: { ...chord.value.currentStrings, [stringName]: !chord.value.currentStrings[stringName] } });
 }
 
 const selectChord = (index: number) => {
@@ -233,6 +203,7 @@ const attachCard = async (cardId: string | null | undefined) => {
     stack.value = card.fretboards.length
         ? _.cloneDeep(card.fretboards).map(fretboard => ({ ...fretboard, currentSetup: props.setup }))
         : [defaultDataFor(props.setup)];
+    stack.value.forEach(respellRoot);
     selectedIndex.value = 0;
     isEditing.value = false;
     setWorkspaceCardId(props.setup, cardId);
@@ -246,6 +217,7 @@ const loadStack = async () => {
         stack.value = [(await fetchCurrentFretboard(props.setup)) ?? defaultDataFor(props.setup)];
     }
     stack.value.forEach(item => item.currentSetup = props.setup);
+    stack.value.forEach(respellRoot);
     isLoaded.value = true;
 }
 
@@ -312,106 +284,29 @@ watch(() => props.cardId, cardId => attachCard(cardId));
                  Stack View fills them all: collapsed rows, and the editor in place of the row being edited -->
             <div ref="stackList" class="stack-list" :class="{ 'is-stack-view': isStackView }">
                 <template v-for="(item, index) in stack" :key="index">
-                    <div v-if="isExpanded(index)" class="page-card fretboard-card">
-                        <div class="pattern-editor">
-                            <div class="editor-actions">
-                                <button type="button" class="reset-button" title="Put this fretboard back to its defaults" @click="resetChord">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 3-6.7L3 8"/><path d="M3 3v5h5"/></svg>
-                                    Reset
-                                </button>
-                                <button v-if="stack.length > 1" type="button" class="delete-button" aria-label="Remove this fretboard" title="Remove this fretboard from the stack" @click="removeChord(selectedIndex)">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>
-                                </button>
-                                <button v-if="isStackView" type="button" class="done-button" title="Collapse this fretboard back into the stack" @click="finishEditing">
-                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
-                                    Done
-                                </button>
-                            </div>
-                            <PatternSummary :chord="chord" :setup="setup" :label-mode="labelMode" @toggle-tone="onToggleTone"/>
+                    <FretboardEditor
+                        v-if="isExpanded(index)"
+                        v-model:label-mode="labelMode"
+                        class="page-card"
+                        :chord="chord"
+                        :setup="setup"
+                        :removable="stack.length > 1"
+                        :collapsible="isStackView"
+                        @update="updateChord"
+                        @reset="resetChord"
+                        @remove="removeChord(selectedIndex)"
+                        @done="finishEditing"
+                    >
+                        <template #builder>
                             <PatternBuilder
                                 :chord="chord"
                                 :setup="setup"
                                 @change-root="onChangeRoot"
                                 @change-tonality="onChangeTonality"
                                 @change-pattern="onChangePattern"
-                                @change-accidental="onChangeAccidental"
                             />
-                        </div>
-
-                        <div class="board-section">
-                            <div class="board-scroll">
-                                <PatternBoard
-                                    class="board"
-                                    :chord="chord"
-                                    :setup="setup"
-                                    :label-mode="labelMode"
-                                    string-toggles
-                                    @toggle-string="onToggleString"
-                                />
-                            </div>
-
-                            <div class="board-toolbar">
-                                <div class="toolbar-group stacked">
-                                    <span class="toolbar-label">Shape</span>
-                                    <div class="tile-radio">
-                                        <label>
-                                            <input type="radio" name="board-shape" :checked="selectedShape === 'All'" @change="onChangeShape('All')">
-                                                <div class="label toolbar-option fw-bold">All</div>
-                                            </input>
-                                        </label>
-                                        <label v-for="shape in shapes" :key="shape">
-                                            <input type="radio" name="board-shape" :checked="selectedShape === shape" @change="onChangeShape(shape)">
-                                                <div class="label toolbar-option fw-bold">{{ shape[0] }}</div>
-                                            </input>
-                                        </label>
-                                    </div>
-                                </div>
-
-                                <div class="toolbar-group">
-                                    <div class="fret-range">
-                                        <span class="fret-min fw-bold">12</span>
-                                        <input
-                                            type="range"
-                                            class="fret-slider"
-                                            aria-label="Frets"
-                                            min="12"
-                                            max="24"
-                                            step="1"
-                                            :value="chord.fretAmount"
-                                            @input="updateChord({ fretAmount: Number(($event.target as HTMLInputElement).value) })"
-                                        >
-                                        <span class="fret-count fw-bold">{{ chord.fretAmount }}</span>
-                                    </div>
-                                </div>
-
-                                <div class="toolbar-group stacked labels-group">
-                                    <span class="toolbar-label">Labels</span>
-                                    <div class="tile-radio fw-bold">
-                                        <label>
-                                            <input type="radio" name="board-labels" :checked="labelMode === 'notes'" @change="labelMode = 'notes'">
-                                                <div class="label toolbar-option">Notes</div>
-                                            </input>
-                                        </label>
-                                        <label>
-                                            <input type="radio" name="board-labels" :checked="labelMode === 'intervals'" @change="labelMode = 'intervals'">
-                                                <div class="label toolbar-option">Intervals</div>
-                                            </input>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div v-if="!isScale" class="chord-section">
-                            <div v-if="voicings.length" class="chord-diagrams">
-                                <label v-for="voicing in voicings" :key="voicing.shape" class="chord-option" :title="`Show the ${voicing.shape} shape on the fretboard`">
-                                    <input type="radio" name="diagram-shape" :checked="selectedShape === diagramShape(voicing)" @change="onChangeShape(diagramShape(voicing))">
-                                    <VerticalChord :voicing="voicing" :chord="chord" :label-mode="labelMode"/>
-                                </label>
-                            </div>
-                            <p v-else class="chord-note">No chord diagrams for this pattern</p>
-                        </div>
-                    </div>
+                        </template>
+                    </FretboardEditor>
                     <StackRow
                         v-else-if="isStackView"
                         :chord="item"
@@ -466,180 +361,6 @@ watch(() => props.cardId, cardId => attachCard(cardId));
     box-shadow: 0 0 0 2px var(--accent-text-color);
 }
 
-.pattern-editor {
-    position: relative;
-    display: flex;
-    flex-wrap: wrap;
-    // Row gap only: it applies when the builder wraps below the summary
-    gap: 2.5rem 0;
-    // Extra top room keeps the Reset button above the builder's first headings
-    padding: 2.75rem 2rem 1.75rem;
-    text-align: start;
-}
-
-// Reset, Remove and Done act on one fretboard, so they live on the card that edits it
-.editor-actions {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.75rem;
-    display: flex;
-    gap: 0.25rem;
-}
-
-.reset-button,
-.delete-button,
-.done-button {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    height: 36px;
-    padding: 0 0.75rem;
-    border: 1px solid transparent;
-    border-radius: 9px;
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-
-    &:focus-visible {
-        outline: 2px solid $yellow;
-        outline-offset: 2px;
-    }
-}
-
-.reset-button {
-    background: none;
-    color: var(--muted-text-color);
-
-    &:hover {
-        border-color: transparent;
-        background-color: var(--option-background-color);
-        color: inherit;
-    }
-}
-
-.delete-button {
-    justify-content: center;
-    width: 36px;
-    padding: 0;
-    background: none;
-    color: var(--muted-text-color);
-
-    &:hover {
-        border-color: transparent;
-        background-color: var(--option-background-color);
-        color: var(--danger-color);
-    }
-}
-
-.done-button {
-    background-color: var(--accent-soft-color);
-    color: var(--accent-strong-text-color);
-
-    &:hover {
-        border-color: var(--accent-text-color);
-    }
-}
-
-// Fretboard with its controls underneath, divided from the editor above
-.board-section {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.25rem;
-    padding: 1.5rem 1.5rem 1.5rem;
-    border-top: 1px solid var(--card-border-color);
-}
-
-// Equal side columns keep the Frets slider centred.
-// Bottom-aligned so inline controls line up with the buttons under stacked headings
-.board-toolbar {
-    display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    align-items: end;
-    gap: 0.75rem;
-    width: 100%;
-}
-
-// A heading and its control wrap as one unit
-.toolbar-group {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.5rem 0.75rem;
-    min-height: 44px;
-}
-
-// Heading above its buttons
-.toolbar-group.stacked {
-    flex-direction: column;
-    flex-wrap: nowrap;
-    align-items: flex-start;
-    gap: 0.4rem;
-}
-
-// Scrolls the neck inside the card when it is wider than the screen.
-// Auto margins center it when it fits and fall back to 0 when it doesn't.
-.board-scroll {
-    display: flex;
-    width: 100%;
-    overflow-x: auto;
-    scrollbar-color: var(--card-border-color) transparent;
-}
-
-.board {
-    flex: none;
-    margin-inline: auto;
-}
-
-.chord-section {
-    padding: 1.5rem;
-    border-top: 1px solid var(--card-border-color);
-}
-
-.chord-diagrams {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 1rem 1.5rem;
-}
-
-.chord-option {
-    cursor: pointer;
-
-    input {
-        position: absolute;
-        width: 0;
-        height: 0;
-        opacity: 0;
-    }
-
-    .vertical-chord {
-        padding: 0.75rem 0.75rem 0.5rem;
-        border: 3px solid transparent;
-        border-radius: 12px;
-        background-color: var(--option-background-color);
-    }
-
-    &:hover .vertical-chord,
-    input:checked + .vertical-chord {
-        border-color: $yellow;
-    }
-
-    input:checked + .vertical-chord :deep(.chord-caption) {
-        color: var(--accent-text-color);
-    }
-
-    input:focus-visible + .vertical-chord {
-        outline: 2px solid $yellow;
-        outline-offset: 2px;
-    }
-}
-
-.chord-note {
-    margin: 0;
-    color: $gray-1;
-}
-
 .rotate-hint {
     display: none;
     align-items: center;
@@ -681,94 +402,9 @@ watch(() => props.cardId, cardId => attachCard(cardId));
     }
 }
 
-.toolbar-label {
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: $gray-1;
-}
-
-input.fret-slider {
-    width: 10rem;
-}
-
-// Slider range: minimum (gray) ── slider ── current count
-.fret-range {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    min-height: 44px;
-}
-
-.fret-min {
-    color: $gray-1;
-}
-
-.fret-count {
-    min-width: 1.5rem;
-    color: var(--accent-text-color);
-}
-
-.labels-group {
-    justify-self: end;
-}
-
-.toolbar-option {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 44px;
-    height: 44px;
-    padding: 0 0.7rem;
-}
-
 @media (max-width: $phone) {
     .fretboard-page {
         padding: 0.75rem 1rem 2rem;
-    }
-
-    .pattern-editor {
-        flex-direction: column;
-        gap: 1.25rem;
-        padding: 1rem;
-    }
-
-    // Own row on phones so they never cover a long chord name
-    .editor-actions {
-        position: static;
-        align-self: flex-end;
-        margin-bottom: -0.75rem;
-    }
-
-    .board-section,
-    .chord-section {
-        padding: 1rem;
-    }
-
-    .chord-diagrams {
-        column-gap: 1rem;
-    }
-
-    // A fixed half-row width, so a diagram alone on the last row matches the others
-    .chord-option {
-        flex: 0 0 calc(50% - 0.5rem);
-        min-width: 9rem;
-        max-width: 11.75rem;
-    }
-
-    .chord-option .vertical-chord {
-        padding: 0.5rem 0.375rem 0.375rem;
-    }
-
-    // Too narrow for three columns, so the groups wrap
-    .board-toolbar {
-        display: flex;
-        flex-wrap: wrap;
-    }
-
-    input.fret-slider {
-        width: 7rem;
     }
 }
 

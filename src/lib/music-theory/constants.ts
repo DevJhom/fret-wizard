@@ -25,13 +25,16 @@ export enum Pattern {
   Chromatic = "Chromatic Scale",
   Power = "Power Chord",
   Triad = "Triad",
-  //Sixth = "Sixth Chord",
   Seventh = "Seventh Chord",
   Add9 = "Add9 Chord",
   Add11 = "Add11 Chord",
+  // Shown as the sixth chord (C6); the value stays as saved fretboards carry it
   Add13 = "Add13 Chord",
   Dominant = "Dominant Chord",
-  //Suspended = "Suspended Chord"
+  Sus2 = "Sus2 Chord",
+  Sus4 = "Sus4 Chord",
+  Diminished = "Diminished Chord",
+  HalfDiminished = "Half-Diminished Chord",
 }
 
 export enum Degree {
@@ -161,9 +164,9 @@ export const degreeInPattern = (pattern: Pattern, tonality: Tonality) => {
 
     case Pattern.Add13:
       if (tonality == Tonality.MAJOR)
-        return [roots, thirds, fifths, sixths]; //the sixth is called the thirteenth
+        return [roots, thirds, fifths, sixths]; //the sixth chord
       if (tonality == Tonality.MINOR)
-        return [roots, minorThirds, fifths, sixths]; //the sixth is called the thirteenth
+        return [roots, minorThirds, fifths, sixths]; //the minor sixth chord
     break;
 
     case Pattern.Dominant:
@@ -171,6 +174,18 @@ export const degreeInPattern = (pattern: Pattern, tonality: Tonality) => {
 
     case Pattern.Power:
       return [roots, fifths];
+
+    case Pattern.Sus2:
+      return [roots, seconds, fifths]; //the second replaces the third
+
+    case Pattern.Sus4:
+      return [roots, fourths, fifths]; //the fourth replaces the third
+
+    case Pattern.Diminished:
+      return [roots, minorThirds, tritones]; //the tritone is the flat fifth
+
+    case Pattern.HalfDiminished:
+      return [roots, minorThirds, tritones, minorSevenths]; //a diminished triad with a minor seventh
 
     default:
       return [roots, seconds, thirds, fifths, sixths];
