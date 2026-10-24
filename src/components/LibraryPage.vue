@@ -31,7 +31,10 @@ const cards = computed(() => visibleCards(libraryStore.cards, filter.value, quer
 const counts = computed(() => filterCounts(libraryStore.cards))
 const favoriteCount = computed(() => libraryStore.cards.filter(card => card.isFavorite).length)
 const isEmpty = computed(() => libraryStore.isLoaded && libraryStore.cards.length === 0)
-const hasNoResults = computed(() => !isEmpty.value && libraryStore.cards.length > 0 && cards.value.length === 0)
+const isFiltered = computed(() => !!query.value.trim() || favoritesOnly.value)
+// A type with no cards looks like an empty library; only search and Favorites get the no-results message
+const showEmptyState = computed(() => isEmpty.value || (libraryStore.isLoaded && cards.value.length === 0 && !isFiltered.value))
+const hasNoResults = computed(() => !isEmpty.value && libraryStore.cards.length > 0 && cards.value.length === 0 && isFiltered.value)
 // The modal starts on the type being filtered for
 const defaultSetup = computed(() => (filter.value === 'all' ? Setup.Scale : filter.value))
 
@@ -42,7 +45,6 @@ const summary = computed(() => {
 
 const noResultsText = computed(() => {
   if (query.value.trim()) return `No cards match "${query.value.trim()}"`
-  if (!favoritesOnly.value) return 'No cards of this type yet'
   return filter.value === 'all' ? 'No favorite cards yet' : 'No favorite cards of this type yet'
 })
 
@@ -151,7 +153,7 @@ onMounted(async () => {
       <button type="button" class="btn-secondary" @click="clearFilters">Clear Search and Filters</button>
     </div>
 
-    <section v-if="isEmpty" class="empty-state">
+    <section v-if="showEmptyState" class="empty-state">
       <svg class="empty-icon" width="96" height="96" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5.25" y="3" width="13.5" height="18" rx="2"/><path d="M9 9h6M9 13h4"/></svg>
       <p class="empty-text">No cards saved yet</p>
     </section>

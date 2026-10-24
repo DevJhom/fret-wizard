@@ -73,12 +73,6 @@ const cancelDelete = () => {
         <div class="card-top">
             <span class="badge" :class="card.setup === Setup.Scale ? 'badge-scale' : 'badge-chord'">{{ card.setup }}</span>
             <div class="corner-actions">
-                <button v-if="isRenaming" type="button" class="btn-icon btn-confirm" aria-label="Save name" @mousedown.prevent @click="saveRename">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
-                </button>
-                <button v-else type="button" class="btn-icon" :aria-label="`Rename ${card.name}`" @click="startRename">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="m13.5 6.5 4 4"/></svg>
-                </button>
                 <button v-if="!isConfirmingDelete" type="button" class="btn-icon btn-delete" :aria-label="`Delete ${card.name}`" @click="askDelete">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>
                 </button>
@@ -86,7 +80,12 @@ const cancelDelete = () => {
         </div>
 
         <div>
-            <h2 v-if="!isRenaming" class="card-name">{{ card.name }}</h2>
+            <div v-if="!isRenaming" class="name-row">
+                <h2 class="card-name">{{ card.name }}</h2>
+                <button type="button" class="btn-icon btn-rename" :aria-label="`Rename ${card.name}`" title="Rename this card" @click="startRename">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="m13.5 6.5 4 4"/></svg>
+                </button>
+            </div>
             <div v-else class="rename-row">
                 <label class="visually-hidden" :for="`rename-${card.id}`">Card name</label>
                 <input
@@ -99,11 +98,17 @@ const cancelDelete = () => {
                     @keydown.esc.prevent="cancelRename"
                     @blur="saveRename"
                 />
+                <button type="button" class="btn-icon btn-confirm" aria-label="Save name" @mousedown.prevent @click="saveRename">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+                </button>
             </div>
             <p class="card-meta">{{ meta }}</p>
         </div>
 
-        <FretboardPreview v-if="selectedFretboard" :fretboard="selectedFretboard" :label="fretboardLabel(selectedFretboard, card.setup)"/>
+        <!-- A pointer shortcut for the Open button, which keyboard and screen reader users already have -->
+        <div v-if="selectedFretboard" class="preview-link" :title="`Open in ${card.setup}`" @click="emit('open')">
+            <FretboardPreview :fretboard="selectedFretboard" :label="fretboardLabel(selectedFretboard, card.setup)"/>
+        </div>
 
         <div v-if="chips.length > 1" class="chips" role="group" aria-label="Fretboards in this card">
             <button
@@ -185,7 +190,14 @@ const cancelDelete = () => {
     color: var(--accent-strong-text-color);
 }
 
+.name-row {
+    display: flex;
+    align-items: flex-start;
+}
+
 .card-name {
+    flex: 0 1 auto;
+    min-width: 0;
     margin: 0;
     font-size: 18px;
     line-height: 1.3;
@@ -215,6 +227,16 @@ const cancelDelete = () => {
     color: inherit;
     font-weight: 600;
     outline: none;
+}
+
+.preview-link {
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+
+    &:hover {
+        background-color: var(--option-background-color);
+    }
 }
 
 .chips {
@@ -336,6 +358,18 @@ const cancelDelete = () => {
     display: flex;
     gap: 2px;
     margin: -10px -10px -10px 0;
+}
+
+// Sits against the name, pulled up so it doesn't make the name's line taller
+.btn-rename {
+    flex: none;
+    width: 36px;
+    height: 36px;
+    margin: -6px 0 -6px -4px;
+
+    &:hover {
+        background-color: transparent;
+    }
 }
 
 .btn-delete:hover {
