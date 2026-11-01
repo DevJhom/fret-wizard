@@ -166,8 +166,12 @@ const openIndex = 11; //equivalent note to the open position
     margin-left: -15px;
 }
 
+// Top-aligned and one line tall, so the fret starts right under the string and its wire spans the row
 .fret {
     position: relative;
+    height: 24px;
+    height: 1lh;
+    vertical-align: top;
     min-width: 2rem;
     max-width: 50px;
     border-right: 1px solid var(--fret-wire-color);
@@ -188,6 +192,19 @@ const openIndex = 11; //equivalent note to the open position
     transform: translate(-50%, -50%);
     background-color: var(--inlay-color);
     pointer-events: none;
+}
+
+// Centers the note on the string line (the row's top border, --string-width thick), whatever the
+// font's baseline; notes-input.scss's -26px offset left thicker strings' notes up to 3px low
+.fret .notes {
+    position: absolute;
+    top: calc(var(--string-width) / -2);
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.fret .notes .checkbox__checkmark {
+    margin-top: 0;
 }
 
 .outside-shape {
