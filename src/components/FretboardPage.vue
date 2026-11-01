@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch, nextTick, onMounted } from 'vue';
+import { ref, computed, watch, watchEffect, nextTick, onMounted, onBeforeUnmount } from 'vue';
 import _ from 'lodash';
 import Sortable from 'sortablejs';
 import { Pattern, Setup, Tonality, degreeInPattern } from '@data/constants';
@@ -8,8 +8,10 @@ import { rootName } from '@data/noteNames';
 import { fetchCurrentFretboard, fetchFretboards, saveCurrentFretboard, saveFretboards } from '@/services/customizerService';
 import { defaultDataFor, FretboardData } from '@/lib/fretboardData';
 import { useLibraryStore } from '@stores/useLibraryStore';
-import { cardWithUnsavedDraft, clearWorkspaceCardId, getWorkspaceCardId, resolveCardRoute, sameStack, setWorkspaceCardId } from '@/lib/cardSession';
+import { cardStatus, cardWithUnsavedDraft, clearWorkspaceCardId, detachNotice, getWorkspaceCardId, pageTitle, resolveCardRoute, sameStack, setWorkspaceCardId } from '@/lib/cardSession';
 import { getStackView, setStackView } from '@/lib/stackView';
+import CardHeader from '@components/CardHeader.vue';
+import DetachedBanner from '@components/DetachedBanner.vue';
 import StackBar from '@components/StackBar.vue';
 import StackRow from '@components/StackRow.vue';
 import PatternBuilder from '@components/PatternBuilder.vue';
@@ -31,6 +33,7 @@ const props = defineProps<{ setup: Setup, cardId?: string | null }>();
 const emit = defineEmits<{
     (e: 'open-card', cardId: string, replace: boolean): void
     (e: 'close-card', replace: boolean): void
+    (e: 'open-library'): void
 }>();
 
 const libraryStore = useLibraryStore();
@@ -44,12 +47,20 @@ const isStackView = ref<boolean>(getStackView(props.setup));
 const isEditing = ref<boolean>(false);
 const isLoaded = ref<boolean>(false);
 const stackList = ref<HTMLElement | null>(null);
+const cardHeader = ref<InstanceType<typeof CardHeader> | null>(null);
+// The URL named a card the Library doesn't have; the header explains until dismissed
+const isDetached = ref<boolean>(false);
+// A card just created here, whose name field opens once the page shows it
+const pendingRenameId = ref<string | null>(null);
 
 const chord = computed(() => stack.value[selectedIndex.value]);
 
 // The Library card named in the URL, once the library has loaded
 const openCard = computed(() => props.cardId ? libraryStore.cards.find(c => c.id === props.cardId && c.setup === props.setup) : undefined);
 const isDirty = computed(() => !!openCard.value && !sameStack(stack.value, openCard.value.fretboards));
+const status = computed(() => cardStatus(!!openCard.value, isDirty.value));
+// Until the library loads, a card URL has no card to name; hiding the header avoids a flash of "Draft"
+const isCardPending = computed(() => !!props.cardId && !openCard.value);
 
 const dismissRotateHint = () => {
     rotateHintDismissed.value = true;
@@ -174,10 +185,26 @@ const saveCard = async () => {
 
 const saveAsNewCard = async () => {
     await libraryStore.ensureLoaded();
-    const card = await libraryStore.createCard(`Card ${libraryStore.cards.length + 1}`, props.setup, stack.value);
+    const card = await libraryStore.createCard(`Sheet ${libraryStore.cards.length + 1}`, props.setup, stack.value);
     if (!card) return;
+    isDetached.value = false;
+    pendingRenameId.value = card.id;
     setWorkspaceCardId(props.setup, card.id);
     emit('open-card', card.id, false);
+}
+
+const renameCard = (name: string) => {
+    if (openCard.value) libraryStore.renameCard(openCard.value.id, name);
+}
+
+// Unlinks the card and starts over from one default fretboard; Back reopens the card
+const closeCard = () => {
+    if (isDirty.value && !window.confirm(`"${openCard.value!.name}" has unsaved changes. Discard them and close it?`)) return;
+    clearWorkspaceCardId(props.setup);
+    stack.value = [defaultDataFor(props.setup)];
+    selectedIndex.value = 0;
+    isEditing.value = false;
+    emit('close-card', false);
 }
 
 // Brings the page in line with the card named in the URL
@@ -186,6 +213,7 @@ const attachCard = async (cardId: string | null | undefined) => {
     await libraryStore.ensureLoaded();
     const workspaceCardId = getWorkspaceCardId(props.setup);
     const action = resolveCardRoute(cardId, props.setup, libraryStore.cards, workspaceCardId);
+    isDetached.value = detachNotice(action);
     if (action === 'detach') {
         if (workspaceCardId === cardId) clearWorkspaceCardId(props.setup);
         emit('close-card', true);
@@ -193,13 +221,13 @@ const attachCard = async (cardId: string | null | undefined) => {
     }
     if (action === 'keep') return;
 
+    const card = libraryStore.cards.find(c => c.id === cardId)!;
     const unsaved = cardWithUnsavedDraft(workspaceCardId, cardId, stack.value, libraryStore.cards);
-    if (unsaved && !window.confirm(`"${unsaved.name}" has unsaved changes. Discard them and open this card?`)) {
+    if (unsaved && !window.confirm(`"${unsaved.name}" has unsaved changes. Discard them and open "${card.name}"?`)) {
         emit('open-card', unsaved.id, true);
         return;
     }
 
-    const card = libraryStore.cards.find(c => c.id === cardId)!;
     stack.value = card.fretboards.length
         ? _.cloneDeep(card.fretboards).map(fretboard => ({ ...fretboard, currentSetup: props.setup }))
         : [defaultDataFor(props.setup)];
@@ -228,6 +256,21 @@ watch([stack, selectedIndex], () => {
 }, { deep: true });
 
 watch(isStackView, value => setStackView(props.setup, value));
+
+// A card just saved here asks for a name as soon as the header shows it
+watch(() => openCard.value?.id, id => {
+    if (!id || id !== pendingRenameId.value) return;
+    pendingRenameId.value = null;
+    nextTick(() => cardHeader.value?.startRename());
+});
+
+watchEffect(() => {
+    document.title = pageTitle(props.setup === Setup.Scale ? 'Scale' : 'Chord', openCard.value?.name, status.value);
+});
+
+onBeforeUnmount(() => {
+    document.title = 'FretWizard';
+});
 
 onMounted(async () => {
     await loadStack();
@@ -264,6 +307,7 @@ watch(() => props.cardId, cardId => attachCard(cardId));
 
         <!-- The stack tabs sit on the card like folder tabs -->
         <div class="stack-folder">
+            <DetachedBanner v-if="isDetached" class="detached-row" @save-as-new="saveAsNewCard" @dismiss="isDetached = false"/>
             <StackBar
                 :chords="stack"
                 :selected-index="selectedIndex"
@@ -278,7 +322,19 @@ watch(() => props.cardId, cardId => attachCard(cardId));
                 @save="saveCard"
                 @save-as-new="saveAsNewCard"
                 @toggle-stack-view="toggleStackView"
-            />
+            >
+                <!-- A draft has no card to name -->
+                <template v-if="openCard || isCardPending" #identity>
+                    <CardHeader
+                        ref="cardHeader"
+                        :class="{ 'is-pending': isCardPending }"
+                        :card-name="openCard?.name"
+                        @rename="renameCard"
+                        @close="closeCard"
+                        @open-library="emit('open-library')"
+                    />
+                </template>
+            </StackBar>
 
             <!-- One slot per fretboard. The Default view fills only the selected one, with the editor.
                  Stack View fills them all: collapsed rows, and the editor in place of the row being edited -->
@@ -335,6 +391,16 @@ watch(() => props.cardId, cardId => attachCard(cardId));
 .stack-folder {
     display: flex;
     flex-direction: column;
+}
+
+// The banner sits clear of the tabs; only the tabs join the card
+.detached-row {
+    margin-bottom: 0.75rem;
+}
+
+// Keeps its height so the stack doesn't jump when the card arrives
+.is-pending {
+    visibility: hidden;
 }
 
 // The first tab sits on the top-left corner, so that corner is square

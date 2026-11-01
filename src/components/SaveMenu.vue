@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue';
+import { cardStatus, saveLabel } from '@/lib/cardSession';
 
 const props = defineProps<{
     cardName?: string,
@@ -16,10 +17,12 @@ const toggle = ref<HTMLButtonElement | null>(null);
 const options = ref<HTMLElement | null>(null);
 const isOpen = ref(false);
 
-// The open card already holds this stack, so there is nothing to save to it
-const isSaved = computed(() => !!props.cardName && !props.isDirty);
+const status = computed(() => cardStatus(!!props.cardName, props.isDirty));
 
-// The bar no longer names the open card; the tooltip still says which one Save writes to
+// The open card already holds this stack, so there is nothing to save to it
+const isSaved = computed(() => status.value === 'saved');
+
+// The card header names the open card; the tooltip repeats which one Save writes to
 const saveTitle = computed(() => {
     if (!props.cardName) return undefined;
     return isSaved.value ? `"${props.cardName}" is up to date` : `Save changes to "${props.cardName}"`;
@@ -70,13 +73,15 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', closeOnOutside
 </script>
 
 <template>
-    <!-- Split button: the main action on the left, the other ways to save behind the arrow -->
-    <div ref="root" class="save-menu" @keydown.esc="closeMenu(true)">
+    <!-- Split button: the main action on the left, the other ways to save behind the arrow.
+         Yellow only while there is something to save; a saved card's button goes gray -->
+    <div ref="root" class="save-menu" :class="{ 'is-saved': isSaved }" @keydown.esc="closeMenu(true)">
         <button type="button" class="save-main" :disabled="isSaved" :title="saveTitle" @click="save">
-            <span class="save-label" :class="{ 'is-hidden': isSaved }">Save to Library</span>
+            <span class="save-label" :class="{ 'is-hidden': status !== 'draft' }">{{ saveLabel('draft') }}</span>
+            <span class="save-label" :class="{ 'is-hidden': status !== 'unsaved' }">{{ saveLabel('unsaved') }}</span>
             <span class="save-label" :class="{ 'is-hidden': !isSaved }">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
-                Saved
+                {{ saveLabel('saved') }}
             </span>
         </button>
         <button ref="toggle" type="button" class="save-toggle" aria-label="More ways to save" aria-haspopup="menu" :aria-expanded="isOpen" @click="toggleMenu">
@@ -94,11 +99,12 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', closeOnOutside
         >
             <button type="button" class="save-option" role="menuitem" :disabled="isSaved" @click="save">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h11l3 3v15H5z"/><path d="M8 3v5h7V3"/><path d="M8 21v-7h8v7"/></svg>
-                Save to Library
+                {{ status === 'unsaved' ? saveLabel('unsaved') : saveLabel('draft') }}
             </button>
-            <button type="button" class="save-option" role="menuitem" @click="saveAsNew">
+            <!-- A draft has nothing to copy: Save to Library already makes it new -->
+            <button type="button" class="save-option" role="menuitem" :disabled="!cardName" @click="saveAsNew">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>
-                Save as a New Card
+                Save as a Copy
             </button>
         </div>
     </div>
@@ -151,7 +157,18 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', closeOnOutside
     visibility: hidden;
 }
 
-// Same yellow as "Save to Library": the label and check mark are what say it is saved
+// Nothing to save: gray like Stack View, so yellow only ever means "press me"
+.is-saved .save-main,
+.is-saved .save-toggle {
+    background-color: var(--option-background-color);
+    color: var(--muted-text-color);
+}
+
+.is-saved .save-toggle {
+    border-left-color: var(--card-border-color);
+    color: inherit;
+}
+
 .save-main:disabled {
     cursor: default;
     filter: none;

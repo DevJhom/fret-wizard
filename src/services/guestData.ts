@@ -12,7 +12,7 @@ const withDefaults = (fretboard: Partial<FretboardData>, setup: Setup): Fretboar
   currentSetup: setup,
 })
 
-const cardName = (name: string | undefined): string => (name ?? '').trim().slice(0, 100) || 'Untitled card'
+const cardName = (name: string | undefined): string => (name ?? '').trim().slice(0, 100) || 'Untitled sheet'
 
 const normalizeProgression = (saved: ChordProgression): ChordProgression => {
   const tonality = saved.tonality === Tonality.MINOR ? Tonality.MINOR : Tonality.MAJOR

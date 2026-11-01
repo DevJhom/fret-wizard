@@ -174,7 +174,7 @@ onBeforeUnmount(() => {
         <template v-if="authStore.status !== 'restoring'">
           <LibraryPage v-if="currentView === 'library'" :key="`library-${authStore.sessionVersion}`" @load-card="onLoadCard"/>
           <ChordProgressionPage v-else-if="currentView === 'progression'" :key="`progression-${authStore.sessionVersion}`"/>
-          <FretboardPage v-else :key="`${currentView}-${authStore.sessionVersion}`" :setup="setupForView[currentView]" :card-id="currentCardId" @open-card="onOpenCard" @close-card="onCloseCard"/>
+          <FretboardPage v-else :key="`${currentView}-${authStore.sessionVersion}`" :setup="setupForView[currentView]" :card-id="currentCardId" @open-card="onOpenCard" @close-card="onCloseCard" @open-library="switchView('library')"/>
         </template>
       </div>
     </div>

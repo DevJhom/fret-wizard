@@ -83,7 +83,7 @@ describe('guest data', () => {
     save('chordProgression', { key: 'C♯', tonality: Tonality.MAJOR, progression: [{ id: 'p-1', degree: 2 }] })
 
     const data = collectGuestData()
-    expect(data?.libraryCards?.[0].name).toBe('Untitled card')
+    expect(data?.libraryCards?.[0].name).toBe('Untitled sheet')
     expect(data?.chordProgression).toEqual({ key: 'C', tonality: Tonality.MAJOR, progression: [{ id: 'p-1', degree: 2 }] })
   })
 

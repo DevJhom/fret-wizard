@@ -40,12 +40,12 @@ const defaultSetup = computed(() => (filter.value === 'all' ? Setup.Scale : filt
 
 const summary = computed(() => {
   const count = libraryStore.cards.length
-  return `${count} saved ${count === 1 ? 'card' : 'cards'}`
+  return `${count} saved ${count === 1 ? 'sheet' : 'sheets'}`
 })
 
 const noResultsText = computed(() => {
-  if (query.value.trim()) return `No cards match "${query.value.trim()}"`
-  return filter.value === 'all' ? 'No favorite cards yet' : 'No favorite cards of this type yet'
+  if (query.value.trim()) return `No sheets match "${query.value.trim()}"`
+  return filter.value === 'all' ? 'No favorite sheets yet' : 'No favorite sheets of this type yet'
 })
 
 const clearFilters = () => {
@@ -123,7 +123,7 @@ onMounted(async () => {
     <div class="actions">
       <button type="button" class="btn-new" @click="isCreateOpen = true">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
-        New Card
+        New Sheet
       </button>
       <label class="sort">
         <span class="visually-hidden">Sort</span>
@@ -155,7 +155,7 @@ onMounted(async () => {
 
     <section v-if="showEmptyState" class="empty-state">
       <svg class="empty-icon" width="96" height="96" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.25" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5.25" y="3" width="13.5" height="18" rx="2"/><path d="M9 9h6M9 13h4"/></svg>
-      <p class="empty-text">No cards saved yet</p>
+      <p class="empty-text">No sheets saved yet</p>
     </section>
 
     <NewCardModal

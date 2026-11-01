@@ -52,3 +52,34 @@ export const cardWithUnsavedDraft = (workspaceCardId: string | null, nextCardId:
   const card = cards.find(c => c.id === workspaceCardId);
   return card && !sameStack(workspaceStack, card.fretboards) ? card : undefined;
 };
+
+// What the page holds: a draft, or a Library card with or without unsaved edits
+export type CardStatus = 'draft' | 'saved' | 'unsaved';
+
+export const cardStatus = (hasCard: boolean, isDirty: boolean): CardStatus => {
+  if (!hasCard) return 'draft';
+  return isDirty ? 'unsaved' : 'saved';
+};
+
+// The Save button names what a click does: create a card, nothing, or overwrite the open one
+export const saveLabel = (status: CardStatus): string => ({
+  draft: 'Save to Library',
+  saved: 'Saved',
+  unsaved: 'Save changes',
+})[status];
+
+// A rename only counts when the trimmed name is new and not blank
+export const renamedTo = (draft: string, current: string): string | null => {
+  const name = draft.trim();
+  return name && name !== current ? name : null;
+};
+
+// The URL named a card the page can't open, so the page says why it is now a draft
+export const detachNotice = (action: CardRouteAction): boolean => action === 'detach';
+
+// Browser tab title: the open card first, marked with • while it has unsaved edits
+export const pageTitle = (pageName: string, cardName: string | undefined, status: CardStatus): string => {
+  const title = `${pageName} · FretWizard`;
+  if (!cardName) return title;
+  return `${status === 'unsaved' ? '• ' : ''}${cardName} · ${title}`;
+};

@@ -2,7 +2,7 @@ import { beforeEach, describe, expect, it } from 'vitest'
 import { Setup } from '@data/constants'
 import { defaultDataFor, FretboardData } from '@/lib/fretboardData'
 import type { LibraryCard } from '@services/adapters/localStorageAdapter'
-import { cardWithUnsavedDraft, clearWorkspaceCardId, getWorkspaceCardId, resolveCardRoute, sameStack, setWorkspaceCardId } from '@/lib/cardSession'
+import { cardStatus, cardWithUnsavedDraft, clearWorkspaceCardId, detachNotice, getWorkspaceCardId, pageTitle, renamedTo, resolveCardRoute, sameStack, saveLabel, setWorkspaceCardId } from '@/lib/cardSession'
 
 const board = (key: string): FretboardData => ({ ...defaultDataFor(Setup.Scale), currentKey: key })
 const card = (id: string, setup: Setup, fretboards: FretboardData[]): LibraryCard => ({ id, name: `Card ${id}`, setup, fretboards, createdAt: 0 })
@@ -69,5 +69,57 @@ describe('cardWithUnsavedDraft', () => {
     expect(cardWithUnsavedDraft(null, 's2', [board('G')], cards)).toBeUndefined() // no card open
     expect(cardWithUnsavedDraft('s1', 's1', [board('G')], cards)).toBeUndefined() // reopening the same card
     expect(cardWithUnsavedDraft('gone', 's2', [board('G')], cards)).toBeUndefined() // card was deleted
+  })
+})
+
+describe('cardStatus', () => {
+  it('is a draft with no card, whatever the stack', () => {
+    expect(cardStatus(false, false)).toBe('draft')
+    expect(cardStatus(false, true)).toBe('draft')
+  })
+
+  it('follows isDirty when a card is open', () => {
+    expect(cardStatus(true, false)).toBe('saved')
+    expect(cardStatus(true, true)).toBe('unsaved')
+  })
+})
+
+describe('saveLabel', () => {
+  it('names what Save will do', () => {
+    expect(saveLabel('draft')).toBe('Save to Library')
+    expect(saveLabel('saved')).toBe('Saved')
+    expect(saveLabel('unsaved')).toBe('Save changes')
+  })
+})
+
+describe('renamedTo', () => {
+  it('trims the new name', () => {
+    expect(renamedTo('  Blues  ', 'Card 5')).toBe('Blues')
+  })
+
+  it('ignores an empty or blank name', () => {
+    expect(renamedTo('', 'Card 5')).toBeNull()
+    expect(renamedTo('   ', 'Card 5')).toBeNull()
+  })
+
+  it('ignores an unchanged name', () => {
+    expect(renamedTo(' Card 5 ', 'Card 5')).toBeNull()
+  })
+})
+
+describe('detachNotice', () => {
+  it('flags a card the Library no longer has, including the remembered workspace card', () => {
+    expect(detachNotice(resolveCardRoute('gone', Setup.Scale, cards, 'gone'))).toBe(true)
+    expect(detachNotice(resolveCardRoute('c1', Setup.Scale, cards, null))).toBe(true)
+    expect(detachNotice(resolveCardRoute('s1', Setup.Scale, cards, 's1'))).toBe(false)
+    expect(detachNotice(resolveCardRoute('s2', Setup.Scale, cards, 's1'))).toBe(false)
+  })
+})
+
+describe('pageTitle', () => {
+  it('names the page, and the card when one is open', () => {
+    expect(pageTitle('Scale', undefined, 'draft')).toBe('Scale · FretWizard')
+    expect(pageTitle('Scale', 'Blues', 'saved')).toBe('Blues · Scale · FretWizard')
+    expect(pageTitle('Chord', 'Blues', 'unsaved')).toBe('• Blues · Chord · FretWizard')
   })
 })

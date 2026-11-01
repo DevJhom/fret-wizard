@@ -3,6 +3,7 @@ import { computed, nextTick, ref } from 'vue';
 import { Setup } from '@data/constants';
 import FretboardPreview from '@components/FretboardPreview.vue';
 import { cardMeta, fretboardLabel } from '@/lib/libraryView';
+import { renamedTo } from '@/lib/cardSession';
 import type { FretboardData } from '@/lib/fretboardData';
 import type { LibraryCard } from '@stores/useLibraryStore';
 
@@ -48,8 +49,8 @@ const startRename = async () => {
 const saveRename = () => {
     if (!isRenaming.value) return;
     isRenaming.value = false;
-    const name = draft.value.trim();
-    if (name && name !== props.card.name) emit('rename', name);
+    const name = renamedTo(draft.value, props.card.name);
+    if (name) emit('rename', name);
 };
 
 const cancelRename = () => {
@@ -82,12 +83,12 @@ const cancelDelete = () => {
         <div>
             <div v-if="!isRenaming" class="name-row">
                 <h2 class="card-name">{{ card.name }}</h2>
-                <button type="button" class="btn-icon btn-rename" :aria-label="`Rename ${card.name}`" title="Rename this card" @click="startRename">
+                <button type="button" class="btn-icon btn-rename" :aria-label="`Rename ${card.name}`" title="Rename" @click="startRename">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="m13.5 6.5 4 4"/></svg>
                 </button>
             </div>
             <div v-else class="rename-row">
-                <label class="visually-hidden" :for="`rename-${card.id}`">Card name</label>
+                <label class="visually-hidden" :for="`rename-${card.id}`">Sheet name</label>
                 <input
                     :id="`rename-${card.id}`"
                     ref="nameInput"
@@ -110,7 +111,7 @@ const cancelDelete = () => {
             <FretboardPreview :fretboard="selectedFretboard" :label="fretboardLabel(selectedFretboard, card.setup)"/>
         </div>
 
-        <div v-if="chips.length > 1" class="chips" role="group" aria-label="Fretboards in this card">
+        <div v-if="chips.length > 1" class="chips" role="group" aria-label="Fretboards in this sheet">
             <button
                 v-for="chip in chips"
                 :key="chip.index"
@@ -137,7 +138,7 @@ const cancelDelete = () => {
                 </button>
             </div>
             <div v-else class="footer-row" @keydown.esc="cancelDelete">
-                <span class="confirm-text">Delete this card?</span>
+                <span class="confirm-text">Delete this sheet?</span>
                 <button ref="cancelDeleteButton" type="button" class="btn-secondary" @click="cancelDelete">Cancel</button>
                 <button type="button" class="btn-danger" @click="emit('delete')">Delete</button>
             </div>

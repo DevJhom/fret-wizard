@@ -142,17 +142,23 @@ onBeforeUnmount(() => tabsResizeObserver.disconnect());
             </div>
             <button type="button" class="add-chord" @click="emit('add')">+ Add {{ setup == Setup.Scale ? 'Scale' : 'Chord' }}</button>
         </div>
-        <div class="stack-actions">
-            <!-- Names the view a click switches to, so it is never shown as pressed -->
-            <button v-if="isStackView" type="button" class="stack-action view-action" title="Show one fretboard at a time, picked by its tab" @click="emit('toggle-stack-view')">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9V7a2 2 0 0 1 2-2h4l2 3h8a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-                Default View
-            </button>
-            <button v-else type="button" class="stack-action view-action" title="Show every fretboard in the stack, collapsed" @click="emit('toggle-stack-view')">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="6" rx="1.5"/><rect x="3" y="14" width="18" height="6" rx="1.5"/></svg>
-                Stack View
-            </button>
-            <SaveMenu :card-name="cardName" :is-dirty="isDirty" @save="emit('save')" @save-as-new="emit('save-as-new')"/>
+        <!-- One row above the tabs: the open card's name on the left, the page's actions on the right -->
+        <div class="stack-top">
+            <div v-if="$slots.identity" class="stack-identity">
+                <slot name="identity"/>
+            </div>
+            <div class="stack-actions">
+                <!-- Names the view a click switches to, so it is never shown as pressed -->
+                <button v-if="isStackView" type="button" class="stack-action view-action" title="Show one fretboard at a time, picked by its tab" @click="emit('toggle-stack-view')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9V7a2 2 0 0 1 2-2h4l2 3h8a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                    Default View
+                </button>
+                <button v-else type="button" class="stack-action view-action" title="Show every fretboard in the stack, collapsed" @click="emit('toggle-stack-view')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="6" rx="1.5"/><rect x="3" y="14" width="18" height="6" rx="1.5"/></svg>
+                    Stack View
+                </button>
+                <SaveMenu :card-name="cardName" :is-dirty="isDirty" @save="emit('save')" @save-as-new="emit('save-as-new')"/>
+            </div>
         </div>
     </div>
 </template>
@@ -293,13 +299,25 @@ onBeforeUnmount(() => tabsResizeObserver.disconnect());
     }
 }
 
+.stack-top {
+    display: flex;
+    order: -1;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+}
+
+// Takes the room the buttons leave; a long name is cut short rather than pushing them down
+.stack-identity {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
 .stack-actions {
     display: flex;
     flex: none;
-    order: -1;
-    justify-content: flex-end;
     gap: 0.5rem;
-    width: 100%;
+    margin-left: auto;
 }
 
 .stack-action {
@@ -324,33 +342,28 @@ onBeforeUnmount(() => tabsResizeObserver.disconnect());
     background-color: var(--option-background-color);
 }
 
-// No tabs to join a card: the bar is a plain row above the list
+// No tabs to join a card: Add sits on its own under the top row
 .is-stack-view {
-    flex-wrap: nowrap;
     align-items: center;
 
     .add-chord {
         margin-left: 0;
     }
-
-    .stack-actions {
-        order: 0;
-        width: auto;
-    }
 }
 
+// Too narrow for the name beside the buttons: the name gets its own line above them
 @media (max-width: $phone) {
-    .stack-actions {
+    .stack-top {
         flex-wrap: wrap;
+        gap: 0.5rem;
     }
 
-    .is-stack-view {
-        flex-wrap: wrap;
+    .stack-identity {
+        flex-basis: 100%;
+    }
 
-        .stack-actions {
-            order: -1;
-            width: 100%;
-        }
+    .stack-actions {
+        flex-wrap: wrap;
     }
 }
 </style>
