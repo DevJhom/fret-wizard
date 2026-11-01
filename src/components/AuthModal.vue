@@ -209,19 +209,21 @@ onMounted(async () => {
   justify-content: center;
   padding: 2rem;
   text-align: center;
-  background-color: $yellow;
   border-right: 1px solid var(--card-border-color);
 }
 
-// Card-colored plate behind the wordmark and tagline so the yellow doesn't swallow them
+// A yellow frame filling the panel, with the wordmark and tagline centered inside
 .auth-plate {
   display: flex;
+  flex: 1;
   flex-direction: column;
+  align-self: stretch;
   align-items: center;
+  justify-content: center;
   gap: 0.25rem;
-  padding: 3rem 2.25rem;
+  padding: 2rem 1.5rem;
+  border: 2px solid $yellow;
   border-radius: 12px;
-  background-color: var(--card-background-color);
 }
 
 // Same wordmark as the top bar logo, larger
@@ -420,14 +422,9 @@ onMounted(async () => {
     border-bottom: 1px solid var(--card-border-color);
   }
 
-  // The close button sits over the brand panel here
-  .auth-close {
-    color: $black;
-  }
-
   .auth-plate {
     gap: 0.1rem;
-    padding: 1.5rem 1.75rem;
+    padding: 1.25rem 1rem;
     border-radius: 10px;
   }
 
